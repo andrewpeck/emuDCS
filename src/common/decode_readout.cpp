@@ -2914,7 +2914,7 @@ extract_scope:
     scp_silent		= false;
     scp_playback	= true;
 
-    scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+    scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 skip_scope:
     //------------------------------------------------------------------------------
@@ -2961,7 +2961,7 @@ extract_miniscope:
     // Load miniscope arrays, display channel graph
     fprintf(log_file,"Decode/display miniscope data\n");
 
-    miniscope16(base_adr,fifo_tbins_mini,miniscope_data);
+    miniscope16(fifo_tbins_mini,miniscope_data);
 
 skip_miniscope:
     //------------------------------------------------------------------------------

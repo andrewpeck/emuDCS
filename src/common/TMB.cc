@@ -4135,12 +4135,12 @@ END:
 		void TMB::TriggerTestInjectALCT() {
 
 			// Turn off CCB backplane inputs, turn on L1A emulator
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			wr_data = 0x003D;
 			status  = vme_write(adr,wr_data);
 
 			// Enable sequencer trigger, set internal l1a delay
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFF00;
 			wr_data = wr_data | 0x0004;
@@ -4148,7 +4148,7 @@ END:
 			status = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs, disable synchronized alct+clct triggers
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0001;
@@ -4156,26 +4156,26 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CLCT cable inputs
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Turn off internal level 1 accept for sequencer
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0FFF;
 			status  = vme_write(adr,wr_data);
 
 			// Select ALCT pattern trigger
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			rd_data = rd_data & 0xFF00;
 			wr_data = rd_data | 0x0002;
@@ -4183,7 +4183,7 @@ END:
 
 			// Set start_trigger state for FMM
 			ttc_cmd = 6;            // start_trigger
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 			wr_data = 0x0001;
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0003 | (ttc_cmd << 8);
@@ -4207,7 +4207,7 @@ END:
 				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Clear previous inject
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFFD;
 			status  = vme_write(adr,wr_data);
@@ -4221,7 +4221,7 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Check for blue flash
-			adr    = base_adr+vme_led_adr;
+			adr    = vme_led_adr;
 			status = vme_read(adr,rd_data);
 			blue_flash = rd_data & 0x1;
 
@@ -4231,7 +4231,7 @@ END:
 			}
 
 			// Check scintillator veto is set
-			adr    = base_adr+seqmod_adr;
+			adr    = seqmod_adr;
 			status = vme_read(adr,rd_data);
 			scint_veto = (rd_data>>13) & 0x1;
 			if (scint_veto!=1) pause("scint veto failed to set");
@@ -4246,20 +4246,20 @@ END:
 			if (scint_veto!=0) pause("scint veto failed to clear");
 
 			// Read ALCT data wot triggered
-			adr    = alct_alct0_adr+base_adr;
+			adr    = alct_alct0_adr;
 			status = vme_read(adr,rd_data);
 			alct0_inj_rd = rd_data;
 
-			adr    = alct_alct1_adr+base_adr;
+			adr    = alct_alct1_adr;
 			status = vme_read(adr,rd_data);
 			alct1_inj_rd = rd_data;
 
 			// Read injector generated ALCT data
-			adr    = alct0_inj_adr+base_adr;
+			adr    = alct0_inj_adr;
 			status = vme_read(adr,rd_data);
 			alct0_inj_wr = rd_data;
 
-			adr    = alct1_inj_adr+base_adr;
+			adr    = alct1_inj_adr;
 			status = vme_read(adr,rd_data);
 			alct1_inj_wr = rd_data;
 
@@ -4317,18 +4317,18 @@ END:
 		void TMB::TriggerTestInjectCLCT(){
 
 			// Turn off CCB backplane inputs, turn on L1A emulator
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			wr_data = 0x003D;
 			status  = vme_write(adr,wr_data);
 
 			// Enable sequencer trigger, turn off dmb trigger, set internal l1a delay
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			wr_data = 0x0004;
 			wr_data = wr_data | (114 << 8);
 			status  = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs, disable synchronized alct+clct triggers
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0001;
@@ -4336,40 +4336,40 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CLCT cable inputs
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF; // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00; // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Turn off internal level 1 accept for sequencer
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0FFF;
 			status  = vme_write(adr,wr_data);
 
 			// Select pattern trigger
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			rd_data = rd_data & 0xFF00;
 			wr_data = rd_data | 0x0001;
 			status  = vme_write(adr,wr_data);
 
 			// Clear previous ALCT inject
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFFD;
 			status  = vme_write(adr,wr_data);
 
 			// Set start_trigger state for FMM
 			ttc_cmd = 6;            // start_trigger
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 			wr_data = 0x0001;
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0003 | (ttc_cmd << 8);
@@ -4393,7 +4393,7 @@ END:
 				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Clear previous  CLCT inject
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x7FFF;
 			status  = vme_write(adr,wr_data);
@@ -4407,7 +4407,7 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Check scintillator veto is set
-			adr    = base_adr+seqmod_adr;
+			adr    = seqmod_adr;
 			status = vme_read(adr,rd_data);
 			scint_veto = (rd_data >> 13) & 0x0001;
 			if (scint_veto!=1) pause ("scint veto failed to set");
@@ -4437,18 +4437,18 @@ END:
 		void TMB::TriggerTestInjectALCTCLCT() {
 
 			// Turn off CCB backplane inputs, turn on L1A emulator
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			wr_data = 0x003D;
 			status  = vme_write(adr,wr_data);
 
 			// Enable sequencer trigger, turn off dmb trigger, set internal l1a delay
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			wr_data = 0x0004;
 			wr_data = wr_data | (114<<8);
 			status  = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs, enable synchronized alct+clct triggers
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0005;
@@ -4456,47 +4456,47 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Set ALCT delay for TMB matching
-			adr     = tmbtim_adr+base_adr;
+			adr     = tmbtim_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFF0;
 			wr_data = wr_data | 0x0003;
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CLCT cable inputs
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Turn off internal level 1 accept for sequencer
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0FFF;
 			status  = vme_write(adr,wr_data);
 
 			// Select pattern trigger
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			rd_data = rd_data & 0xFF00;
 			wr_data = rd_data | 0x0001;
 			status  = vme_write(adr,wr_data);
 
 			// Clear previous ALCT inject
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFFD;
 			status  = vme_write(adr,wr_data);
 
 			// Set start_trigger state for FMM
 			ttc_cmd = 6;            // start_trigger
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 			wr_data = 0x0001;
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0003 | (ttc_cmd << 8);
@@ -4520,7 +4520,7 @@ END:
 				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Clear previous  CLCT inject
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x7FFF;
 			status  = vme_write(adr,wr_data);
@@ -4534,7 +4534,7 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Check scintillator veto is set
-			adr    = base_adr+seqmod_adr;
+			adr    = seqmod_adr;
 			status = vme_read(adr,rd_data);
 			scint_veto = (rd_data>>13) & 0x1;
 			if (scint_veto!=1) pause("scint veto failed to set");
@@ -4568,18 +4568,18 @@ END:
 			else         rdscope = true;
 
 			// Turn off CCB backplane inputs, turn on L1A emulator
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			wr_data = 0x003D;
 			status  = vme_write(adr,wr_data);
 
 			// Enable sequencer trigger, turn off dmb trigger, set internal l1a delay
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			wr_data = 0x0004;
 			wr_data = wr_data | (l1a_delay << 8);
 			status  = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs, enable synchronized alct+clct triggers
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0005;
@@ -4587,40 +4587,40 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Set ALCT delay for TMB matching
-			adr     = tmbtim_adr+base_adr;
+			adr     = tmbtim_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFF0;
 			wr_data = wr_data | 0x0003;
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CLCT cable inputs
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Turn off internal level 1 accept for sequencer, set l1a window width
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x00FF;
 			wr_data = wr_data | 0x0300;     // l1a window width
 			status  = vme_write(adr,wr_data);
 
 			// Take RAT out of sync mode
-			adr     = vme_ratctrl_adr+base_adr;
+			adr     = vme_ratctrl_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFFE;
 			status  = vme_write(adr,wr_data);
 
 			// Enable RPC injector
-			adr     = rpc_inj_adr+base_adr;
+			adr     = rpc_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFF80; // clear out old bits
 			wr_data = wr_data | 0x0001; // rpc_mask_all 1=enable inputs from RPC
@@ -4633,20 +4633,20 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Select pattern trigger
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			rd_data = rd_data & 0xFF00;
 			wr_data = rd_data | 0x0001;
 			status  = vme_write(adr,wr_data);
 			// Clear previous ALCT inject
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFFD;
 			status  = vme_write(adr,wr_data);
 
 			// Set start_trigger state for FMM
 			ttc_cmd = 6;            // start_trigger
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 			wr_data = 0x0001;
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0003 | (ttc_cmd << 8);
@@ -4661,7 +4661,7 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Clear DMB RAM write-address
-			adr     = dmb_ram_adr+base_adr;
+			adr     = dmb_ram_adr;
 			wr_data = 0x2000;   //reset RAM write address
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0000;   // unreset
@@ -4677,7 +4677,7 @@ END:
 				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Fire CLCT+ALCT Injectors
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x8000; // fire injector
 			status  = vme_write(adr,wr_data);
@@ -4694,7 +4694,7 @@ END:
 				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Get DMB RAM word count and busy bit
-			adr       = dmb_wdcnt_adr+base_adr;
+			adr       = dmb_wdcnt_adr;
 			status    = vme_read(adr,rd_data);
 			dmb_wdcnt = rd_data & 0x0FFF;
 			dmb_busy  = (rd_data >> 14) & 0x0001;
@@ -4716,16 +4716,16 @@ END:
 
 			// Write RAM read address to TMB
 			for (iadr=0; iadr<=dmb_wdcnt-1; ++iadr) {
-				adr     = dmb_ram_adr+base_adr;
+				adr     = dmb_ram_adr;
 				wr_data = iadr & 0xFFFF;
 				status  = vme_write(adr,wr_data);
 
 				// Read RAM data from TMB
-				adr    = dmb_rdata_adr+base_adr;
+				adr    = dmb_rdata_adr;
 				status = vme_read(adr,rd_data);         // read lsbs
 				dmb_rdata_lsb=rd_data;
 
-				adr    = dmb_wdcnt_adr+base_adr;
+				adr    = dmb_wdcnt_adr;
 				status = vme_read(adr,rd_data);         // read msbs
 				dmb_rdata_msb = (rd_data >> 12) & 0x3;  // rdata msbs
 
@@ -4736,7 +4736,7 @@ END:
 			}   // close iadr
 
 			// Clear RAM address for next event
-			adr     = dmb_ram_adr+base_adr;
+			adr     = dmb_ram_adr;
 			wr_data = 0x2000;   // reset RAM write address
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0000;   // unreset
@@ -4752,27 +4752,27 @@ END:
 			fprintf(stdout, "ALCT test started\n");
 
 			// Turn off CCB inputs to zero alct_adb_sync and ext_trig
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFBF;         // Clear previous l1a
 			wr_data = wr_data | 0x1;            // Turn off CCB backplane
 			status  = vme_write(adr,wr_data);
 
 			// Enable ALCT cable ports
-			adr     = vme_loopbk_adr+base_adr;
+			adr     = vme_loopbk_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x000C;         // alct_rxoe=txoe=1
 			status  = vme_write(adr,wr_data);
 
 			// Clear last event
-			adr     = alctfifo1_adr+base_adr;
+			adr     = alctfifo1_adr;
 			wr_data = 1;                        // reset word counter
 			status  = vme_write(adr,wr_data);
 			wr_data = 0;                        // enable word counter
 			status  = vme_write(adr,wr_data);
 
 			// Make sure alct fifo went unbusy
-			adr    = alct_fifo_adr+base_adr;
+			adr    = alct_fifo_adr;
 			status = vme_read(adr,rd_data);
 			alct_raw_busy = (rd_data >> 0) & 0x0001;
 			alct_raw_done = (rd_data >> 1) & 0x0001;
@@ -4780,7 +4780,7 @@ END:
 
 			// Fire ext_trig to ALCT board
 			//L16510:
-			adr     = alct_cfg_adr+base_adr;
+			adr     = alct_cfg_adr;
 			status  = vme_read(adr,rd_data);    // get current state
 			wr_data = rd_data & 0xFFF0;         // clear bits[3:0] alct ext trig
 			wr_data = wr_data | 0x0004;         // fire alct ext trig
@@ -4790,11 +4790,11 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Read ALCT trigger words
-			adr    = alct_alct0_adr+base_adr;
+			adr    = alct_alct0_adr;
 			status = vme_read(adr,rd_data);     // get current state
 			alct0_rd = rd_data;
 
-			adr    = alct_alct1_adr+base_adr;
+			adr    = alct_alct1_adr;
 			status = vme_read(adr,rd_data);     // get current state
 			alct1_rd = rd_data;
 
@@ -4809,7 +4809,7 @@ END:
 			alct1_prev = alct1_rd;
 
 			// Fire CCB L1A oneshot to ALCT
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFBF;         // Clear previous l1a
 			wr_data = wr_data | 0x1;            // Turn off CCB backplane
@@ -4821,7 +4821,7 @@ END:
 			// Check alct fifo status
 			for (i=1; i<=100; ++i)              // cheap readout delay 
 			{
-				adr    = alct_fifo_adr+base_adr;
+				adr    = alct_fifo_adr;
 				status = vme_read(adr,rd_data);
 				alct_raw_busy = (rd_data >> 0) & 0x0001;
 				alct_raw_done = (rd_data >> 1) & 0x0001;
@@ -4835,7 +4835,7 @@ END:
 			if (alct_raw_done!=1) pause("alct fifo not done");
 
 			// Get alct word count
-			adr    = alct_fifo_adr+base_adr;    // alct word count
+			adr    = alct_fifo_adr;    // alct word count
 			status = vme_read(adr,rd_data);
 			alct_raw_nwords = (rd_data >> 2) & 0x07FF;
 			fprintf(stdout,"\talct_raw_nwords=%5i\n",alct_raw_nwords);
@@ -4843,16 +4843,16 @@ END:
 			// Read alct fifo data
 			for (i=0; i<=max(alct_raw_nwords-1,0); ++i) {
 				//  for (i=1; i<=alct_raw_nwords; ++i) 
-				adr     = alctfifo1_adr+base_adr;
+				adr     = alctfifo1_adr;
 				wr_data = (i<<1);                   // ram read address
 				status  = vme_write(adr,wr_data);
 
-				adr     = alctfifo2_adr+base_adr;   // alct raw data lsbs
+				adr     = alctfifo2_adr;   // alct raw data lsbs
 				status  = vme_read(adr,rd_data);
 				alct_raw_data = rd_data;
 				fprintf(stdout,"adr=4i alct raw lsbs=%4.4X\n",rd_data);
 
-				adr     = alct_fifo_adr+base_adr;   // alct raw data msbs
+				adr     = alct_fifo_adr;   // alct raw data msbs
 				status  = vme_read(adr,rd_data);
 				fprintf(stdout,"adr=4i alct raw msbs=%4.4X\n",rd_data);
 				rd_data = (rd_data>>13) & 0x0003;
@@ -4897,7 +4897,7 @@ END:
 		void TMB::TriggerTestFire_CLCT_ext_trig_with_ALCT () {
 			while(true) {
 				//L16600:
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFEF;         // Clear previous trigger
 				status  = vme_write(adr,wr_data);
@@ -4920,12 +4920,12 @@ END:
 			else         rdscope = true;
 
 			// Get csc_id
-			adr    = base_adr+seq_id_adr;
+			adr    = seq_id_adr;
 			status = vme_read(adr,rd_data);
 			csc_id = (rd_data >> 5) & 0x1F;
 
 			// Get current thresholds
-			adr    = seq_clct_adr+base_adr;
+			adr    = seq_clct_adr;
 			status = vme_read(adr,rd_data);
 			triad_persist       = (rd_data >>  0) & 0xF;    // 4 bits
 			hit_thresh_pretrig  = (rd_data >>  4) & 0x7;    // 3 bits
@@ -4933,32 +4933,32 @@ END:
 			hit_thresh_postdrift= (rd_data >> 10) & 0x7;    // 3 bits
 			drift_delay         = (rd_data >> 13) & 0x3;    // 2 bits
 
-			adr    = temp0_adr+base_adr;
+			adr    = temp0_adr;
 			status = vme_read(adr,rd_data);
 			pid_thresh_pretrig  = (rd_data >> 2) & 0xF;     // 4 bits
 			pid_thresh_postdrift= (rd_data >> 6) & 0xF;     // 4 bits
 
-			adr    = layer_trig_adr+base_adr;
+			adr    = layer_trig_adr;
 			status = vme_read(adr,rd_data);
 			lyr_thresh_pretrig = (rd_data >> 1) & 0xF;      // 4 bits
 
 			// Get current adjacent cfeb separation
-			adr    = temp0_adr+base_adr;
+			adr    = temp0_adr;
 			status = vme_read(adr,rd_data);
 			adjcfeb_dist=(rd_data >> 10) & 0x3F;
 
 			// Get current CLCT separation
-			adr    = temp1_adr+base_adr;
+			adr    = temp1_adr;
 			status = vme_read(adr,rd_data);
 			clct_sep = (rd_data >> 8) & 0xFF;
 
 			// Get current active_feb_list source
-			adr    = seqmod_adr+base_adr;
+			adr    = seqmod_adr;
 			status = vme_read(adr,rd_data);
 			active_feb_src=(rd_data >> 14) & 0x1;
 
 			// Get current cfeb tbins
-			adr    = base_adr+seq_fifo_adr;
+			adr    = seq_fifo_adr;
 			status = vme_read(adr,rd_data);
 
 			fifo_mode       = (rd_data >>  0) & 0x07;   // 3 bits
@@ -4969,14 +4969,14 @@ END:
 			if (fifo_tbins==0) fifo_tbins=32;
 
 			// Get current match parameters
-			adr    = base_adr+tmbtim_adr;
+			adr    = tmbtim_adr;
 			status = vme_read(adr,rd_data);
 
 			alct_delay      = (rd_data >> 0) & 0xF;     // 4 bits
 			clct_width      = (rd_data >> 4) & 0xF;     // 4 bits
 
 			// Get current tmb_match mode
-			adr    = base_adr+tmb_trig_adr;
+			adr    = tmb_trig_adr;
 			status = vme_read(adr,rd_data);
 
 			tmb_allow_alct  = (rd_data >> 2) & 0x1;     // 1 bit
@@ -4984,7 +4984,7 @@ END:
 			tmb_allow_match = (rd_data >> 4) & 0x1;     // 1 bit
 
 			// Get current tmb_match mode for ME1AB
-			adr    = base_adr+non_trig_adr;
+			adr    = non_trig_adr;
 			status = vme_read(adr,rd_data);
 
 			tmb_allow_alct_ro   = (rd_data >> 0) & 0x1; // 1=Allow ALCT-only non-triggering readout
@@ -4993,28 +4993,28 @@ END:
 			mpc_me1a_block      = (rd_data >> 3) & 0x1; // Block ME1A LCTs from MPC, still queue for readout
 
 			// Get current alct injector delay
-			adr    = base_adr+alct_inj_adr;
+			adr    = alct_inj_adr;
 			status = vme_read(adr,rd_data);
 			alct_injector_delay=(rd_data >> 5) & 0x1F;  // 5 bits
 
 			// Get current alct bx0 enable
-			adr    = base_adr+bx0_delay_adr;
+			adr    = bx0_delay_adr;
 			status = vme_read(adr,rd_data);
 			alct_bx0_en=(rd_data >> 8) & 0x1;           // 1 bit
 
 			// Get current rat injector delay and data=address mode
-			adr    = base_adr+rpc_inj_adr;
+			adr    = rpc_inj_adr;
 			status = vme_read(adr,rd_data);
 			inj_delay_rat  = (rd_data >>  3) & 0xF;     // 4 bits
 			rpc_tbins_test = (rd_data >> 15) & 0x1;     // 1bit
 
 			// Get current RPC readout list
-			adr    = base_adr+rpc_cfg_adr;
+			adr    = rpc_cfg_adr;
 			status = vme_read(adr,rd_data);
 			rpc_exists=(rd_data >> 0) & 0x3;            // 2 bits
 
 			// Get current RPC tbins
-			adr    = base_adr+rpc_tbins_adr;
+			adr    = rpc_tbins_adr;
 			status = vme_read(adr,rd_data);
 
 			fifo_tbins_rpc  = (rd_data >> 0) & 0x1F;    // 5 bits
@@ -5023,14 +5023,14 @@ END:
 			if (fifo_tbins_rpc==0) fifo_tbins_rpc=32;
 
 			// Get scope-in-readout
-			adr    = base_adr+scp_ctrl_adr;
+			adr    = scp_ctrl_adr;
 			status = vme_read(adr,rd_data);
 			scp_auto   =(rd_data >> 3) & 0x1;           // 1 bit
 			scp_nowrite=(rd_data >> 4) & 0x1;           // 1 bit
 			scp_tbins  =(rd_data >> 5) & 0x7;           // 3 bits
 
 			// Get miniscope-in-readout
-			adr    = base_adr+miniscope_adr;
+			adr    = miniscope_adr;
 			status = vme_read(adr,rd_data);
 			mini_read_enable    =(rd_data >> 0) & 0x1;  // 1 bit
 			mini_test           =(rd_data >> 1) & 0x1;  // 1 bit
@@ -5039,19 +5039,19 @@ END:
 			fifo_pretrig_mini   =(rd_data >> 8) & 0x1F; // 5 bits
 
 			// Get L1A delay
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			status  = vme_read(adr,rd_data);
 			l1a_delay = (rd_data >> 8) & 0xFF;
 
 			if (first_event)l1a_delay=119;              // hits 0th l1a window bx, override TMB default
 
 			// Get L1A lookback
-			adr    = base_adr+l1a_lookback_adr;
+			adr    = l1a_lookback_adr;
 			status = vme_read(adr,rd_data);
 			l1a_lookback = (rd_data & 0x07FF);
 
 			// Get sync error forced
-			adr    = base_adr+sync_err_ctrl_adr;
+			adr    = sync_err_ctrl_adr;
 			status = vme_read(adr,rd_data);
 			sync_err_force = (rd_data>>15) & 0x1;
 
@@ -5205,7 +5205,7 @@ END:
 			// Turn off CFEB cable inputs
 			//L16705:
 			while(true) {  //CLCT Bang Mode loop
-				adr       = cfeb_inj_adr+base_adr;
+				adr       = cfeb_inj_adr;
 				mask_all  = 0x00;   // 5'b00000 disables cfeb inputs
 				febsel    = 0x00;   // Injector RAM select
 				mask_cfeb = 0x00;   // Injector RAMs to fire
@@ -5217,13 +5217,13 @@ END:
 				status    = vme_write(adr,wr_data);
 
 				// Turn off GTX optical receiver inputs
-				adr     = adr_virtex6_gtx_rx_all+base_adr;
+				adr     = adr_virtex6_gtx_rx_all;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFFE;     // Turn of enable_all bt
 				status  = vme_write(adr,wr_data);
 
 				// Turn off ALCT cable inputs, enable synchronized alct+clct triggers
-				adr     = alct_inj_adr+base_adr;
+				adr     = alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 
 				alct_injector_delay=13;
@@ -5234,14 +5234,14 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Turn on CFEB enables to over-ride mask_all
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF;                 // clear old cfeb_en and source
 				wr_data = wr_data | 0x7C00;                 // ceb_en_source=0,cfeb_en=1F
 				status  = vme_write(adr,wr_data);
 
 				// Reset bad bits
-				adr     = cfeb_badbits_ctrl_adr+base_adr;   // CFEB  Bad Bit Control/Status
+				adr     = cfeb_badbits_ctrl_adr;   // CFEB  Bad Bit Control/Status
 				status  = vme_read(adr,rd_data);            // read current
 				rd_data = rd_data & 0xFFE0;                 // clean out old reset bits
 				wr_data = rd_data | 0x001F;                 // assert reset[4:0]
@@ -5250,27 +5250,27 @@ END:
 				status  = vme_write(adr,wr_data);           // restore register with resets off
 
 				// Enable sequencer trigger, turn off dmb trigger, set internal l1a delay
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				wr_data = 0x0004;
 				wr_data = wr_data | (l1a_delay << 8);
 				status  = vme_write(adr,wr_data);
 
 				// Set csc_id
-				adr    = base_adr+seq_id_adr;
+				adr    = seq_id_adr;
 				status = vme_read(adr,rd_data);
 				wr_data = rd_data & ~(0x1F << 5);           // clear old csc_id
 				wr_data = wr_data | (csc_id << 5);          // new csc_id
 				status  = vme_write(adr,wr_data);
 
 				// Set L1A lookback
-				adr     = base_adr+l1a_lookback_adr;
+				adr     = l1a_lookback_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & ~0x07FF;
 				wr_data = wr_data | (l1a_lookback << 0);
 				status  = vme_write(adr,wr_data);
 
 				// Turn off CCB backplane inputs, turn on L1A emulator, do this after turning off cfeb and alct cable inputs
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				wr_data = 0x0000;
 				wr_data = wr_data | 0x0001; // ccb_ignore_rx
 				wr_data = wr_data | 0x0004; // ccb_int_l1a_en
@@ -5283,7 +5283,7 @@ END:
 				vme_bx0_emu_en_default = vme_bx0_emu_en;    // update default so u dont have to keep entering
 
 				// Set ALCT delay for TMB matching
-				adr     = tmbtim_adr+base_adr;
+				adr     = tmbtim_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF00;
 				wr_data = wr_data | (alct_delay << 0);
@@ -5291,7 +5291,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set tmb_match mode
-				adr     = base_adr+tmb_trig_adr;
+				adr     = tmb_trig_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE7;     // clear bits 4,3
 				wr_data = wr_data | (tmb_allow_alct  << 2);
@@ -5300,7 +5300,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set tmb_match mode for ME1AB
-				adr     = base_adr+non_trig_adr;
+				adr     = non_trig_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFF0;
 				wr_data = wr_data | (tmb_allow_alct_ro  << 0);  // 1=Allow ALCT-only non-triggering readout
@@ -5310,7 +5310,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set alct bx0 enable
-				adr     = base_adr+bx0_delay_adr;
+				adr     = bx0_delay_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & ~(1 << 8);
 				wr_data = wr_data | (alct_bx0_en << 8);
@@ -5319,19 +5319,19 @@ END:
 				// Turn on layer trigger mode if its selected
 				layer_trig_en=0;
 				if (layer_mode) layer_trig_en=1;
-				adr     = layer_trig_adr+base_adr;
+				adr     = layer_trig_adr;
 				wr_data = layer_trig_en | (lyr_thresh_pretrig << 1);
 				status  = vme_write(adr,wr_data);
 
 				// Turn off internal level 1 accept for sequencer, set l1a window width
-				adr     = seq_l1a_adr+base_adr;
+				adr     = seq_l1a_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x00FF;
 				wr_data = wr_data | 0x0300;         //  l1a window width
 				status  = vme_write(adr,wr_data);
 
 				// Set fifo tbins
-				adr     = base_adr+seq_fifo_adr;
+				adr     = seq_fifo_adr;
 				status  = vme_read(adr,rd_data);    // get current
 				wr_data = rd_data & 0xF000;         // clear lower bits
 
@@ -5344,7 +5344,7 @@ END:
 				status = vme_write(adr,wr_data);
 
 				// Set pid_thresh_pretrig, pid_thresh_postdrift
-				adr    = temp0_adr+base_adr;
+				adr    = temp0_adr;
 				status = vme_read(adr,rd_data);
 
 				wr_data=rd_data & 0xFC03;
@@ -5354,35 +5354,35 @@ END:
 				status = vme_write(adr,wr_data);
 
 				// Set adjcfeb_dist
-				adr     = temp0_adr+base_adr;
+				adr     = temp0_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF;         // adjcfeb_dist[5:0] is in [15:10]
 				wr_data = wr_data | (adjcfeb_dist << 10);
 				status  = vme_write(adr,wr_data);
 
 				// Set CLCT separation
-				adr     = temp1_adr+base_adr;
+				adr     = temp1_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x00FF;
 				wr_data = wr_data | (clct_sep << 8);
 				status  = vme_write(adr,wr_data);
 
 				// Set active_feb_list source
-				adr     = seqmod_adr+base_adr;
+				adr     = seqmod_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & ~(1 << 14);
 				wr_data = wr_data | (active_feb_src << 14);
 				status  = vme_write(adr,wr_data);
 
 				// Set RAT out of sync mode
-				adr     = vme_ratctrl_adr+base_adr;
+				adr     = vme_ratctrl_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFFE;
 				wr_data = wr_data | rat_sync_mode;
 				status  = vme_write(adr,wr_data);
 
 				// Set miniscope
-				adr     = base_adr+miniscope_adr;
+				adr     = miniscope_adr;
 				wr_data = 0;
 				wr_data = wr_data | (mini_read_enable  << 0);   // 1 bit
 				wr_data = wr_data | (mini_test         << 1);   // 1 bit
@@ -5392,7 +5392,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Include RPCs in readout
-				adr     = rpc_cfg_adr+base_adr;
+				adr     = rpc_cfg_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFEC;                     //  Turn off bits4,1,0
 				wr_data = wr_data | (rpc_exists & 0x3);         //  Turn on existing RPCs
@@ -5400,7 +5400,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set RPC tbins
-				adr     = base_adr+rpc_tbins_adr;
+				adr     = rpc_tbins_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xF800;                     // Clear out old values
 				wr_data = wr_data | (fifo_tbins_rpc     <<  0); // 5 bits
@@ -5409,7 +5409,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Enable RPC injector
-				adr     = rpc_inj_adr+base_adr;
+				adr     = rpc_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF80;                 // Clear out old bits
 				wr_data = wr_data | 0x0001;                 // rpc_mask_all 1=enable inputs from RPC
@@ -5430,7 +5430,7 @@ END:
 				// Load RPC injector RAM
 				if (rat_injector_enable && !rat_injector_sync) {
 
-					adr     = rpc_inj_adr+base_adr;             // Get current injector control
+					adr     = rpc_inj_adr;             // Get current injector control
 					status  = vme_read(adr,rd_data);
 					wr_data = rd_data & 0x807F;                 // Clear injector data, set inj_sel=0 to point to pad rams
 					status  = vme_write(adr,wr_data);
@@ -5452,11 +5452,11 @@ END:
 					for (irpc=0; irpc<=1;   ++ irpc) {
 						for (ibxn=0; ibxn<=255; ++ ibxn) {
 							fprintf(stdout,"rpc_inj_image writing%2i%2i%6.5X\n",ibxn,irpc,rpc_inj_image[ibxn][irpc]);
-							adr     = rpc_inj_wdata_adr+base_adr;       // pad data to write to ram
+							adr     = rpc_inj_wdata_adr;       // pad data to write to ram
 							wr_data = rpc_inj_image[ibxn][irpc] & 0x0000FFFF;
 							status  = vme_write(adr,wr_data);
 
-							adr     = rpc_inj_adr+base_adr;             // get current injector control
+							adr     = rpc_inj_adr;             // get current injector control
 							status  = vme_read(adr,rd_data);
 							wr_data = rd_data & 0x807F;                 // clear bxn data
 							rpc_inj_bxn=(rpc_inj_image[ibxn][irpc] >> 16) & 0x7;
@@ -5464,7 +5464,7 @@ END:
 							wr_data = wr_data | (1           << 7);     // set inj_sel=1
 							status  = vme_write(adr,wr_data);
 
-							adr     = rpc_inj_adr_adr+base_adr;         // ram write strobes
+							adr     = rpc_inj_adr_adr;         // ram write strobes
 							rpc_inj_wen   = (1 << irpc);                // select this ram
 							rpc_inj_ren   = 0;
 							rpc_inj_rwadr = ibxn;                       // at this address
@@ -5482,23 +5482,23 @@ END:
 
 					for (irpc=0; irpc<=1; ++irpc) {
 						for (ibxn=0; ibxn<=7; ++ibxn) {
-							adr = rpc_inj_adr_adr+base_adr;         // ram read strobes
+							adr = rpc_inj_adr_adr;         // ram read strobes
 							rpc_inj_wen   = 0;                      // select this ram
 							rpc_inj_ren   = (1 << irpc);
 							rpc_inj_rwadr = ibxn;                   // at this address
 							wr_data = rpc_inj_wen | (rpc_inj_ren << 4) | (rpc_inj_rwadr << 8) | (rpc_tbins_test << 15);     // set ren=1
 							status  = vme_write(adr,wr_data);
 
-							adr    = rpc_inj_rdata_adr+base_adr;    // read pad data
+							adr    = rpc_inj_rdata_adr;    // read pad data
 							status = vme_read(adr,rd_data);
 							rpc_inj_data=rd_data;
 
-							adr    = rpc_inj_adr+base_adr;          // read bxn data
+							adr    = rpc_inj_adr;          // read bxn data
 							status = vme_read(adr,rd_data);
 							rpc_inj_bxn = (rd_data >> 11) & 0x7;
 							rpc_inj_data = rpc_inj_data | (rpc_inj_bxn << 16);
 
-							adr = rpc_inj_adr_adr+base_adr;         // ram read strobes
+							adr = rpc_inj_adr_adr;         // ram read strobes
 							rpc_inj_ren=0;
 							wr_data = rpc_inj_wen | (rpc_inj_ren << 4) | (rpc_inj_rwadr << 8) | (rpc_tbins_test << 15);     // set ren=0
 							status  = vme_write(adr,wr_data);
@@ -5513,7 +5513,7 @@ END:
 				}   // if (rat_injector_enable
 
 				// Select clct pattern trigger
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF00;
 				wr_data = wr_data | 0x0001;
@@ -5521,7 +5521,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set start_trigger state for FMM
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 
 				ttc_cmd = 3;            // ttc_resync
 				wr_data = 0x0003 | (ttc_cmd << 8);
@@ -5542,7 +5542,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Force a sync error if requested
-				adr     = base_adr+sync_err_ctrl_adr;
+				adr     = sync_err_ctrl_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & ~(1<<15);       // clear old
 				wr_data = rd_data |  (sync_err_force<<15);
@@ -5551,7 +5551,7 @@ END:
 				// Clear sync error if bx0 emulator is turned on
 				if (vme_bx0_emu_en==1)
 				{
-					adr     = base_adr+sync_err_ctrl_adr;
+					adr     = sync_err_ctrl_adr;
 					status  = vme_read(adr,rd_data);
 					wr_data = rd_data |  0x1;   // assert clear
 					status  = vme_write(adr,wr_data);
@@ -5839,7 +5839,7 @@ END:
 						}
 
 						// Write muon data to Injector
-						adr     = l1a_lookback_adr+base_adr;
+						adr     = l1a_lookback_adr;
 						status  = vme_read(adr,rd_data);                // Read lookback register
 						l1a_lookback_data = rd_data & ~(0x3 << 11);     // Clear out injector RAM data [17:16] in [12:11]
 
@@ -5852,7 +5852,7 @@ END:
 									wr_data_msb = (wr_data_mem >> 16) & 0x3;        // RAM write data [17:16];
 									wadr        = itbin;
 
-									adr    = cfeb_inj_adr+base_adr;                 // Select injector RAM
+									adr    = cfeb_inj_adr;                 // Select injector RAM
 									status = vme_read(adr,rd_data);                 // Get current data
 
 									wr_data = rd_data & 0xFC1F;                     // Zero   CFEB select
@@ -5860,21 +5860,21 @@ END:
 									wr_data = wr_data | (febsel << 5) | 0x7C00;     // Set febsel, enable injectors
 									status  = vme_write(adr,wr_data);               // Select CFEB
 
-									adr     = cfeb_inj_adr_adr+base_adr;
+									adr     = cfeb_inj_adr_adr;
 									ren     = 0;
 									wen     = 0;
 									wr_data = wen | (ren << 3) | (wadr << 6);
 									status  = vme_write(adr,wr_data);               // Set RAM Address + No write
 
-									adr     = cfeb_inj_wdata_adr+base_adr;
+									adr     = cfeb_inj_wdata_adr;
 									wr_data = wr_data_lsb;
 									status  = vme_write(adr,wr_data);               // Store RAM Data lsb [15:0]
 
-									adr     = l1a_lookback_adr+base_adr;
+									adr     = l1a_lookback_adr;
 									wr_data = l1a_lookback_data | (wr_data_msb << 11);
 									status  = vme_write(adr,wr_data);               // Store RAM Data msb [17:16]
 
-									adr     = cfeb_inj_adr_adr+base_adr;
+									adr     = cfeb_inj_adr_adr;
 									wen     = (1 << iram);
 									wr_data = wen | (ren << 3) | (wadr << 6);
 									status  = vme_write(adr,wr_data);               // Set RAM Address + Assert write
@@ -5887,11 +5887,11 @@ END:
 									wr_data = wen | (ren << 3) | (wadr << 6);
 									status  = vme_write(adr,wr_data);               // Set RAM Address + Read enable
 
-									adr     = cfeb_inj_rdata_adr+base_adr;
+									adr     = cfeb_inj_rdata_adr;
 									status  = vme_read(adr,rd_data);                // Read RAM data lsbs [15:0]
 									rd_data_lsb = rd_data;
 
-									adr     = l1a_lookback_adr+base_adr;
+									adr     = l1a_lookback_adr;
 									status  = vme_read(adr,rd_data);                // Read RAM data msbs [17:16]
 									rd_data_msb = (rd_data >> 13) & 0x3;
 									rd_data_mem = rd_data_lsb | (rd_data_msb << 16); 
@@ -5932,7 +5932,7 @@ END:
 						alct0_inj_wr    = (alct0_bxn_inj  << 11) | alct0_inj_wr;
 
 						wr_data = alct0_inj_wr;
-						adr     = alct0_inj_adr+base_adr;
+						adr     = alct0_inj_adr;
 						status  = vme_write(adr,wr_data);
 
 						fprintf(stdout ,"alct0_inj_wr=%4.4X\n",alct0_inj_wr);
@@ -5960,7 +5960,7 @@ END:
 						alct1_inj_wr    = (alct1_bxn_inj  << 11) | alct1_inj_wr;
 
 						wr_data = alct1_inj_wr; 
-						adr     = alct1_inj_adr+base_adr;
+						adr     = alct1_inj_adr;
 						status  = vme_write(adr,wr_data);
 
 						fprintf(stdout ,"alct1_inj_wr=%4.4X\n",alct1_inj_wr);
@@ -5981,7 +5981,7 @@ END:
 							hit_thresh_postdrift_temp = hit_thresh_postdrift;
 						}
 
-						adr    = seq_clct_adr+base_adr;
+						adr    = seq_clct_adr;
 						status = vme_read(adr,rd_data);
 
 						wr_data = rd_data & 0x8000; // clear hit_thresh,nph_pattern,drift
@@ -5993,7 +5993,7 @@ END:
 						status  = vme_write(adr,wr_data);
 
 						// Clear previous event aff, clct, mpc registers
-						adr     = seqmod_adr+base_adr;
+						adr     = seqmod_adr;
 						status  = vme_read(adr,rd_data);
 						wr_data = rd_data |  (1<<15);       // clear   = set bit 15
 						status  = vme_write(adr,wr_data);
@@ -6001,7 +6001,7 @@ END:
 						status  = vme_write(adr,wr_data);
 
 						// Set scope-in-readout
-						adr     = base_adr+scp_ctrl_adr;
+						adr     = scp_ctrl_adr;
 						status  = vme_read(adr,rd_data);
 						wr_data = rd_data & 0xFF07;  // clear bits 3,4,5,6,7
 						wr_data = wr_data | (scp_auto    << 3);
@@ -6019,7 +6019,7 @@ END:
 							scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 						// Fire CLCT+ALCT Injectors
-						adr     = cfeb_inj_adr+base_adr;
+						adr     = cfeb_inj_adr;
 						status  = vme_read(adr,rd_data);
 						wr_data = rd_data | 0x8000;     // fire injector
 						status  = vme_write(adr,wr_data);
@@ -6028,7 +6028,7 @@ END:
 
 						// Wait for injector to complete
 						for (i=0; i<=10; ++i) {
-							adr      = cfeb_inj_adr+base_adr;
+							adr      = cfeb_inj_adr;
 							status   = vme_read(adr,rd_data);
 							inj_busy = (rd_data >> 15) & 0x1;
 							if (inj_busy==0) break;
@@ -6131,15 +6131,15 @@ END:
 								clct1_cfeb_emu  = 0;}
 
 								// CLCTvme: Get VME latched CLCT words
-								adr    = seq_clct0_adr+base_adr;
+								adr    = seq_clct0_adr;
 								status = vme_read(adr,rd_data);
 								clct0_vme = rd_data;
 
-								adr    = seq_clct1_adr+base_adr;
+								adr    = seq_clct1_adr;
 								status = vme_read(adr,rd_data);
 								clct1_vme = rd_data;
 
-								adr    = seq_clctm_adr+base_adr;
+								adr    = seq_clctm_adr;
 								status = vme_read(adr,rd_data);
 								clctc_vme = (rd_data >> 0) & 0x0007;
 
@@ -6148,20 +6148,20 @@ END:
 								fprintf(stdout,"clctm_vme=%6.6X\n",rd_data);
 
 								// CLCTvme: Get VME clct bxn stored at pretrigger
-								adr    = bxn_clct_adr+base_adr;
+								adr    = bxn_clct_adr;
 								status = vme_read(adr,rd_data);
 								clct_bxn_expect = rd_data & 0x3;
 								fprintf(stdout,"CLCT pretrigger bxn=%4.4Xh truncated=%4.4Xh\n",rd_data,clct_bxn_expect);
 
 								// CLCTvme: Get VME  number of layers hit
-								adr    = layer_trig_adr+base_adr;
+								adr    = layer_trig_adr;
 								status = vme_read(adr,rd_data);
 								nlayers_hit = (rd_data >> 4) & 0x7;
 
 								fprintf(stdout,"nlayers_hit=%1i\n",nlayers_hit);
 
 								// CLCTvme: Get VME active CFEB list
-								adr    = seq_clctm_adr+base_adr;
+								adr    = seq_clctm_adr;
 								status = vme_read(adr,rd_data);
 								active_feb_list = (rd_data >> 3) & 0x1F;
 
@@ -6865,19 +6865,19 @@ END:
 								fprintf(stdout,"\n");
 
 								// Read latched MPC data
-								adr    = mpc0_frame0_adr+base_adr;
+								adr    = mpc0_frame0_adr;
 								status = vme_read(adr,rd_data);
 								mpc0_frame0_vme = rd_data;
 
-								adr    = mpc0_frame1_adr+base_adr;
+								adr    = mpc0_frame1_adr;
 								status = vme_read(adr,rd_data);
 								mpc0_frame1_vme = rd_data;
 
-								adr    = mpc1_frame0_adr+base_adr;
+								adr    = mpc1_frame0_adr;
 								status = vme_read(adr,rd_data);
 								mpc1_frame0_vme = rd_data;
 
-								adr    = mpc1_frame1_adr+base_adr;
+								adr    = mpc1_frame1_adr;
 								status = vme_read(adr,rd_data);
 								mpc1_frame1_vme = rd_data;
 
@@ -7043,7 +7043,7 @@ END:
 									// Get DMB RAM word count and busy bit
 									if (!rrhd)      break; 
 
-									adr    = dmb_wdcnt_adr+base_adr;
+									adr    = dmb_wdcnt_adr;
 									status = vme_read(adr,rd_data);
 									dmb_wdcnt = rd_data & 0x0FFF;
 									dmb_busy  = (rd_data >> 14) & 0x0001;
@@ -7064,16 +7064,16 @@ END:
 
 									// Write RAM read address to TMB
 									for (i=0; i<=dmb_wdcnt-1; ++i) {
-										adr     = dmb_ram_adr+base_adr;
+										adr     = dmb_ram_adr;
 										wr_data = i & 0xffff;
 										status  = vme_write(adr,wr_data);
 
 										// Read RAM data from TMB
-										adr    = dmb_rdata_adr+base_adr;
+										adr    = dmb_rdata_adr;
 										status = vme_read(adr,rd_data);             // read lsbs
 										dmb_rdata_lsb = rd_data;
 
-										adr    = dmb_wdcnt_adr+base_adr;
+										adr    = dmb_wdcnt_adr;
 										status = vme_read(adr,rd_data);             // read msbs
 										dmb_rdata_msb = (rd_data >> 12) & 0x3;      // rdata msbs
 										dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
@@ -7083,7 +7083,7 @@ END:
 									} // close i
 
 									// Clear RAM address for next event
-									adr     = dmb_ram_adr+base_adr;
+									adr     = dmb_ram_adr;
 									wr_data = 0x2000;   // reset RAM write address
 									status  = vme_write(adr,wr_data);
 									wr_data = 0x0000;   // unreset
@@ -7098,7 +7098,7 @@ END:
 
 								// Take snapshot of current counter state
 								//L16708:
-								adr = base_adr+cnt_ctrl_adr;
+								adr = cnt_ctrl_adr;
 								wr_data=0x0022; //snap
 								status = vme_write(adr,wr_data);
 								wr_data=0x0020; //unsnap
@@ -7107,10 +7107,10 @@ END:
 								// Read counters
 								for (i=0; i<mxcounter; ++i) {
 									for (j=0; j<=1; ++j) {
-										adr = base_adr+cnt_ctrl_adr;
+										adr = cnt_ctrl_adr;
 										wr_data=(i << 9) | 0x0020 | (j << 8);
 										status = vme_write(adr,wr_data);
-										adr = base_adr+cnt_rdata_adr;
+										adr = cnt_rdata_adr;
 										status = vme_read(adr,rd_data);
 
 										// Combine lsbs+msbs
@@ -7144,7 +7144,7 @@ END:
 				// L16730 continue
 
 				// Set pattern thresholds back to default
-				adr    = seq_clct_adr+base_adr;
+				adr    = seq_clct_adr;
 				status = vme_read(adr,rd_data);
 
 				hit_thresh_pretrig_temp   = hit_thresh_pretrig;
@@ -7174,13 +7174,13 @@ END:
 				else         rdscope = true;
 
 				// Turn off CCB backplane inputs, enable L1A emulator
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data | 0x0005;
 				status  = vme_write(adr,wr_data);
 
 				// Turn off ALCT cable inputs
-				adr     = alct_inj_adr+base_adr;
+				adr     = alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x0000;
 				wr_data = wr_data | 0x0001;
@@ -7188,20 +7188,20 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Turn off CFEB cable inputs
-				adr     = cfeb_inj_adr+base_adr;
+				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE0;
 				status  = vme_write(adr,wr_data);
 
 				// Turn on CFEB enables to over-ride mask_all
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 				wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 				status  = vme_write(adr,wr_data);
 
 				// Select sequencer to take clct ext or alct ext trig
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF00;
 				wr_data = wr_data | 0x0060;     // Select alct or clct ext trig mode
@@ -7217,7 +7217,7 @@ END:
 					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Fire pseudo-CCB external clct trigger linked to alct
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data | 0x0014;     // fire clct ext trig
 				status  = vme_write(adr,wr_data);
@@ -7225,7 +7225,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Read back trigger register to see what triggered
-				adr     = seq_trig_src_adr+base_adr;
+				adr     = seq_trig_src_adr;
 				status  = vme_read(adr,rd_data);
 
 				if (rd_data!=0x0020) printf("\tTrigger source error rd_data=%4.4X\n",rd_data);
@@ -7254,13 +7254,13 @@ END:
 				else         rdscope = true;
 
 				// Turn off CCB backplane inputs, enable L1A emulator
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data | 0x0005;
 				status  = vme_write(adr,wr_data);
 
 				// Turn off ALCT cable inputs
-				adr     = alct_inj_adr+base_adr;
+				adr     = alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x0000;
 				wr_data = wr_data | 0x0001;
@@ -7268,20 +7268,20 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Turn off CFEB cable inputs
-				adr     = cfeb_inj_adr+base_adr;
+				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE0;
 				status  = vme_write(adr,wr_data);
 
 				// Turn on CFEB enables to over-ride mask_all
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 				wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 				status  = vme_write(adr,wr_data);
 
 				// Select sequencer to take clct ext or alct ext trig
-				adr      = seq_trig_en_adr+base_adr;
+				adr      = seq_trig_en_adr;
 				status   = vme_read(adr,rd_data);
 				wr_data  = rd_data & 0xFF00;
 				wr_data  = wr_data | 0x0060;    // Select alct or clct ext trig mode
@@ -7297,7 +7297,7 @@ END:
 					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Fire pseudo-CCB external trigger alct
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data | 0x000C;     // fire alct ext trig
 				//  wr_data = rd_data | 0x0014;     // fire clct ext trig !!!!TEMPORARY !!!!!!
@@ -7306,7 +7306,7 @@ END:
 				status = vme_write(adr,wr_data);
 
 				// Read back trigger register to see what triggered
-				adr    = seq_trig_src_adr+base_adr;
+				adr    = seq_trig_src_adr;
 				status = vme_read(adr,rd_data);
 
 				if (rd_data!=0x0040) printf("\tTrigger source error rd_data=%4.4X\n",rd_data);
@@ -7336,13 +7336,13 @@ END:
 				else         rdscope = true;
 
 				// Turn off CCB backplane inputs, enable L1A emulator
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data | 0x0005;
 				status  = vme_write(adr,wr_data);
 
 				// Turn off ALCT cable inputs
-				adr     = alct_inj_adr+base_adr;
+				adr     = alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x0000;
 				wr_data = wr_data | 0x0001;
@@ -7350,20 +7350,20 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Turn off CFEB cable inputs
-				adr     = cfeb_inj_adr+base_adr;
+				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE0;
 				status  = vme_write(adr,wr_data);
 
 				// Turn on CFEB enables to over-ride mask_all
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF; // clear old cfeb_en and source
 				wr_data = wr_data | 0x7C00; // ceb_en_source=0,cfeb_en=1F
 				status  = vme_write(adr,wr_data);
 
 				// Select sequencer to take clct ext, turn on all cfebs
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				wr_data = 0x0220;
 				status  = vme_write(adr,wr_data);
 
@@ -7377,7 +7377,7 @@ END:
 					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Fire pseudo-CCB external trigger clct
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				status  = vme_read(adr,rd_data);
 				//  wr_data = rd_data | 0x000C;     // fire alct ext trig
 				wr_data = rd_data | 0x0014;     // fire clct ext trig
@@ -7386,7 +7386,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Read back trigger register to see what triggered
-				adr    = seq_trig_src_adr+base_adr;
+				adr    = seq_trig_src_adr;
 				status = vme_read(adr,rd_data);
 
 				if (rd_data!=0x0020) printf("\tTrigger source error rd_data=%4.4X\n",rd_data);
@@ -7418,19 +7418,19 @@ END:
 				rdscope = true;
 
 			// Turn off CCB backplane inputs
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x0005;
 			status  = vme_write(adr,wr_data);
 
 			// Enable GTL ccb_clct_ext_trig
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x0040;
 			status  = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0001;
@@ -7438,27 +7438,27 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CFEB cable inputs
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Select sequencer to take clct ext or alct ext trig
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFF00;
 			wr_data = wr_data | 0x0060; // Select alct or clct ext trig mode
 			status  = vme_write(adr,wr_data);
 
 			// Turn on sequencer internal L1A
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x1000;
 			status  = vme_write(adr,wr_data);
@@ -7467,7 +7467,7 @@ END:
 			pause("Connect GTL pulse generator to P2A D10, monitor TP382-6");
 
 			// Set start_trigger state for FMM
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 
 			ttc_cmd = 6;            // start_trigger
 			wr_data = 0x0001;
@@ -7521,19 +7521,19 @@ END:
 			}
 
 			// Turn off CCB backplane inputs
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x0005;
 			status  = vme_write(adr,wr_data);
 
 			// Enable GTL ccb_clct_ext_trig
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x0040;
 			status  = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0001;
@@ -7541,33 +7541,33 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CFEB cable inputs
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Select sequencer to take clct ext or alct ext trig
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFF00;
 			wr_data = wr_data | 0x0060;     // Select alct or clct ext trig mode
 			status  = vme_write(adr,wr_data);
 
 			// Turn on sequencer internal L1A
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data | 0x1000;
 			status  = vme_write(adr,wr_data);
 
 			// Set start_trigger state for FMM
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 
 			ttc_cmd = 6;            // start_trigger
 			wr_data = 0x0001;
@@ -7602,7 +7602,7 @@ END:
 				// Get DMB RAM word count and busy bit
 				if (!rdraw)     break; 
 
-				adr       = dmb_wdcnt_adr+base_adr;
+				adr       = dmb_wdcnt_adr;
 				status    = vme_read(adr,rd_data);
 				dmb_wdcnt = rd_data & 0x0FFF;
 				dmb_busy  = (rd_data>>14) & 0x0001;
@@ -7622,16 +7622,16 @@ END:
 				// Write RAM read address to TMB
 				//L96211:
 				for (i=0; i<=dmb_wdcnt-1; ++i) {
-					adr     = dmb_ram_adr+base_adr;
+					adr     = dmb_ram_adr;
 					wr_data = i & 0xFFFF;
 					status  = vme_write(adr,wr_data);
 
 					// Read RAM data from TMB
-					adr    = dmb_rdata_adr+base_adr;
+					adr    = dmb_rdata_adr;
 					status = vme_read(adr,rd_data);         // read lsbs
 					dmb_rdata_lsb = rd_data;
 
-					adr    = dmb_wdcnt_adr+base_adr;
+					adr    = dmb_wdcnt_adr;
 					status = vme_read(adr,rd_data);         // read msbs
 
 					dmb_rdata_msb = (rd_data>>12) & 0x3;    // rdata msbs
@@ -7642,7 +7642,7 @@ END:
 				}   // close for i
 
 				// Clear RAM address for next event
-				adr     = dmb_ram_adr+base_adr;
+				adr     = dmb_ram_adr;
 				wr_data = 0x2000;   // reset RAM write address
 				status  = vme_write(adr,wr_data);
 				wr_data = 0x0000;   // unreset
@@ -7675,18 +7675,18 @@ END:
 				else         rdscope = true;
 
 				// Turn off CCB backplane inputs, turn on L1A emulator
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				wr_data = 0x003D;
 				status  = vme_write(adr,wr_data);
 
 				// Enable sequencer trigger, turn off dmb trigger, set internal l1a delay
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				wr_data = 0x0004;
 				wr_data = wr_data | (114<<8);
 				status  = vme_write(adr,wr_data);
 
 				// Turn off ALCT cable inputs, enable synchronized alct+clct triggers
-				adr     = alct_inj_adr+base_adr;
+				adr     = alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x0000;
 				wr_data = wr_data | 0x0005;
@@ -7694,47 +7694,47 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set ALCT delay for TMB matching
-				adr     = tmbtim_adr+base_adr;
+				adr     = tmbtim_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFF0;
 				wr_data = wr_data | 0x0003;
 				status  = vme_write(adr,wr_data);
 
 				// Turn off CLCT cable inputs
-				adr     = cfeb_inj_adr+base_adr;
+				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE0;
 				status  = vme_write(adr,wr_data);
 
 				// Turn on CFEB enables to over-ride mask_all
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF; // clear old cfeb_en and source
 				wr_data = wr_data | 0x7C00; // ceb_en_source=0,cfeb_en=1F
 				status  = vme_write(adr,wr_data);
 
 				// Turn off internal level 1 accept for sequencer
-				adr     = seq_l1a_adr+base_adr;
+				adr     = seq_l1a_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x0FFF;
 				status  = vme_write(adr,wr_data);
 
 				// Select pattern trigger
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				rd_data = rd_data & 0xFF00;
 				wr_data = rd_data | 0x0001;
 				status  = vme_write(adr,wr_data);
 
 				// Clear previous ALCT inject
-				adr=alct_inj_adr+base_adr;
+				adr=alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFFD;
 				status  = vme_write(adr,wr_data);
 
 				// Set l1reset, which takes FMM to stop trigger
 				ttc_cmd = 3;        // l1reset
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 				wr_data = 0x0001;
 				status  = vme_write(adr,wr_data);
 				wr_data = 0x0003 | (ttc_cmd<<8);
@@ -7743,7 +7743,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Check FMM machine is in stop_trigger state after l1reset
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 				status  = vme_read(adr,rd_data);
 				fmm_state = (rd_data >> 4) & 0x0007;
 
@@ -7752,7 +7752,7 @@ END:
 				// Set FMM start_trigger (wait for bx0) after l1reset
 				ttc_cmd=6;      // start_trigger
 
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 				wr_data = 0x0001;
 				status  = vme_write(adr,wr_data);
 				wr_data = 0x0003 | (ttc_cmd<<8);
@@ -7761,7 +7761,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Check FMM machine is waiting for bx0 after start trigger
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 				status  = vme_read(adr,rd_data);
 				fmm_state = (rd_data>>4) & 0x0007;
 
@@ -7769,14 +7769,14 @@ END:
 
 				// Set FMM to start_trigger by sending bx0
 				ttc_cmd = 1;
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 				wr_data = 0x0003 | (ttc_cmd<<8);
 				status  = vme_write(adr,wr_data);
 				wr_data = 0x0001;
 				status  = vme_write(adr,wr_data);
 
 				// Check FMM machine is in start_trigger state
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 				status  = vme_read(adr,rd_data);
 				fmm_state = (rd_data>>4) & 0x0007;
 
@@ -7791,7 +7791,7 @@ END:
 					for (i=1; i<=ntrig; ++i)
 					{
 						// Clear previous  CLCT inject
-						adr     = cfeb_inj_adr+base_adr;
+						adr     = cfeb_inj_adr;
 						status  = vme_read(adr,rd_data);
 						wr_data = rd_data & 0x7FFF;
 						status  = vme_write(adr,wr_data);
@@ -7805,7 +7805,7 @@ END:
 						status  = vme_write(adr,wr_data);
 
 						// Read back latched CLCT bxn
-						adr    = seq_clctm_adr+base_adr;
+						adr    = seq_clctm_adr;
 						status = vme_read(adr,rd_data);
 						clctc_vme = (rd_data >> 0) & 0x0007;
 
@@ -7822,7 +7822,7 @@ END:
 
 					// Set FMM bxn after l1reset to resume bxn counting
 					ttc_cmd = 1;        // bx0
-					adr     = base_adr+ccb_cmd_adr;
+					adr     = ccb_cmd_adr;
 					wr_data = 0x0001;
 					status  = vme_write(adr,wr_data);
 					wr_data = 0x0003 | (ttc_cmd<<8);
@@ -7842,7 +7842,7 @@ END:
 		//------------------------------------------------------------------------------
 		int TMB::TriggerTestFireL1A() {
 			// Get current fifo_mode, l1a_lookback, hdr_wr_continuous, scope
-			adr    = base_adr+seq_fifo_adr;
+			adr    = seq_fifo_adr;
 			status = vme_read(adr,rd_data);
 
 			fifo_mode       = (rd_data >> 0) & 0x07;    // 3 bits
@@ -7850,15 +7850,15 @@ END:
 			fifo_pretrig    = (rd_data >> 8) & 0x1F;    // 5 bits
 			if (fifo_tbins==0) fifo_tbins=32;
 
-			adr    = base_adr+l1a_lookback_adr;
+			adr    = l1a_lookback_adr;
 			status = vme_read(adr,rd_data);
 			l1a_lookback = (rd_data & 0x07FF);
 
-			adr    = base_adr+seqmod_adr;
+			adr    = seqmod_adr;
 			status = vme_read(adr,rd_data);
 			hdr_wr_continuous = (rd_data >> 5) & 0x1;
 
-			adr    = base_adr+scp_ctrl_adr;
+			adr    = scp_ctrl_adr;
 			status = vme_read(adr,rd_data);
 			scp_auto   =(rd_data >> 3) & 0x1;           // 1 bit
 			scp_nowrite=(rd_data >> 4) & 0x1;           // 1 bit
@@ -7939,13 +7939,13 @@ END:
 			// Turn off CFEB cable inputs
 			//L96405:
 			while(true) { //loop until L1Loopback > 800
-				adr     = cfeb_inj_adr+base_adr;
+				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE0;     // mask_all=5'b00000
 				status  = vme_write(adr,wr_data);
 
 				// Turn off ALCT cable inputs, enable synchronized alct+clct triggers
-				adr     = alct_inj_adr+base_adr;
+				adr     = alct_inj_adr;
 				status  = vme_read(adr,rd_data);
 
 				wr_data = rd_data & 0x0000;
@@ -7954,41 +7954,41 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Turn on CFEB enables to over-ride mask_all
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF;         // clear old cfeb_en and source
 				wr_data = wr_data | 0x7C00;         // ceb_en_source=0,cfeb_en=1F
 				status  = vme_write(adr,wr_data);
 
 				// Enable sequencer trigger, turn off dmb trigger, set internal l1a delay
-				adr     = ccb_trig_adr+base_adr;
+				adr     = ccb_trig_adr;
 				wr_data = 0x0004;
 				wr_data = wr_data | (l1a_delay << 8);
 				status  = vme_write(adr,wr_data);
 
 				// Set L1A lookback
-				adr     = base_adr+l1a_lookback_adr;
+				adr     = l1a_lookback_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & ~0x07FF;
 				wr_data = wr_data | (l1a_lookback << 0);
 				status  = vme_write(adr,wr_data);
 
 				// Set readout machine to respond to unexpected L1As
-				adr    = seqmod_adr+base_adr;
+				adr    = seqmod_adr;
 				status = vme_read(adr,rd_data);     // current ccb reg state
 
 				wr_data = (rd_data | 0x0200);       // turn on l1a_allow_notmb bit 9
 				status  = vme_write(adr,wr_data);
 
 				// Set new hdr_wr_continuous
-				adr    = base_adr+seqmod_adr;
+				adr    = seqmod_adr;
 				status = vme_read(adr,rd_data);
 				wr_data = rd_data & ~0x0020;
 				wr_data = wr_data | (hdr_wr_continuous << 5);
 				status  = vme_write(adr,wr_data);
 
 				// Turn off CCB backplane inputs, turn on L1A emulator, do this after turning off cfeb and alct cable inputs
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				wr_data = 0x0000;
 				wr_data = wr_data | 0x0001; // ccb_ignore_rx
 				//  wr_data = wr_data | 0x0004; // ccb_int_l1a_en
@@ -7998,7 +7998,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set ALCT delay for TMB matching
-				adr     = tmbtim_adr+base_adr;
+				adr     = tmbtim_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF00;
 				wr_data = wr_data | (alct_delay << 0);
@@ -8006,7 +8006,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set tmb_match mode
-				adr     = base_adr+tmb_trig_adr;
+				adr     = tmb_trig_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFE7;     // clear bits 4,3
 				wr_data = wr_data | (tmb_allow_clct  << 3);
@@ -8014,14 +8014,14 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Turn off internal level 1 accept for sequencer, set l1a window width
-				adr     = seq_l1a_adr+base_adr;
+				adr     = seq_l1a_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x00FF;
 				wr_data = wr_data | 0x0300;         //  l1a window width
 				status  = vme_write(adr,wr_data);
 
 				// Set fifo tbins
-				adr     = base_adr+seq_fifo_adr;
+				adr     = seq_fifo_adr;
 				status  = vme_read(adr,rd_data);    // get current
 				wr_data = rd_data & 0xF000;         // clear lower bits
 
@@ -8033,7 +8033,7 @@ END:
 				status = vme_write(adr,wr_data);
 
 				// Set pid_thresh_pretrig, pid_thresh_postdrift
-				adr    = temp0_adr+base_adr;
+				adr    = temp0_adr;
 				status = vme_read(adr,rd_data);
 
 				wr_data=rd_data & 0xFC03;
@@ -8043,42 +8043,42 @@ END:
 				status = vme_write(adr,wr_data);
 
 				// Set adjcfeb_dist
-				adr     = temp0_adr+base_adr;
+				adr     = temp0_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x03FF;         // adjcfeb_dist[5:0] is in [15:10]
 				wr_data = wr_data | (adjcfeb_dist << 10);
 				status  = vme_write(adr,wr_data);
 
 				// Set CLCT separation
-				adr     = temp1_adr+base_adr;
+				adr     = temp1_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0x00FF;
 				wr_data = wr_data | (clct_sep << 8);
 				status  = vme_write(adr,wr_data);
 
 				// Set active_feb_list source
-				adr     = seqmod_adr+base_adr;
+				adr     = seqmod_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & ~(1 << 14);
 				wr_data = wr_data | (active_feb_src << 14);
 				status  = vme_write(adr,wr_data);
 
 				// Set RAT out of sync mode
-				adr     = vme_ratctrl_adr+base_adr;
+				adr     = vme_ratctrl_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFFFE;
 				wr_data = wr_data | rat_sync_mode;
 				status  = vme_write(adr,wr_data);
 
 				// Select clct pattern trigger
-				adr     = seq_trig_en_adr+base_adr;
+				adr     = seq_trig_en_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF00;
 				wr_data = wr_data | 0x0001;
 				status  = vme_write(adr,wr_data);
 
 				// Set start_trigger state for FMM
-				adr     = base_adr+ccb_cmd_adr;
+				adr     = ccb_cmd_adr;
 
 				ttc_cmd = 3;            // l1reset
 				wr_data = 0x0003 | (ttc_cmd << 8);
@@ -8099,7 +8099,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Lower pattern threshold temporarily so edge key 1/2-strips will trigger, set it back later
-				adr    = seq_clct_adr+base_adr;
+				adr    = seq_clct_adr;
 				status = vme_read(adr,rd_data);
 
 				wr_data = rd_data & 0x8000; // clear hit_thresh,nph_pattern,drift
@@ -8111,7 +8111,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Set scope-in-readout
-				adr     = base_adr+scp_ctrl_adr;
+				adr     = scp_ctrl_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data & 0xFF07;  // clear bits 3,4,5,6,7
 				wr_data = wr_data | (scp_auto    << 3);
@@ -8129,7 +8129,7 @@ END:
 					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Prepare to fire L1A
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				status  = vme_read(adr,rd_data);        // current ccb reg state
 
 				wr_data = (rd_data & ~0x0040);          // turn off l1a oneshot bit 6 in case it was on
@@ -8140,7 +8140,7 @@ END:
 				// Fire CLCT+ALCT Injectors
 				fprintf(stdout,"\nFiring injectors for L1A-only event\n");
 
-				adr     = cfeb_inj_adr+base_adr;
+				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
 				wr_data = rd_data | 0x8000;             // fire injector
 				status  = vme_write(adr,wr_data);
@@ -8148,7 +8148,7 @@ END:
 				status  = vme_write(adr,wr_data);
 
 				// Fire L1A
-				adr     = ccb_cfg_adr+base_adr;
+				adr     = ccb_cfg_adr;
 				wr_data = wr_fire_l1a;
 				status  = vme_write(adr,wr_data);       // fire L1A
 
@@ -8160,7 +8160,7 @@ END:
 				sleep(1);
 
 				// Get DMB RAM word count and busy bit
-				adr    = dmb_wdcnt_adr+base_adr;
+				adr    = dmb_wdcnt_adr;
 				status = vme_read(adr,rd_data);
 				dmb_wdcnt = rd_data & 0x0FFF;
 				dmb_busy  = (rd_data >> 14) & 0x0001;
@@ -8184,16 +8184,16 @@ END:
 
 					// Write RAM read address to TMB
 					for (i=0; i<=dmb_wdcnt-1; ++i) {
-						adr     = dmb_ram_adr+base_adr;
+						adr     = dmb_ram_adr;
 						wr_data = i & 0xffff;
 						status  = vme_write(adr,wr_data);
 
 						// Read RAM data from TMB
-						adr    = dmb_rdata_adr+base_adr;
+						adr    = dmb_rdata_adr;
 						status = vme_read(adr,rd_data);             // read lsbs
 						dmb_rdata_lsb = rd_data;
 
-						adr    = dmb_wdcnt_adr+base_adr;
+						adr    = dmb_wdcnt_adr;
 						status = vme_read(adr,rd_data);             // read msbs
 						dmb_rdata_msb = (rd_data >> 12) & 0x3;      // rdata msbs
 						dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
@@ -8203,7 +8203,7 @@ END:
 					} // close i
 
 					// Clear RAM address for next event
-					adr     = dmb_ram_adr+base_adr;
+					adr     = dmb_ram_adr;
 					wr_data = 0x2000;   // reset RAM write address
 					status  = vme_write(adr,wr_data);
 					wr_data = 0x0000;   // unreset
@@ -8220,7 +8220,7 @@ END:
 
 					// Read sequencer Debug register
 					for (seqdeb_adr=0; seqdeb_adr<=1; ++seqdeb_adr) {
-						adr     = seq_debug_adr+base_adr;
+						adr     = seq_debug_adr;
 						wr_data = seqdeb_adr;
 						status  = vme_write(adr,wr_data);   // write sub adr
 						status  = vme_read (adr,rd_data);   // read data
@@ -8238,7 +8238,7 @@ END:
 				} while(false); //close do{...} while(false) 
 				//L96708:
 
-				adr = base_adr+cnt_ctrl_adr;
+				adr = cnt_ctrl_adr;
 				wr_data=0x0022; //snap
 				status = vme_write(adr,wr_data);
 				wr_data=0x0020; //unsnap
@@ -8247,10 +8247,10 @@ END:
 				// Read counters
 				for (i=0; i<mxcounter; ++i) {
 					for (j=0; j<=1; ++j) {
-						adr = base_adr+cnt_ctrl_adr;
+						adr = cnt_ctrl_adr;
 						wr_data=(i << 9) | 0x0020 | (j << 8);
 						status = vme_write(adr,wr_data);
-						adr = base_adr+cnt_rdata_adr;
+						adr = cnt_rdata_adr;
 						status = vme_read(adr,rd_data);
 
 						// Combine lsbs+msbs
@@ -8340,7 +8340,7 @@ END:
 			display_cfeb=true;
 
 			// Get current cfeb tbins
-			adr    = base_adr+seq_fifo_adr;
+			adr    = seq_fifo_adr;
 			status = vme_read(adr,rd_data);
 
 			fifo_mode       = (rd_data >> 0) & 0x07;    // 3 bits
@@ -8349,18 +8349,18 @@ END:
 			if (fifo_tbins==0) fifo_tbins=32;
 
 			// Turn off CCB backplane inputs, turn on L1A emulator
-			adr     = ccb_cfg_adr+base_adr;
+			adr     = ccb_cfg_adr;
 			wr_data = 0x003D;
 			status  = vme_write(adr,wr_data);
 
 			// Enable l1a on sequencer trigger, turn off dmb trigger, set internal l1a delay
-			adr     = ccb_trig_adr+base_adr;
+			adr     = ccb_trig_adr;
 			wr_data = 0x0004;
 			wr_data = wr_data | (l1a_delay << 8);
 			status  = vme_write(adr,wr_data);
 
 			// Turn off ALCT cable inputs, enable synchronized alct+clct triggers
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x0000;
 			wr_data = wr_data | 0x0005;
@@ -8368,48 +8368,48 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Set ALCT delay for TMB matching
-			adr     = tmbtim_adr+base_adr;
+			adr     = tmbtim_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFF0;
 			wr_data = wr_data | 0x0003;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on all CFEB inputs so we can check for crosstalk
-			adr     = cfeb_inj_adr+base_adr;
+			adr     = cfeb_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFE0;
 			wr_data = wr_data | 0x001F;
 			status  = vme_write(adr,wr_data);
 
 			// Turn on CFEB enables to over-ride mask_all
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x03FF;     // clear old cfeb_en and source
 			wr_data = wr_data | 0x7C00;     // ceb_en_source=0,cfeb_en=1F
 			status  = vme_write(adr,wr_data);
 
 			// Turn off internal level 1 accept for sequencer, set l1a window width
-			adr     = seq_l1a_adr+base_adr;
+			adr     = seq_l1a_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0x00FF;
 			wr_data = wr_data | 0x0300;     // l1a window width
 			status  = vme_write(adr,wr_data);
 
 			// Turn off CLCT pattern trigger
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFF00;
 			status  = vme_write(adr,wr_data);
 
 			// Clear previous ALCT inject
-			adr     = alct_inj_adr+base_adr;
+			adr     = alct_inj_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFFFD;
 			status  = vme_write(adr,wr_data);
 
 			// Set start_trigger state for FMM
 			ttc_cmd = 6;            // start_trigger
-			adr     = base_adr+ccb_cmd_adr;
+			adr     = ccb_cmd_adr;
 			wr_data = 0x0001;
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0003 | (ttc_cmd << 8);
@@ -8424,14 +8424,14 @@ END:
 			status  = vme_write(adr,wr_data);
 
 			// Clear DMB RAM write-address
-			adr     = dmb_ram_adr+base_adr;
+			adr     = dmb_ram_adr;
 			wr_data = 0x2000;   //reset RAM write address
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0000;   // unreset
 			status  = vme_write(adr,wr_data);
 
 			// Fire VME trigger
-			adr     = seq_trig_en_adr+base_adr;
+			adr     = seq_trig_en_adr;
 			status  = vme_read(adr,rd_data);
 			wr_data = rd_data & 0xFF00;
 			wr_data = wr_data | (1 << 7);   // fire vme trigger
@@ -8443,7 +8443,7 @@ END:
 			sleep(1);
 
 			// Get DMB RAM word count and busy bit
-			adr       = dmb_wdcnt_adr+base_adr;
+			adr       = dmb_wdcnt_adr;
 			status    = vme_read(adr,rd_data);
 			dmb_wdcnt = rd_data & 0x0FFF;
 			dmb_busy  = (rd_data >> 14) & 0x0001;
@@ -8458,16 +8458,16 @@ END:
 
 			// Write RAM read address to TMB
 			for (iadr=0; iadr<=dmb_wdcnt-1; ++iadr) {
-				adr     = dmb_ram_adr+base_adr;
+				adr     = dmb_ram_adr;
 				wr_data = iadr & 0xFFFF;
 				status  = vme_write(adr,wr_data);
 
 				// Read RAM data from TMB
-				adr    = dmb_rdata_adr+base_adr;
+				adr    = dmb_rdata_adr;
 				status = vme_read(adr,rd_data);         // read lsbs
 				dmb_rdata_lsb=rd_data;
 
-				adr    = dmb_wdcnt_adr+base_adr;
+				adr    = dmb_wdcnt_adr;
 				status = vme_read(adr,rd_data);         // read msbs
 				dmb_rdata_msb = (rd_data >> 12) & 0x3;  // rdata msbs
 
@@ -8478,7 +8478,7 @@ END:
 			}   // close iadr
 
 			// Clear RAM address for next event
-			adr     = dmb_ram_adr+base_adr;
+			adr     = dmb_ram_adr;
 			wr_data = 0x2000;   // reset RAM write address
 			status  = vme_write(adr,wr_data);
 			wr_data = 0x0000;   // unreset

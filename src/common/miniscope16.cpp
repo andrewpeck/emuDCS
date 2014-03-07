@@ -25,7 +25,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 // Entry miniscope16()
 //------------------------------------------------------------------------------
-void miniscope16 (unsigned long base_adr, int ntbins, int miniscope_data[16]) {
+void miniscope16 (int ntbins, int miniscope_data[16]) {
 
     //Log file
     FILE     *log_file;

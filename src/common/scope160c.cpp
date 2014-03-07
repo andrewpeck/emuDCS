@@ -46,7 +46,6 @@ using namespace std;
 // Entry scope160c()
 //------------------------------------------------------------------------------
 void    scope160c (
-        unsigned long	 base_adr,
         unsigned long	 scp_ctrl_adr,
         unsigned long	 scp_rdata_adr,
         int				 scp_arm,
@@ -335,7 +334,7 @@ void    scope160c (
     //------------------------------------------------------------------------------
     rd_data=0;
     if(!scp_playback) {
-        adr = scp_ctrl_adr+base_adr;
+        adr = scp_ctrl_adr;
         status = vme_read(adr,rd_data);
     }
 
@@ -372,7 +371,7 @@ void    scope160c (
     if (scp_arm)
     {
         // Get current scope control state
-        adr = scp_ctrl_adr+base_adr;
+        adr = scp_ctrl_adr;
         status = vme_read(adr,rd_data);
         scp_runstop		= (rd_data >> 1) & 0x1;
         scp_forcetrig	= (rd_data >> 2) & 0x1;
@@ -406,13 +405,13 @@ void    scope160c (
     if(scp_readout)
     {
         // Get current scope control state, exit if in auto mode
-        adr = scp_ctrl_adr+base_adr;
+        adr = scp_ctrl_adr;
         status = vme_read(adr,rd_data);
         scp_auto = (rd_data >> 3) & 0x1;
         if(scp_auto==1) goto exit;					// Exit if in auto mode
 
         for (i=1; i<=20; ++i) {						// Give it time to store 512 words
-            adr = scp_ctrl_adr+base_adr;
+            adr = scp_ctrl_adr;
             status = vme_read(adr,rd_data);				// Read scope status
             //	printf("\tScope status %4.4X\n",rd_data);
             scp_trig_done = (rd_data >>13) & 0x1;
@@ -430,18 +429,18 @@ void    scope160c (
 triggered:
         if(!scp_silent)fprintf(stdout,"\tScope triggered\n");
 
-        adr = scp_ctrl_adr+base_adr;
+        adr = scp_ctrl_adr;
         status = vme_read(adr,rd_data);				// Read scope status
         scp_state=rd_data;
 
         for (itbin=0; itbin<=NTBINS-1; ++itbin) {	// Loop over ram addresses
             for (iram=0;  iram <=NRAMS-1;  ++iram )	{	// Loop over ram chips
-                adr = scp_ctrl_adr+base_adr;
+                adr = scp_ctrl_adr;
                 wr_data=scp_state & 0xF0FF;					// Clear ramsel bits 8,9.10,11
                 wr_data=wr_data | (iram << 8);				// Ram block select
                 status = vme_write(adr,wr_data);
 
-                adr = scp_rdata_adr+base_adr;
+                adr = scp_rdata_adr;
                 wr_data=itbin;								// Write ram address
                 status = vme_write(adr,wr_data);
 
