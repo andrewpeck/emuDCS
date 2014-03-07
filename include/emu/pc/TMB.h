@@ -671,11 +671,28 @@ public:
   //!Values of "MPC accept" data sent from MPC to TMB 
   int MPC0Accept();
   int MPC1Accept();
-  ////////////////////////
-  //
+ 
+  
+  //---------------------------------------------------------------------------------------
+  //  Trigger Tests 
+  //---------------------------------------------------------------------------------------
   void TriggerTestInjectALCT();
   void TriggerTestInjectCLCT();
-  //
+  void TriggerTestInjectALCTCLCT();
+  int  TriggerTestInjectALCTCLCT_Readout();
+  int  TriggerTestFire_L1A_to_ALCT();
+  void TriggerTestFire_CLCT_ext_trig_with_ALCT ();
+  void TriggerTestInject_walking_CLCT();
+  void TriggerTestExternalTriggerALCTCLCT();
+  void TriggerTestExternalTriggerALCT();
+  void TriggerTestExternalTriggerCLCT();
+  void TriggerTestExternalTriggerALCTCLCTwithGTLpulser();
+  void TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC();
+  void TriggerTestTestBXNCounter();
+  int  TriggerTestFireL1A();
+  int  TriggerTestForceCLCTtriggerandReadout();
+  //---------------------------------------------------------------------------------------
+  
   bool SelfTest() ;
   void init() ;
   //

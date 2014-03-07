@@ -36,7 +36,19 @@ Sources=\
 	EmuEndcap.cc \
         EmuLogger.cc \
         PROBLEM.cc \
-        DDU.cc
+        DDU.cc \
+		common.cpp \
+		crc22.cpp \
+		decode_readout.cpp \
+		lct_quality.cpp \
+		miniscope16.cpp \
+		pattern_finder.cpp \
+		pattern_unit.cpp \
+		pause.cpp \
+		scope160c.cpp \
+		service.cpp \
+		stop.cpp \
+		vme_emulib.cpp
 
 IncludeDirs = 
 
