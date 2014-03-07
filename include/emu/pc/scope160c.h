@@ -5,8 +5,7 @@
 //	TMB Internal Scope Readout
 //------------------------------------------------------------------------------
 
-void			scope160c (
-        unsigned long	 base_adr,
+void scope160c (
         unsigned long	 scp_ctrl_adr,
         unsigned long	 scp_rdata_adr,
         int				 scp_arm,

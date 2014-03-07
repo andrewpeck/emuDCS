@@ -3,6 +3,6 @@
 //------------------------------------------------------------------------------
 //	TMB Internal Miniscope Readout
 //------------------------------------------------------------------------------
-void miniscope16 (unsigned long base_adr, int ntbins, int miniscope_data[16]);
+void miniscope16 (int ntbins, int miniscope_data[16]);
 //------------------------------------------------------------------------------
 #endif

@@ -1,6 +1,5 @@
 #ifndef COMMON_H
 #define COMMON_H
-
 #include <cmath>
 #include <cstdlib>
 #include <cstring> 
@@ -49,7 +48,6 @@ extern int             vme_bx0_emu_en;
 extern bool            first_scn;
 
 //  Common/TMB_VME_addresses
-extern unsigned long       base_adr;
 const unsigned long tmb_global_slot         = 26;
 const unsigned long tmb_brcst_slot          = 27;
 const unsigned long tmb_boot_adr            = 0x070000;
@@ -310,8 +308,6 @@ const unsigned long ccb_txb_adr             = 0x000088;
 
 const unsigned long heater_adr              = 0x00008A; // Last bdtestv3 address instantiated
 
-
-
 //------------------------------------------------------------------------------
 //  Common
 //------------------------------------------------------------------------------
@@ -323,90 +319,29 @@ extern string msg_string;
 extern int data_read; 
 extern int data_expect; 
 
-//void            pause           (std::string s);
-//void            stop            (std::string s);
-//void            sleep           (clock_t msec);
-//bool          pass_fail       (string prompt);
+//------------------------------------------------------------------------------
+// File scope declarations
+//------------------------------------------------------------------------------
 
-//void            lct_quality     (int &ACC, int &A, int &C, int &A4, int &C4, int &P, int &CPAT, int &Q);
-//int             flip_pid        (int pid);
-//void            crc22a          (long int &din, long int &crc, int reset);
+// VME calls
+extern long            status;
+extern unsigned long   boot_adr;
+extern unsigned long   adr;
+extern unsigned short  rd_data;
+extern unsigned short  wr_data;
 
-//void          ddd_wr          (unsigned long &base_adr, const int &ddd_chip, const int &ddd_channel, const int &ddd_delay);
-//int           ddd_rd          (unsigned long &base_adr, const int &ddd_chip, const int &ddd_channel);
-//void          dsn_rd          (unsigned long &vme_dsn_adr, const int &itype, int dsn[]);
-//void          idcode_decode   (long &idcode, string &sdevice_type, string &sdevice_name, string &sdevice_version, string &sdevice_size);
+//------------------------------------------------------------------------------
+// Event counters
+//------------------------------------------------------------------------------
+const int      mxcounter = 86;
+extern int     cnt_lsb;
+extern int     cnt_msb;
+extern int     cnt_full;
+extern int     cnt[mxcounter];
+extern string  scnt[mxcounter];
 
-//void          phaser_wr       (unsigned long &base_adr, const string phaser_bank, const int &phaser_delay, const int &phaser_delta);
-//int           phaser_rd       (unsigned long &base_adr, const string phaser_bank, const int &phaser_delta);
-//void          posneg_wr       (unsigned long &base_adr, const string phaser_bank, const int &posneg);
-//int           posneg_rd       (unsigned long &base_adr, const string phaser_bank);
-//int           dddstr_rd       (unsigned long &base_adr, const string ddd_delay);
-//int           cfebbx_rd       (unsigned long &base_adr, const string nbx_delay);
-
-//void            decode_readout  (int vf_data[], int &dmb_wdcnt, bool &err_check);
-//void          smb_write       (unsigned long &adc_adr, int &smb_adr, int &smb_cmd,       int &smb_data);
-//void          smb_read        (unsigned long &adc_adr, int &smb_adr, int &smb_data_tmb,  int &smb_data_rat);
-
-//void          lfsr_rng        (const int &reset, __int64 &lfsr);
-//void          dow_crc         (int in[7], int &crc);
-//void          adc_read        (unsigned long &base_adr);
-//void          adc_read_mez    (unsigned long &base_adr);
-//void          aok             (string msg_string);
-//void          aokf            (string msg_string, const int itest, const int status); 
-//void            ck              (std::string data_string, int data_read, int data_expect);
-//int             cks             (std::string data_string, int data_read, int data_expect);
-//void          tok             (std::string msg_string, double fdata_read, double fdata_expect, double tolerance, int &status);
-//void            inquire         (std::string prompt, const int &minv, const int &maxv, const int &radix, int &now);
-//void            inquir2         (std::string prompt, const int &minv, const int &maxv, const int &radix, int &num, int &now);
-//void          inquirl         (std::string prompt, const int &minv, const int &maxv, const int &radix, long int &now);
-//void            inquirb         (std::string prompt, bool &now);
-//void          xsvf_writer     (int &islot, string xsvf_file_name, int &nerrors);
-
-//long int        vme_read        (unsigned long &adr, unsigned short &rd_data);
-//long int        vme_write       (unsigned long &adr, unsigned short &wr_data);
-//long int        vme_errs        (const int &print_mode);
-
-//void          i4_to_tdi       (long int &i4, char  tdi[], const int &nbits, const int &spi);
-//void          tdi_to_i4       (char  tdi[], long int &i4, const int &nbits, const int &spi);
-//void          bit_to_array    (const int &idata, int iarray[], const int &n);
-
-//int           xsvfExecute     ();
-//void          setPort         (short int p, short int val);
-//unsigned char readTDOBit      ();
-
-//void          vme_jtag_anystate_to_rti(unsigned long &adr, int &ichain);
-//void          vme_jtag_write_ir       (unsigned long &adr, int &ichain, int &chip_id, int &opcode);
-//void          vme_jtag_write_dr       (unsigned long &adr, int &ichain, int &chip_id, char wr_data[], char rd_data[], int &nbits);
-//bool          vme_jtag_cable_detect   (unsigned long &base_adr);
-
- //------------------------------------------------------------------------------
- // File scope declarations
- //------------------------------------------------------------------------------
-
- // JTAG stream
- // char            tdi[mxbitstream]={0};
- //char         tdo[mxbitstream]={0};
-
- // VME calls
- extern long            status;
- extern unsigned long   boot_adr;
- extern unsigned long   adr;
- extern unsigned short  rd_data;
- extern unsigned short  wr_data;
-
- //------------------------------------------------------------------------------
- // Event counters
- //------------------------------------------------------------------------------
- const int      mxcounter = 86;
- extern int     cnt_lsb;
- extern int     cnt_msb;
- extern int     cnt_full;
- extern int     cnt[mxcounter];
- extern string  scnt[mxcounter];
- 
- //------------------------------------------------------------------------------
- // The bitter end.. 
- //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// The bitter end.. 
+//------------------------------------------------------------------------------
 
 #endif //COMMON_H
