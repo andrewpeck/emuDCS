@@ -5077,106 +5077,87 @@ END:
 				clct_hit_inject_clip[iclct] = 0;
 			}
 
-			inquirb("\tCheck Pattern RAM readback [y|n]? cr=%3c", cprr);
-			inquire("\tBX0 emulator enable             ? cr=%3i", minv= 0, maxv=  1, radix=10, vme_bx0_emu_en);
-			inquire("\tBX0 sync error force            ? cr=%3i", minv= 0, maxv=  1, radix=10, sync_err_force);
-			inquire("\tCSC ID                          ? cr=%3i", minv= 0, maxv= 31, radix=10, csc_id);
-			inquirb("\tLayer-trigger mode         [y|n]? cr=%3c", layer_mode);
+			inquirb("WalkingCLCT", "cprr", 						cprr);
+			inquire("WalkingCLCT", "vme_bx0_emu_en", 			minv= 0, maxv=  1, radix=10, vme_bx0_emu_en);
+			inquire("WalkingCLCT", "sync_err_force", 			minv= 0, maxv=  1, radix=10, sync_err_force);
+			inquire("WalkingCLCT", "csc_id", 					minv= 0, maxv= 31, radix=10, csc_id);
+			inquirb("WalkingCLCT", "layer_mode", 				layer_mode);
 
 			if (layer_mode)
-				inquire("\tLyr_thresh_pretrig              ? cr=%3i", minv= 0, maxv= 7, radix=10, lyr_thresh_pretrig);
+				inquire("WalkingCLCT", "lyr_thresh_pretrig", minv= 0, maxv= 7, radix=10, lyr_thresh_pretrig);
 
-			inquire("\tHit_thresh_pretrig              ? cr=%3i", minv= 0, maxv=  7, radix=10, hit_thresh_pretrig);
-			inquire("\tPid_thresh_pretrig              ? cr=%3X", minv= 0, maxv= 15, radix=16, pid_thresh_pretrig);
-			inquire("\tDmb_thresh_pretrig              ? cr=%3i", minv= 0, maxv=  7, radix=10, dmb_thresh_pretrig);
-			inquire("\tHit_thresh_postdrift            ? cr=%3i", minv= 0, maxv=  7, radix=10, hit_thresh_postdrift);
-			inquire("\tPid_thresh_postdrift            ? cr=%3X", minv= 0, maxv= 15, radix=16, pid_thresh_postdrift);
-			inquire("\tAdjacent cfeb distance          ? cr=%3i", minv= 0, maxv= 63, radix=10, adjcfeb_dist);
-			inquire("\tActive_feb_list 0|1=pre|tmb     ? cr=%3i", minv= 0, maxv=  1, radix=10, active_feb_src);
-			inquire("\tTriad persistence               ? cr=%3i", minv= 0, maxv= 15, radix=10, triad_persist);
-			inquire("\tDrift delay                     ? cr=%3i", minv= 0, maxv=  3, radix=10, drift_delay);
-			inquire("\tAlct*clct match window          ? cr=%3i", minv= 0, maxv= 15, radix=10, clct_width);
-			inquire("\tAlct Delay                      ? cr=%3i", minv= 0, maxv= 15, radix=10, alct_delay);
-			inquire("\tAlct Injector_delay nom=13      ? cr=%3i", minv= 0, maxv= 15, radix=10, alct_injector_delay);
-			inquire("\tAlct Enable alct_bx0            ? cr=%3i", minv= 0, maxv=  2, radix=10, alct_bx0_en);
-			inquirb("\tClct Send emulator to tmb  [y|n]? cr=%3c", send_emulator_to_tmb);
-			inquire("\tClct Mpc_me1a_block             ? cr=%3i", minv= 0, maxv=mcl, radix=10, mpc_me1a_block);
-			inquire("\tClct Separation (blanking)      ? cr=%3i", minv= 0, maxv=255, radix=10, clct_sep);
-			inquirb("\tClct Load InjectorRAM image[y|n]? cr=%3c", load_clct_injector_image);
-			inquire("\tAlct Inject 0,1,2 alcts         ? cr=%3i", minv= 0, maxv=  2, radix=10, nalcts_inject);
-			inquire("\tClct Inject 1 or 2 clcts        ? cr=%3i", minv= 0, maxv=mcl, radix=10, nclcts_inject);
+			inquire("WalkingCLCT", "hit_thresh_pretrig", 		minv= 0, maxv=  7, radix=10, hit_thresh_pretrig);
+			inquire("WalkingCLCT", "pid_thresh_pretrig", 		minv= 0, maxv= 15, radix=16, pid_thresh_pretrig);
+			inquire("WalkingCLCT", "dmb_thresh_pretrig", 		minv= 0, maxv=  7, radix=10, dmb_thresh_pretrig);
+			inquire("WalkingCLCT", "hit_thresh_postdrift", 		minv= 0, maxv=  7, radix=10, hit_thresh_postdrift);
+			inquire("WalkingCLCT", "pid_thresh_postdrift", 		minv= 0, maxv= 15, radix=16, pid_thresh_postdrift);
+			inquire("WalkingCLCT", "adjcfeb_dist", 				minv= 0, maxv= 63, radix=10, adjcfeb_dist);
+			inquire("WalkingCLCT", "active_feb_src", 			minv= 0, maxv=  1, radix=10, active_feb_src);
+			inquire("WalkingCLCT", "triad_persist", 			minv= 0, maxv= 15, radix=10, triad_persist);
+			inquire("WalkingCLCT", "drift_delay", 				minv= 0, maxv=  3, radix=10, drift_delay);
+			inquire("WalkingCLCT", "clct_width", 				minv= 0, maxv= 15, radix=10, clct_width);
+			inquire("WalkingCLCT", "alct_delay", 				minv= 0, maxv= 15, radix=10, alct_delay);
+			inquire("WalkingCLCT", "alct_injector_delay", 		minv= 0, maxv= 15, radix=10, alct_injector_delay);
+			inquire("WalkingCLCT", "alct_bx0_en", 				minv= 0, maxv=  2, radix=10, alct_bx0_en);
+			inquirb("WalkingCLCT", "send_emulator_to_tmb", 		send_emulator_to_tmb);
+			inquire("WalkingCLCT", "mpc_me1a_block", 			minv= 0, maxv=mcl, radix=10, mpc_me1a_block);
+			inquire("WalkingCLCT", "clct_sep", 					minv= 0, maxv=255, radix=10, clct_sep);
+			inquirb("WalkingCLCT", "load_clct_injector_image", 	load_clct_injector_image);
+			inquire("WalkingCLCT", "nalcts_inject", 			minv= 0, maxv=  2, radix=10, nalcts_inject);
+			inquire("WalkingCLCT", "nclcts_inject", 			minv= 0, maxv=mcl, radix=10, nclcts_inject);
 
 			for (iclct=0; iclct<nclcts_inject; ++iclct)
 			{
 				if (nclcts_inject>=mxclcts) stop("nclcts_inject>=mxclct");
+
 				if (iclct==0) {
 					clct_hit_inject[iclct] = 6;
-					inquir2("\tClct%1i Key half-strip0-159 -1=all? cr=%3i", minv=-1, maxv=159, radix=10, iclct,clct_key_inject[iclct]);
-					inquir2("\tClct%1i Pattern ID   2-A    -1=all? cr=%3X", minv=-1, maxv=0xA, radix=16, iclct,clct_pid_inject[iclct]);
-					inquir2("\tClct%1i Pattern Hits 0-6          ? cr=%3i", minv= 0, maxv=6,   radix=10, iclct,clct_hit_inject[iclct]);
+					inquire("WalkingCLCT", "clct0_key_inject", minv=-1, maxv=159, radix=10, clct_key_inject[iclct]);
+					inquire("WalkingCLCT", "clct0_pid_inject", minv=-1, maxv=0xA, radix=16, clct_pid_inject[iclct]);
+					inquire("WalkingCLCT", "clct0_hit_inject", minv= 0, maxv=6,   radix=10, clct_hit_inject[iclct]);
 				}
 				if (iclct==1) {
 					clct_hit_inject[iclct] = 5;
-					inquir2("\tClct%1i Key half-strip159-0 -1=all? cr=%3i", minv=-1, maxv=159, radix=10, iclct,clct_key_inject[iclct]);
-					inquir2("\tClct%1i Pattern ID   2-A    -1=all? cr=%3X", minv=-1, maxv=0xA, radix=16, iclct,clct_pid_inject[iclct]);
-					inquir2("\tClct%1i Pattern Hits 0-6          ? cr=%3i", minv= 0, maxv=6,   radix=10, iclct,clct_hit_inject[iclct]);
+					inquire("WalkingCLCT", "clct1_key_inject", minv=-1, maxv=159, radix=10, clct_key_inject[iclct]);
+					inquire("WalkingCLCT", "clct1_pid_inject", minv=-1, maxv=0xA, radix=16, clct_pid_inject[iclct]);
+					inquire("WalkingCLCT", "clct1_hit_inject", minv= 0, maxv=6,   radix=10, clct_hit_inject[iclct]);
 				}
 				if (iclct>=2) {
 					clct_hit_inject[iclct] = 4;
-					inquir2("\tClct%1i Key half-strip0-159       ? cr=%3i", minv=-1, maxv=159, radix=10, iclct,clct_key_inject[iclct]);
-					inquir2("\tClct%1i Pattern ID   2-A          ? cr=%3X", minv=-1, maxv=0xA, radix=16, iclct,clct_pid_inject[iclct]);
-					inquir2("\tClct%1i Pattern Hits 0-6          ? cr=%3i", minv= 0, maxv=6,   radix=10, iclct,clct_hit_inject[iclct]);
+					inquire("WalkingCLCT", "clct2_key_inject", minv=-1, maxv=159, radix=10, clct_key_inject[iclct]);
+					inquire("WalkingCLCT", "clct2_pid_inject", minv=-1, maxv=0xA, radix=16, clct_pid_inject[iclct]);
+					inquire("WalkingCLCT", "clct2_hit_inject", minv= 0, maxv=6,   radix=10, clct_hit_inject[iclct]);
 				}
 			}   // close for iclct
 
 
-			// interactive mode 
-			if (interactive) {
-				printf ("\tClct Triad 1st tbin ly5:ly0     ? cr=000000 ");
-				fgets(line, 80, stdin);
-				n=strlen(line);
-				sscanf(line,"%1i,%1i,%1i,%1i,%1i,%1i",&i,&i,&i,&i,&i,&i);
-				if (n!=0) {
-					for (i=0; i<=5; ++i) {
-						triad_1st_tbin[i]=0;
-					} // close for i
-				} // close if n!=0
-			} // close interactive mode
+			inquire("WalkingCLCT", "triad_1st_tbin_0", minv= 0, maxv=1, radix=10, triad_1st_tbin_[0]);
+			inquire("WalkingCLCT", "triad_1st_tbin_1", minv= 0, maxv=1, radix=10, triad_1st_tbin_[1]);
+			inquire("WalkingCLCT", "triad_1st_tbin_2", minv= 0, maxv=1, radix=10, triad_1st_tbin_[2]);
+			inquire("WalkingCLCT", "triad_1st_tbin_3", minv= 0, maxv=1, radix=10, triad_1st_tbin_[3]);
+			inquire("WalkingCLCT", "triad_1st_tbin_4", minv= 0, maxv=1, radix=10, triad_1st_tbin_[4]);
+			inquire("WalkingCLCT", "triad_1st_tbin_5", minv= 0, maxv=1, radix=10, triad_1st_tbin_[5]);
 
+			inquire("WalkingCLCT", "tmb_allow_match"   		minv= 0, maxv=  1, radix=10, tmb_allow_match);
+			inquire("WalkingCLCT", "tmb_allow_alct"    		minv= 0, maxv=  1, radix=10, tmb_allow_alct);
+			inquire("WalkingCLCT", "tmb_allow_clct"    		minv= 0, maxv=  1, radix=10, tmb_allow_clct);
+			inquire("WalkingCLCT", "tmb_allow_match_ro"		minv= 0, maxv=  1, radix=10, tmb_allow_match_ro);
+			inquire("WalkingCLCT", "tmb_allow_alct_ro" 		minv= 0, maxv=  1, radix=10, tmb_allow_alct_ro);
+			inquire("WalkingCLCT", "tmb_allow_clct_ro" 		minv= 0, maxv=  1, radix=10, tmb_allow_clct_ro);
+			inquirb("WalkingCLCT", "rrhd",                 	rrhd);
+			inquire("WalkingCLCT", "fifo_tbins",        	minv= 0, maxv= 31, radix=10, fifo_tbins);
+			inquire("WalkingCLCT", "fifo_pretrig",      	minv= 0, maxv= 31, radix=10, fifo_pretrig);
+			inquire("WalkingCLCT", "fifo_mode",         	minv= 0, maxv=  7, radix=10, fifo_mode);
+			inquire("WalkingCLCT", "bcb_read_enable",   	minv= 0, maxv=  1, radix=10, bcb_read_enable);
+			inquire("WalkingCLCT", "l1a_delay",         	minv= 0, maxv=256, radix=10, l1a_delay);
+			inquire("WalkingCLCT", "l1a_lookback",      	minv= 0, maxv=256, radix=10, l1a_lookback);
 
-			inquire("\tAllow TMB alct*clct match       ? cr=%3i", minv= 0, maxv=  1, radix=10, tmb_allow_match);
-			inquire("\tAllow TMB alct-only             ? cr=%3i", minv= 0, maxv=  1, radix=10, tmb_allow_alct);
-			inquire("\tAllow TMB clct-only             ? cr=%3i", minv= 0, maxv=  1, radix=10, tmb_allow_clct);
-			inquire("\tAllow TMB alct*clct match_ro    ? cr=%3i", minv= 0, maxv=  1, radix=10, tmb_allow_match_ro);
-			inquire("\tAllow TMB alct-only_ro          ? cr=%3i", minv= 0, maxv=  1, radix=10, tmb_allow_alct_ro);
-			inquire("\tAllow TMB clct-only_ro          ? cr=%3i", minv= 0, maxv=  1, radix=10, tmb_allow_clct_ro);
-			inquirb("\tCFEB Read out raw hits dump[y|n]? cr=%3c", rrhd);
-			inquire("\tCFEB Tbins                      ? cr=%3i", minv= 0, maxv= 31, radix=10, fifo_tbins);
-			inquire("\tCFEB Tbins before pretrig       ? cr=%3i", minv= 0, maxv= 31, radix=10, fifo_pretrig);
-			inquire("\tCFEB FIFO mode                  ? cr=%3i", minv= 0, maxv=  7, radix=10, fifo_mode);
-			inquire("\tCFEB Blockedbits readout enable ? cr=%3i", minv= 0, maxv=  1, radix=10, bcb_read_enable);
-			inquire("\tL1A  Delay                      ? cr=%3i", minv= 0, maxv=256, radix=10, l1a_delay);
-			inquire("\tL1A  Lookback                   ? cr=%3i", minv= 0, maxv=256, radix=10, l1a_lookback);
-
-			// interactive mode
-			if (interactive) {
-				printf ("\tRPC Injector rat,tmb,sync,none  ? (r/t/s/n)");
-				fgets(line, 80, stdin);
-				n=strlen(line);
-				sscanf(line,"%d",&i);
-			} //close interactive mode
-
-			rat_injector_sync   = false;
-			rat_injector_enable = true;
-			rat_sync_mode=0;
-
-			if ((n!=0) && (i=='r' || i=='R')) rat_injector_sync   = true;
-			if ((n!=0) && (i=='n' || i=='N')) rat_injector_enable = false;
-			if ((n!=0) && (i=='s' || i=='S')) rat_sync_mode       = 1;
-
-			inquire("\tRAT injector delay              ? cr=%3i", minv= 0, maxv=256, radix=10, inj_delay_rat);
-			inquire("\tRPC data=address mode           ? cr=%3i", minv= 0, maxv=  1, radix=10, rpc_tbins_test);
-			inquirb("\tRPCs in readout            [y|n]? cr=%3c", rpcs_in_rdout);
+			inquirb("WalkingCLCT", "rat_injector_sync",		rat_injector_sync);
+			inquirb("WalkingCLCT", "rat_injector_enable", 	rat_injector_enable); 
+			inquire("WalkingCLCT", "rat_sync_mode", 		rat_sync_mode); 
+			inquire("WalkingCLCT", "inj_delay_rat", 		minv= 0, maxv=256, radix=10, inj_delay_rat);
+			inquire("WalkingCLCT", "rpc_tbins_test",		minv= 0, maxv=  1, radix=10, rpc_tbins_test);
+			inquirb("WalkingCLCT", "rpcs_in_rdout", 		rpcs_in_rdout);
 
 			printf ("\tRPC list to readout             ? cr= %1i%1i",(rpc_exists>>1)&0x1,rpc_exists&0x1);
 
@@ -5185,21 +5166,22 @@ END:
 			sscanf(line,"%i,%i",&i,&j);
 			if (n!=0) rpc_exists= (j<<1) | i; 
 
-			inquire("\tRPC TBins Decouple              ? cr=%3i", minv= 0, maxv=  1, radix=10, rpc_decouple);
-			inquire("\tRPC Tbins                       ? cr=%3i", minv= 0, maxv= 31, radix=10, fifo_tbins_rpc);
-			inquire("\tRPC Tbins before pretrig        ? cr=%3i", minv= 0, maxv= 31, radix=10, fifo_pretrig_rpc);
-			inquire("\tRPC Scope in readout            ? cr=%3i", minv= 0, maxv=  1, radix=10, scp_auto);
-			inquire("\tScope tbins/64                  ? cr=%3i", minv= 0, maxv= 31, radix=10, scp_tbins);
-			inquire("\tScope nowrite                   ? cr=%3i", minv= 0, maxv=  1, radix=10, scp_nowrite);    // nowrite=1 uses tmb scope ram initial test pattern
-			inquire("\tMiniscope in readout            ? cr=%3i", minv= 0, maxv= 31, radix=10, mini_read_enable);
+			inquire("WalkingCLCT", "rpc_decouple", 			minv= 0, maxv=  1, radix=10, rpc_decouple);
+			inquire("WalkingCLCT", "fifo_tbins_rpc", 		minv= 0, maxv= 31, radix=10, fifo_tbins_rpc);
+			inquire("WalkingCLCT", "fifo_pretrig_rpc", 		minv= 0, maxv= 31, radix=10, fifo_pretrig_rpc);
+			inquire("WalkingCLCT", "scp_auto", 				minv= 0, maxv=  1, radix=10, scp_auto);
+			inquire("WalkingCLCT", "scp_tbins", 			minv= 0, maxv= 31, radix=10, scp_tbins);
+			inquire("WalkingCLCT", "scp_nowrite", 			minv= 0, maxv=  1, radix=10, scp_nowrite);    // nowrite=1 uses tmb scope ram initial test pattern
+			inquire("WalkingCLCT", "mini_read_enable", 		minv= 0, maxv= 31, radix=10, mini_read_enable);
 
 			if (mini_read_enable==1) {
-				inquire("\tMiniscope test mode             ? cr=%3i", minv= 0, maxv= 31, radix=10, mini_test);
-				inquire("\tMiniscope 1st word=tbins        ? cr=%3i", minv= 0, maxv= 31, radix=10, mini_tbins_word);
-				inquire("\tMiniscope tbins                 ? cr=%3i", minv= 0, maxv= 31, radix=10, fifo_tbins_mini);
-				inquire("\tMiniscope tbins pretrig         ? cr=%3i", minv= 0, maxv= 31, radix=10, fifo_pretrig_mini);
+				inquire("WalkingCLCT", "mini_test", 		minv= 0, maxv= 31, radix=10, mini_test);
+				inquire("WalkingCLCT", "mini_tbins_word", 	minv= 0, maxv= 31, radix=10, mini_tbins_word);
+				inquire("WalkingCLCT", "fifo_tbins_mini", 	minv= 0, maxv= 31, radix=10, fifo_tbins_mini);
+				inquire("WalkingCLCT", "fifo_pretrig_mini", minv= 0, maxv= 31, radix=10, fifo_pretrig_mini);
 			}
-			inquirb("\tPause on fail              [y|n]? cr=%3c", pause_on_fail);
+
+			inquirb("WalkingCLCT", "pause_on_fail", 		pause_on_fail);
 
 
 			// Turn off CFEB cable inputs
@@ -7874,67 +7856,33 @@ END:
 			printf("\n");
 
 			// Inquire
-			printf("\tFifo_mode           ? cr=%3i",fifo_mode);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) fifo_mode=i;
 
-			printf("\tTbins               ? cr=%3i",fifo_tbins);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) fifo_tbins=i;
+			inquire("FireL1AEvent", "fifo_mode", 			minv=0, maxv=0, radix=10, fifo_mode); 			//update this
+			inquire("FireL1AEvent", "fifo_tbins", 			minv=0, maxv=0, radix=10, fifo_tbins); 			//update this
+			inquire("FireL1AEvent", "fifo_pretrig", 		minv=0, maxv=0, radix=10, fifo_pretrig); 		//update this
+			inquire("FireL1AEvent", "l1a_lookback", 		minv=0, maxv=0, radix=10, l1a_lookback); 		//update this
+			inquire("FireL1AEvent", "hdr_wr_continuous", 	minv=0, maxv=0, radix=10, hdr_wr_continuous); 	//update this
+			inquirb("FireL1AEvent", "fire_injector", 		fire_injector); 									//update this
+			inquire("FireL1AEvent", "scp_tbins", 			minv=0, maxv=0, radix=10, scp_tbins); 			//update this
 
-			printf("\tTbins before pretrig? cr=%3i",fifo_pretrig);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) fifo_pretrig=i;
+			inquire("FireL1AEvent", "alct_injector_delay", 	minv=0, maxv=0, radix=10, alct_injector_delay);		//update this
+			inquire("FireL1AEvent", "l1a_delay", 			minv=0, maxv=0, radix=10, l1a_delay);		//update this
+			inquire("FireL1AEvent", "alct_delay", 			minv=0, maxv=0, radix=10, alct_delay);		//update this
+			inquire("FireL1AEvent", "clct_width", 			minv=0, maxv=0, radix=10, clct_width);		//update this
+			inquire("FireL1AEvent", "tmb_allow_clct", 		minv=0, maxv=0, radix=10, tmb_allow_clct);		//update this
+			inquire("FireL1AEvent", "tmb_allow_match", 		minv=0, maxv=0, radix=10, tmb_allow_match);		//update this
+			inquire("FireL1AEvent", "pid_thresh_pretrig", 	minv=0, maxv=0, radix=10, pid_thresh_pretrig);		//update this
+			inquire("FireL1AEvent", "pid_thresh_postdrift", minv=0, maxv=0, radix=10, pid_thresh_postdrift);		//update this
+			inquire("FireL1AEvent", "adjcfeb_dist", 		minv=0, maxv=0, radix=10, adjcfeb_dist);		//update this
+			inquire("FireL1AEvent", "clct_sep", 			minv=0, maxv=0, radix=10, clct_sep);		//update this
+			inquire("FireL1AEvent", "active_feb_src", 		minv=0, maxv=0, radix=10, active_feb_src);		//update this
+			inquire("FireL1AEvent", "rat_sync_mode", 		minv=0, maxv=0, radix=10, rat_sync_mode);		//update this
 
-			printf("\tL1A_lookback        ? cr=%3i",l1a_lookback);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) l1a_lookback=i;
-
-			printf("\tHdr_wr_continuous   ? cr=%3i",hdr_wr_continuous);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) hdr_wr_continuous=i;
-
-			printf("\tFire CLCT injectors ? cr=%3i",fire_injector);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) fire_injector=true;
-
-			printf("\tScope tbins/64      ? cr=%3i",scp_tbins);
-			fgets(line, 80, stdin);
-			n=strlen(line);
-			sscanf(line,"%i",&i);
-			if (n!=0) scp_tbins=i; 
-
-			// Non-inquire defaults
-			alct_injector_delay = 14;
-			l1a_delay           = 119;
-			alct_delay          = 4;
-			clct_width          = 3;
-			tmb_allow_clct      = 1;
-			tmb_allow_match     = 1;
-			pid_thresh_pretrig  = 0;
-			pid_thresh_postdrift= 0;
-			adjcfeb_dist        = 5;
-			clct_sep            = 10;
-			active_feb_src      = 0;
-			rat_sync_mode       = 0;
-
-			triad_persist       = 6;
-			dmb_thresh_pretrig  = 1;
-			hit_thresh_pretrig  = 1;
-			hit_thresh_postdrift= 1;
-			drift_delay         = 2;
+			inquire("FireL1AEvent", "triad_persist", 		minv=0, maxv=0, radix=10, triad_persist);		//update this
+			inquire("FireL1AEvent", "dmb_thresh_pretrig", 	minv=0, maxv=0, radix=10, dmb_thresh_pretrig);		//update this
+			inquire("FireL1AEvent", "hit_thresh_pretrig", 	minv=0, maxv=0, radix=10, hit_thresh_pretrig);		//update this
+			inquire("FireL1AEvent", "hit_thresh_postdrift", minv=0, maxv=0, radix=10, hit_thresh_postdrift);		//update this
+			inquire("FireL1AEvent", "drift_delay", 			minv=0, maxv=0, radix=10, drift_delay);		//update this
 
 			// Turn off CFEB cable inputs
 			//L96405:
@@ -13647,3 +13595,4 @@ END:
 
 	} // namespace emu::pc  
 } // namespace emu  
+

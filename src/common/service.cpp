@@ -23,6 +23,9 @@
 
 using namespace std; 
 
+minIni ini("config.ini");
+
+
 //------------------------------------------------------------------------------
 //   Flip pattern ID numbers, because Im too lazy to flip the hs image
 //------------------------------------------------------------------------------
@@ -80,7 +83,7 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
 //------------------------------------------------------------------------------
 void inquire(string test, string var, const int &minv, const int &maxv, const int &radix, int &now) {
 	int i; 
-	i=ini_getl(test,var,-1,inifile); 
+	i=ini.getl(test,var,-1); 
 	if ( (i<minv) || (i>maxv) ) {
 		std::cout << "ERROR: Config value " << test << " :: " << var << " out of range." << std::endl; 
 		return EXIT_FAILURE;
@@ -99,8 +102,8 @@ void inquir2(string test, string var1, string var2, const int &min, const int &m
 	int j; 
 
 
-	i=ini_getl(test,var1,-1,inifile); 
-	j=ini_getl(test,var2,-1,inifile); 
+	i=ini.getl(test,var1,-1); 
+	j=ini.getl(test,var2,-1); 
 	if ( (i<minv) || (i>maxv) ) {
 		std::cout << "ERROR: Config value " << test << " :: " << var1 << " out of range." << std::endl; 
 		return EXIT_FAILURE;
@@ -120,7 +123,7 @@ void inquir2(string test, string var1, string var2, const int &min, const int &m
 void inquirl(string test, string var, const int &min, const int &max, const int &radix, long int &now)
 {
 	long int i; 
-	i=ini_getl(test,var,-1,inifile); 
+	i=ini.getl(test,var,-1); 
 	if ( (i<minv) || (i>maxv) ) {
 		std::cout << "ERROR: Config value " << test << " :: " << var << " out of range." << std::endl; 
 		return EXIT_FAILURE;
@@ -135,9 +138,9 @@ void inquirl(string test, string var, const int &min, const int &max, const int 
 //   Inquire prompt for bool
 //------------------------------------------------------------------------------
 void inquirb(string test, string val, bool &now) {
-	bool i; 
-	i = ini_getbool(test,var,0,inifile); 
-	now = i; 
+	bool b; 
+	b = ini.getbool(test,var,0); 
+	now = b; 
 }
 
 //------------------------------------------------------------------------------

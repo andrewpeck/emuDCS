@@ -3,40 +3,40 @@
 //------------------------------------------------------------------------------
 // Local
 //------------------------------------------------------------------------------
-int                id_slot;
+int                	id_slot;
 
 // CSC type
-int                csc_me1ab;
-int                stagger_hs_csc;
-int                reverse_hs_csc;
-int                reverse_hs_me1a;
-int                reverse_hs_me1b;
-int                csc_type;
+int                	csc_me1ab;
+int                	stagger_hs_csc;
+int                	reverse_hs_csc;
+int                	reverse_hs_me1a;
+int                	reverse_hs_me1b;
+int                	csc_type;
 
 //string           flags_ok;
 
 // Menu
-char           line[80];
-int                ifunc;
-int                i,j,k,n;
+char           		line[80];
+int                	ifunc;
+int                	i,j,k,n;
 
 // CCB
-int                ttc_cmd;
-int                ccb_cmd;
+int                	ttc_cmd;
+int                	ccb_cmd;
 
 // Trigger tests
-int                dmb_thresh_pretrig;
-int                hit_thresh_pretrig;
-int                hit_thresh_postdrift;
-int                pid_thresh_pretrig;
-int                pid_thresh_postdrift;
-int                lyr_thresh_pretrig;
+int                	dmb_thresh_pretrig;
+int                	hit_thresh_pretrig;
+int                	hit_thresh_postdrift;
+int                	pid_thresh_pretrig;
+int                	pid_thresh_postdrift;
+int                	lyr_thresh_pretrig;
 
-int                triad_persist;
-int                drift_delay;
-int                clct_sep;
-int                active_feb_src;
-int                active_feb_list;
+int                	triad_persist;
+int                	drift_delay;
+int                	clct_sep;
+int                	active_feb_src;
+int                	active_feb_list;
 
 bool           layer_mode;
 int                layer_trig_en;
@@ -89,7 +89,7 @@ bool           loop_keys[mxclcts];
 bool           loop_pids[mxclcts];
 int                iclct;
 
-int                triad_1st_tbin[6];
+int             triad_1st_tbin[6];
 int             l1a_delay; // hits 0th l1a window bx
 int             rat_sync_mode;
 int             rat_injector_delay;
