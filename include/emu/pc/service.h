@@ -29,31 +29,19 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
 //------------------------------------------------------------------------------
 //   Inquire prompt for integer
 //------------------------------------------------------------------------------
-void inquire(string prompt, const int &minv, const int &maxv, const int &radix, int &now); 
+void inquire(string test, string val, const int &minv, const int &maxv, const int &radix, int &now); 
 //------------------------------------------------------------------------------
 //   Inquire prompt for two integers
 //------------------------------------------------------------------------------
-void inquir2(string prompt, const int &min, const int &max, const int &radix, int &num, int &now); 
+void inquir2(string test, string val, const int &min, const int &max, const int &radix, int &num, int &now); 
 //------------------------------------------------------------------------------
 //   Inquire prompt for long integer
 //------------------------------------------------------------------------------
-void inquirl(string prompt, const int &min, const int &max, const int &radix, long int &now); 
+void inquirl(string test, string val, const int &min, const int &max, const int &radix, long int &now); 
 //------------------------------------------------------------------------------
 //   Inquire prompt for bool
 //------------------------------------------------------------------------------
-void inquirb(string prompt, bool &now); 
-//------------------------------------------------------------------------------
-//   Pass Fail prompt
-//------------------------------------------------------------------------------
-bool pass_fail(string prompt); 
-//------------------------------------------------------------------------------
-//   Display Test OK
-//------------------------------------------------------------------------------
-void aok(string msg_string); 
-//------------------------------------------------------------------------------
-//   Display Test OK or FAIL
-//------------------------------------------------------------------------------
-void aokf(string msg_string, const int itest, const int status); 
+void inquirb(string test, string val, bool &now); 
 //------------------------------------------------------------------------------
 //   Convert integer bit string to an array
 //------------------------------------------------------------------------------

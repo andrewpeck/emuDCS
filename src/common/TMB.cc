@@ -564,7 +564,6 @@
 #include "emu/pc/lct_quality.h"
 #include "emu/pc/trigger_test.h"
 #include "emu/pc/common.h"
-#include "emu/pc/minIni.h"
 //------------------------------------------------------------------------------
 
 

@@ -47,6 +47,7 @@ Sources=\
 		pause.cpp \
 		scope160c.cpp \
 		service.cpp \
+		minIni.cpp \
 		stop.cpp
 
 IncludeDirs = 
