@@ -47,8 +47,7 @@ Sources=\
 		pause.cpp \
 		scope160c.cpp \
 		service.cpp \
-		stop.cpp \
-		vme_emulib.cpp
+		stop.cpp
 
 IncludeDirs = 
 

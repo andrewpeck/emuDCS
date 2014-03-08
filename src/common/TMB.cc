@@ -558,13 +558,13 @@
 #include "emu/pc/scope160c.h"
 #include "emu/pc/stop.h"
 #include "emu/pc/pause.h"
-#include "emu/pc/vme_emulib.h"
 #include "emu/pc/crc22.h"
 #include "emu/pc/service.h"
 #include "emu/pc/pattern_finder.h"
 #include "emu/pc/lct_quality.h"
 #include "emu/pc/trigger_test.h"
 #include "emu/pc/common.h"
+#include "emu/pc/minIni.h"
 //------------------------------------------------------------------------------
 
 
@@ -3987,7 +3987,7 @@ END:
 		// Trigger Tests 
 		//------------------------------------------------------------------------------
 
-		bool interactive=true; 
+		bool interactive=false; 
 		bool rat_injector_sync=false;
 		bool rat_injector_enable=true;
 		int nclcts_inject=1;
@@ -4204,7 +4204,7 @@ END:
 			scp_silent     = false;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Clear previous inject
 			adr     = alct_inj_adr;
@@ -4308,7 +4308,7 @@ END:
 			scp_silent     = true;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 		} // End InjectALCT()
 
 		//------------------------------------------------------------------------------
@@ -4390,7 +4390,7 @@ END:
 			scp_silent     = false;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Clear previous  CLCT inject
 			adr     = cfeb_inj_adr;
@@ -4428,7 +4428,7 @@ END:
 			scp_silent     = true;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 		} // close InjectCLCT()
 
 		//------------------------------------------------------------------------------
@@ -4517,7 +4517,7 @@ END:
 			scp_silent     = false;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Clear previous  CLCT inject
 			adr     = cfeb_inj_adr;
@@ -4555,7 +4555,7 @@ END:
 			scp_silent     = true;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 		} // close InjectALCTCLCT()
 
 		//------------------------------------------------------------------------------
@@ -4674,7 +4674,7 @@ END:
 			scp_silent     = false;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Fire CLCT+ALCT Injectors
 			adr     = cfeb_inj_adr;
@@ -4691,7 +4691,7 @@ END:
 			scp_silent     = true;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Get DMB RAM word count and busy bit
 			adr       = dmb_wdcnt_adr;
@@ -5180,6 +5180,7 @@ END:
 			inquirb("\tRPCs in readout            [y|n]? cr=%3c", rpcs_in_rdout);
 
 			printf ("\tRPC list to readout             ? cr= %1i%1i",(rpc_exists>>1)&0x1,rpc_exists&0x1);
+
 			fgets(line, 80, stdin);
 			n=strlen(line);
 			sscanf(line,"%i,%i",&i,&j);
@@ -6016,7 +6017,7 @@ END:
 						scp_silent     = false;
 						scp_playback   = false;
 						if (rdscope)
-							scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+							scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 						// Fire CLCT+ALCT Injectors
 						adr     = cfeb_inj_adr;
@@ -7135,7 +7136,7 @@ END:
 								scp_silent     = true;
 								scp_playback   = false;
 								if (rdscope && scp_auto==0)
-									scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+									scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 								// Close big key-stepping loops
 								if (pause_on_fail) pause("<cr> to resume");
@@ -7214,7 +7215,7 @@ END:
 				scp_silent     = false;
 				scp_playback   = false;
 				if (rdscope)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Fire pseudo-CCB external clct trigger linked to alct
 				adr     = ccb_trig_adr;
@@ -7237,7 +7238,7 @@ END:
 				scp_silent     = true;
 				scp_playback   = false;
 				if (rdscope && scp_auto==0)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Bang Mode
 				if (ifunc<0)    usleep (1500000);
@@ -7294,7 +7295,7 @@ END:
 				scp_silent     = false;
 				scp_playback   = false;
 				if (rdscope)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Fire pseudo-CCB external trigger alct
 				adr     = ccb_trig_adr;
@@ -7318,7 +7319,7 @@ END:
 				scp_silent     = true;
 				scp_playback   = false;
 				if (rdscope && scp_auto==0)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Bang mode
 				if (ifunc<0)        usleep (1500000);
@@ -7374,7 +7375,7 @@ END:
 				scp_silent     = false;
 				scp_playback   = false;
 				if (rdscope)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Fire pseudo-CCB external trigger clct
 				adr     = ccb_trig_adr;
@@ -7398,7 +7399,7 @@ END:
 				scp_silent     = true;
 				scp_playback   = false;
 				if (rdscope && scp_auto==0)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Loop mode
 				if (ifunc<0)        usleep(1500000);
@@ -7490,7 +7491,7 @@ END:
 			scp_silent     = false;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Read back embedded scope data
 			scp_arm        = false;
@@ -7499,7 +7500,7 @@ END:
 			scp_silent     = true;
 			scp_playback   = false;
 			if (rdscope && scp_auto==0)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 
 		} // close ExternalTriggerALCTCLCTwithGTLpulser()
@@ -7596,7 +7597,7 @@ END:
 			scp_silent     = false;
 			scp_playback   = false;
 			if (rdscope)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			do {            //do{...} while(false) to replace goto
 				// Get DMB RAM word count and busy bit
@@ -7657,7 +7658,7 @@ END:
 			scp_silent     = true;
 			scp_playback   = false;
 			if (rdscope && scp_auto==0)
-				scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+				scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 			// Decode raw hits dump
 			decode_readout(vf_data,dmb_wdcnt,err_check=false);
@@ -8126,7 +8127,7 @@ END:
 				scp_silent     = false;
 				scp_playback   = false;
 				if (rdscope)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Prepare to fire L1A
 				adr     = ccb_cfg_adr;
@@ -8276,7 +8277,7 @@ END:
 				scp_silent     = true;
 				scp_playback   = false;
 				if (rdscope && scp_auto==0)
-					scope160c(base_adr,scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+					scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 				// Bang mode
 				if (ifunc >= 0)
@@ -8562,6 +8563,42 @@ END:
 			return 0; 
 		} //close ForceCLCTtriggerandReadout
 
+		//------------------------------------------------------------------------------
+		// vme_write:   Wrapper around emuLIB native TMB write register. Handles type 
+		//              conversion of addresses and data. 
+		//              TMB.cc places hard limit on data word size: 
+		//                  (data_to_write < 0x10000)
+		//------------------------------------------------------------------------------
+		long int vme_write(unsigned long &adr, unsigned short &wr_data) {
+			//int reg = static_cast<int>(adr);                    //typecast long adr to int
+			//int value = static_cast<int>(wr_data);              //typecast short wr_data to int
+			//TMB::WriteRegister(int reg, int value);         //write to VME register using emuLib
+			return EXIT_SUCCESS;
+		}
+
+		//------------------------------------------------------------------------------
+		// vme_read:    Wrapper around emuLIB native TMB write register. Handles type 
+		//              conversion of addresses and data. 
+		//------------------------------------------------------------------------------
+		long int vme_read(unsigned long &adr, unsigned short &rd_data) {
+			//int reg = static_cast<int>(adr);                    //typcast long adr to int
+			//rd_data = (unsigned short) TMB::ReadRegister(reg);  //read VME register using emuLib 
+			return EXIT_SUCCESS;
+		}
+
+		//------------------------------------------------------------------------------
+		// dummy functions
+		//------------------------------------------------------------------------------
+		long int vme_open() { return EXIT_SUCCESS; };
+		long int vme_bwrite(unsigned long &adr, unsigned short wr_data[], long &nwords) { return EXIT_SUCCESS; }
+		long int vme_bread(unsigned long &adr, unsigned short rd_data[], long &nwords)   { return EXIT_SUCCESS; }
+		long int vme_sysreset() { return EXIT_SUCCESS; }
+		long int vme_close() { return EXIT_SUCCESS; };
+		long int vme_errs(const int &print_mode) { return EXIT_SUCCESS; };
+
+		//------------------------------------------------------------------------------
+		// Close Trigger Tests 
+		//------------------------------------------------------------------------------
 
 		int TMB::tmb_read_delays(int device) {
 
