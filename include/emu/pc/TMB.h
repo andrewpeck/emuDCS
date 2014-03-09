@@ -692,14 +692,14 @@ public:
   int  TriggerTestFireL1A();
   int  TriggerTestForceCLCTtriggerandReadout();
   //---------------------------------------------------------------------------------------
-  long int vme_write(unsigned long &adr, unsigned short &wr_data);
-  long int vme_read(unsigned long &adr, unsigned short &rd_data);
-  long int vme_open();
-  long int vme_bwrite(unsigned long &adr, unsigned short wr_data[], long &nwords);
-  long int vme_bread(unsigned long &adr, unsigned short rd_data[], long &nwords);
-  long int vme_sysreset();
-  long int vme_close();
-  long int vme_errs(const int &print_mode);
+  int vme_write(unsigned long &adr, unsigned short &wr_data);
+  int vme_read(unsigned long &adr, unsigned short &rd_data);
+  int vme_open();
+  int vme_bwrite(unsigned long &adr, unsigned short wr_data[], long &nwords);
+  int vme_bread(unsigned long &adr, unsigned short rd_data[], long &nwords);
+  int vme_sysreset();
+  int vme_close();
+  int vme_errs(const int &print_mode);
   //---------------------------------------------------------------------------------------
   
   bool SelfTest() ;
