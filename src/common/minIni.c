@@ -30,7 +30,7 @@
 #endif
 
 #define MININI_IMPLEMENTATION
-#include "minIni.h"
+#include "emu/pc/minIni.h"
 #if defined NDEBUG
   #define assert(e)
 #else

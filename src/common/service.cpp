@@ -81,7 +81,7 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
 //------------------------------------------------------------------------------
 //   Inquire prompt for integer
 //------------------------------------------------------------------------------
-void inquire(string test, string var, const int &minv, const int &maxv, const int &radix, int &now) {
+int inquire(string test, string var, const int &minv, const int &maxv, const int &radix, int &now) {
 	int i; 
 	i=ini.getl(test,var,-1); 
 	if ( (i<minv) || (i>maxv) ) {
@@ -96,7 +96,7 @@ void inquire(string test, string var, const int &minv, const int &maxv, const in
 //------------------------------------------------------------------------------
 //   Inquire prompt for two integers
 //------------------------------------------------------------------------------
-void inquir2(string test, string var1, string var2, const int &min, const int &max, const int &radix, int &num, int &now)
+int inquir2(string test, string var1, string var2, const int &minv, const int &maxv, const int &radix, int &num, int &now)
 {
 	int i; 
 	int j; 
@@ -120,7 +120,7 @@ void inquir2(string test, string var1, string var2, const int &min, const int &m
 //------------------------------------------------------------------------------
 //   Inquire prompt for long integer
 //------------------------------------------------------------------------------
-void inquirl(string test, string var, const int &min, const int &max, const int &radix, long int &now)
+int inquirl(string test, string var, const long int &minv, const long int &maxv, const int &radix, long int &now)
 {
 	long int i; 
 	i=ini.getl(test,var,-1); 
@@ -137,7 +137,7 @@ void inquirl(string test, string var, const int &min, const int &max, const int 
 //------------------------------------------------------------------------------
 //   Inquire prompt for bool
 //------------------------------------------------------------------------------
-void inquirb(string test, string val, bool &now) {
+void inquirb(string test, string var, bool &now) {
 	bool b; 
 	b = ini.getbool(test,var,0); 
 	now = b; 

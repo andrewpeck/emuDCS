@@ -5106,8 +5106,7 @@ END:
 			inquire("WalkingCLCT", "nalcts_inject", 			minv= 0, maxv=  2, radix=10, nalcts_inject);
 			inquire("WalkingCLCT", "nclcts_inject", 			minv= 0, maxv=mcl, radix=10, nclcts_inject);
 
-			for (iclct=0; iclct<nclcts_inject; ++iclct)
-			{
+			for (iclct=0; iclct<nclcts_inject; ++iclct) {
 				if (nclcts_inject>=mxclcts) stop("nclcts_inject>=mxclct");
 
 				if (iclct==0) {
@@ -5131,19 +5130,19 @@ END:
 			}   // close for iclct
 
 
-			inquire("WalkingCLCT", "triad_1st_tbin_0", minv= 0, maxv=1, radix=10, triad_1st_tbin_[0]);
-			inquire("WalkingCLCT", "triad_1st_tbin_1", minv= 0, maxv=1, radix=10, triad_1st_tbin_[1]);
-			inquire("WalkingCLCT", "triad_1st_tbin_2", minv= 0, maxv=1, radix=10, triad_1st_tbin_[2]);
-			inquire("WalkingCLCT", "triad_1st_tbin_3", minv= 0, maxv=1, radix=10, triad_1st_tbin_[3]);
-			inquire("WalkingCLCT", "triad_1st_tbin_4", minv= 0, maxv=1, radix=10, triad_1st_tbin_[4]);
-			inquire("WalkingCLCT", "triad_1st_tbin_5", minv= 0, maxv=1, radix=10, triad_1st_tbin_[5]);
+			inquire("WalkingCLCT", "triad_1st_tbin_0", 		minv= 0, maxv=  1, radix=10, triad_1st_tbin[0]);
+			inquire("WalkingCLCT", "triad_1st_tbin_1", 		minv= 0, maxv=  1, radix=10, triad_1st_tbin[1]);
+			inquire("WalkingCLCT", "triad_1st_tbin_2", 		minv= 0, maxv=  1, radix=10, triad_1st_tbin[2]);
+			inquire("WalkingCLCT", "triad_1st_tbin_3", 		minv= 0, maxv=  1, radix=10, triad_1st_tbin[3]);
+			inquire("WalkingCLCT", "triad_1st_tbin_4", 		minv= 0, maxv=  1, radix=10, triad_1st_tbin[4]);
+			inquire("WalkingCLCT", "triad_1st_tbin_5", 		minv= 0, maxv=  1, radix=10, triad_1st_tbin[5]);
 
-			inquire("WalkingCLCT", "tmb_allow_match"   		minv= 0, maxv=  1, radix=10, tmb_allow_match);
-			inquire("WalkingCLCT", "tmb_allow_alct"    		minv= 0, maxv=  1, radix=10, tmb_allow_alct);
-			inquire("WalkingCLCT", "tmb_allow_clct"    		minv= 0, maxv=  1, radix=10, tmb_allow_clct);
-			inquire("WalkingCLCT", "tmb_allow_match_ro"		minv= 0, maxv=  1, radix=10, tmb_allow_match_ro);
-			inquire("WalkingCLCT", "tmb_allow_alct_ro" 		minv= 0, maxv=  1, radix=10, tmb_allow_alct_ro);
-			inquire("WalkingCLCT", "tmb_allow_clct_ro" 		minv= 0, maxv=  1, radix=10, tmb_allow_clct_ro);
+			inquire("WalkingCLCT", "tmb_allow_match",  		minv= 0, maxv=  1, radix=10, tmb_allow_match);
+			inquire("WalkingCLCT", "tmb_allow_alct",   		minv= 0, maxv=  1, radix=10, tmb_allow_alct);
+			inquire("WalkingCLCT", "tmb_allow_clct",   		minv= 0, maxv=  1, radix=10, tmb_allow_clct);
+			inquire("WalkingCLCT", "tmb_allow_match_ro",	minv= 0, maxv=  1, radix=10, tmb_allow_match_ro);
+			inquire("WalkingCLCT", "tmb_allow_alct_ro",		minv= 0, maxv=  1, radix=10, tmb_allow_alct_ro);
+			inquire("WalkingCLCT", "tmb_allow_clct_ro",		minv= 0, maxv=  1, radix=10, tmb_allow_clct_ro);
 			inquirb("WalkingCLCT", "rrhd",                 	rrhd);
 			inquire("WalkingCLCT", "fifo_tbins",        	minv= 0, maxv= 31, radix=10, fifo_tbins);
 			inquire("WalkingCLCT", "fifo_pretrig",      	minv= 0, maxv= 31, radix=10, fifo_pretrig);
@@ -5154,7 +5153,7 @@ END:
 
 			inquirb("WalkingCLCT", "rat_injector_sync",		rat_injector_sync);
 			inquirb("WalkingCLCT", "rat_injector_enable", 	rat_injector_enable); 
-			inquire("WalkingCLCT", "rat_sync_mode", 		rat_sync_mode); 
+			inquire("FireL1AEvent", "rat_sync_mode", 		minv= 0, maxv=1,   radix=10, rat_sync_mode);		//update this
 			inquire("WalkingCLCT", "inj_delay_rat", 		minv= 0, maxv=256, radix=10, inj_delay_rat);
 			inquire("WalkingCLCT", "rpc_tbins_test",		minv= 0, maxv=  1, radix=10, rpc_tbins_test);
 			inquirb("WalkingCLCT", "rpcs_in_rdout", 		rpcs_in_rdout);
@@ -8519,7 +8518,7 @@ END:
 		long int vme_write(unsigned long &adr, unsigned short &wr_data) {
 			//int reg = static_cast<int>(adr);                    //typecast long adr to int
 			//int value = static_cast<int>(wr_data);              //typecast short wr_data to int
-			//TMB::WriteRegister(int reg, int value);         //write to VME register using emuLib
+			//TMB::WriteRegister(int reg, int value);         //write to VME register using emuLib native 
 			return EXIT_SUCCESS;
 		}
 

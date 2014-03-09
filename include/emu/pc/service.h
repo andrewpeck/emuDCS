@@ -29,15 +29,15 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
 //------------------------------------------------------------------------------
 //   Inquire prompt for integer
 //------------------------------------------------------------------------------
-void inquire(string test, string val, const int &minv, const int &maxv, const int &radix, int &now); 
+int inquire(string test, string val, const int &minv, const int &maxv, const int &radix, int &now); 
 //------------------------------------------------------------------------------
 //   Inquire prompt for two integers
 //------------------------------------------------------------------------------
-void inquir2(string test, string val, const int &min, const int &max, const int &radix, int &num, int &now); 
+int inquir2(string test, string val, const int &minv, const int &maxv, const int &radix, int &num, int &now); 
 //------------------------------------------------------------------------------
 //   Inquire prompt for long integer
 //------------------------------------------------------------------------------
-void inquirl(string test, string val, const int &min, const int &max, const int &radix, long int &now); 
+int inquirl(string test, string val, const long int &minv, const long int &maxv, const int &radix, long int &now); 
 //------------------------------------------------------------------------------
 //   Inquire prompt for bool
 //------------------------------------------------------------------------------
