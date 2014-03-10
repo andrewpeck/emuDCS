@@ -691,6 +691,7 @@ public:
   void TriggerTestTestBXNCounter();
   int  TriggerTestFireL1A();
   int  TriggerTestForceCLCTtriggerandReadout();
+  //------------------------------------------------------------------------------
   bool SelfTest() ;
   void init() ;
   //
