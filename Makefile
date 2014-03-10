@@ -44,11 +44,9 @@ Sources=\
 		miniscope16.cpp \
 		pattern_finder.cpp \
 		pattern_unit.cpp \
-		pause.cpp \
 		scope160c.cpp \
 		service.cpp \
-		minIni.cpp \
-		stop.cpp
+		minIni.cpp
 
 IncludeDirs = 
 
