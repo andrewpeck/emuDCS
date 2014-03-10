@@ -5731,7 +5731,7 @@ END:
 						// Load CLCT injector pattern RAM triads from an image file, format="0  0 |00000000|00000000|00000000|00000000|00000000|"
 						if (load_clct_injector_image)
 						{
-							ram_file_name = "clct_injector_ram_image.txt";          // Open RAM imagae file
+							inquirs("WalkingCLCT","ram_file",ram_file_name);
 							fprintf(stdout,"\n\tOpening CLCT injector RAM image file %s\n",ram_file_name.c_str());
 
 							ram_file      = fopen(ram_file_name.c_str(),"r");
@@ -5877,11 +5877,11 @@ END:
 
 									if (cprr && !cprr_ignore && (rd_data_mem != wr_data_mem)){
 										printf("\tInjector Verify Err: cfeb%1i key%3i RAM%2i Tbin%2i wr=%5.5X rd=%5.5X\n",icfeblp,ikey,iram,itbin,wr_data_mem,rd_data_mem);
-										printf("\tSkip, Continue <cr> ");
-										fgets(line, 80, stdin);
-										n=strlen(line);
-										sscanf(line,"%d",&i);
-										if (n==1 && (i=='S' || i=='s')) cprr_ignore=true;
+										//printf("\tSkip, Continue <cr> ");
+										//fgets(line, 80, stdin);
+										//n=strlen(line);
+										//sscanf(line,"%d",&i);
+										//if (n==1 && (i=='S' || i=='s')) cprr_ignore=true;
 									}
 
 								}   // close itbin
