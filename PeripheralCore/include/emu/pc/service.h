@@ -43,6 +43,10 @@ int inquirl(string test, string val, const long int &minv, const long int &maxv,
 //------------------------------------------------------------------------------
 void inquirb(string test, string val, bool &now); 
 //------------------------------------------------------------------------------
+//   Inquire prompt for string
+//------------------------------------------------------------------------------
+void inquirs(string test, string val, string &now); 
+//------------------------------------------------------------------------------
 //   Convert integer bit string to an array
 //------------------------------------------------------------------------------
 void bit_to_array(const int &idata, int iarray[], const int &n); 

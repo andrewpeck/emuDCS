@@ -144,6 +144,15 @@ void inquirb(string test, string var, bool &now) {
 }
 
 //------------------------------------------------------------------------------
+//   Inquire prompt for string
+//------------------------------------------------------------------------------
+void inquirs(string test, string var, string &now) {
+	string s; 
+	s = ini.gets(test,var,0); 
+	now = s; 
+}
+
+//------------------------------------------------------------------------------
 //   Convert integer bit string to an array
 //------------------------------------------------------------------------------
 void bit_to_array(const int &idata, int iarray[], const int &n) {
