@@ -24,17 +24,6 @@
 using namespace std;
 
 //------------------------------------------------------------------------------
-//	Debug print mode
-//------------------------------------------------------------------------------
-#define debug 1	
-
-#ifdef debug
-#define dprintf fprintf
-#else
-#define dprintf
-#endif
-
-//------------------------------------------------------------------------------
 // Constants
 //------------------------------------------------------------------------------
 const int	MXCFEB		= 	5;				// Number of CFEBs on CSC
@@ -78,13 +67,6 @@ void pattern_finder
  int &hs_hit_2nd
  )
 {
-    //------------------------------------------------------------------------------
-    // Log File
-    //------------------------------------------------------------------------------
-    FILE     *log_file;
-    string	log_file_name="vmetst_log.txt";
-    log_file = fopen(log_file_name.c_str(),"w");
-
     //------------------------------------------------------------------------------
     // Local
     //------------------------------------------------------------------------------
@@ -136,12 +118,12 @@ void pattern_finder
     int	me1a_ly4hs[MXHS*1];
     int	me1a_ly5hs[MXHS*1];
 
-    dprintf(log_file,"dbg: ly0="); for (i=0; i<MXHS; ++i) dprintf(log_file,"%1i",cfeb0_ly0hs[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly1="); for (i=0; i<MXHS; ++i) dprintf(log_file,"%1i",cfeb0_ly1hs[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly2="); for (i=0; i<MXHS; ++i) dprintf(log_file,"%1i",cfeb0_ly2hs[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly3="); for (i=0; i<MXHS; ++i) dprintf(log_file,"%1i",cfeb0_ly3hs[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly4="); for (i=0; i<MXHS; ++i) dprintf(log_file,"%1i",cfeb0_ly4hs[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly5="); for (i=0; i<MXHS; ++i) dprintf(log_file,"%1i",cfeb0_ly5hs[i]); dprintf(log_file,"\n");
+    printf(stdout,"dbg: ly0="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly0hs[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly1="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly1hs[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly2="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly2hs[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly3="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly3hs[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly4="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly4hs[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly5="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly5hs[i]); printf(stdout,"\n");
 
     //-------------------------------------------------------------------------------------------------------------------
     // Generate mask for marking adjacent cfeb as hit if nearby keys are over thresh
@@ -323,12 +305,12 @@ void pattern_finder
             ly5hs_pad[i-0+j+k] = (i>=128) ? me1a_ly5hs[i%32] : me1b_ly5hs[i%128];
         }}
 
-    dprintf(log_file,"dbg: ly0hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) dprintf(log_file,"%1i",ly0hs_pad[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly1hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) dprintf(log_file,"%1i",ly1hs_pad[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly2hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) dprintf(log_file,"%1i",ly2hs_pad[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly3hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) dprintf(log_file,"%1i",ly3hs_pad[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly4hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) dprintf(log_file,"%1i",ly4hs_pad[i]); dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: ly5hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) dprintf(log_file,"%1i",ly5hs_pad[i]); dprintf(log_file,"\n");
+    printf(stdout,"dbg: ly0hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly0hs_pad[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly1hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly1hs_pad[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly2hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly2hs_pad[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly3hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly3hs_pad[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly4hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly4hs_pad[i]); printf(stdout,"\n");
+    printf(stdout,"dbg: ly5hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly5hs_pad[i]); printf(stdout,"\n");
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4C:  Layer-trigger mode
@@ -355,8 +337,8 @@ void pattern_finder
 
     layer_trig = (nlayers_hit >= lyr_thresh_pretrig);
 
-    dprintf(log_file,"dbg: layer_trig =%1i\n",layer_trig );
-    dprintf(log_file,"dbg: nlayers_hit=%1i\n",nlayers_hit);
+    printf(stdout,"dbg: layer_trig =%1i\n",layer_trig );
+    printf(stdout,"dbg: nlayers_hit=%1i\n",nlayers_hit);
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4D: 1/2-Strip Pattern Finder
@@ -395,7 +377,7 @@ void pattern_finder
                 &ly5hs_pad[ihs],
                 hs_hit[ihs],
                 hs_pid[ihs]);
-        dprintf(log_file,"dbg: hs_hit[%3i]=%1i hs_pid[%3i]=%1X\n",ihs,hs_hit[ihs],ihs,hs_pid[ihs]);
+        printf(stdout,"dbg: hs_hit[%3i]=%1i hs_pid[%3i]=%1X\n",ihs,hs_hit[ihs],ihs,hs_pid[ihs]);
     }
 
     // Convert s0 pattern IDs and hits into sortable pattern numbers, [6:4]=nhits, [3:0]=pattern id
@@ -554,9 +536,9 @@ void pattern_finder
     hs_pid_1st = (hs_pat_1st >> 0     ) & 0xF;
     hs_hit_1st = (hs_pat_1st >> MXPIDB) & 0x7;
 
-    dprintf(log_file,"dbg: hs_key_1st=%3i\n",hs_key_1st);
-    dprintf(log_file,"dbg: hs_pid_1st=%3X\n",hs_pid_1st);
-    dprintf(log_file,"dbg: hs_hit_1st=%3i\n",hs_hit_1st);
+    printf(stdout,"dbg: hs_key_1st=%3i\n",hs_key_1st);
+    printf(stdout,"dbg: hs_pid_1st=%3X\n",hs_pid_1st);
+    printf(stdout,"dbg: hs_hit_1st=%3i\n",hs_hit_1st);
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 6B: Mark key 1/2-strips near the 1st CLCT key as busy to exclude them from 2nd CLCT priority encoding
@@ -605,10 +587,10 @@ void pattern_finder
         busy_key[ikey] = (ikey>=busy_min && ikey<=busy_max);
     }
 
-    dprintf(log_file,"\n");
-    dprintf(log_file,"dbg: busy_min=%3i\n",busy_min);
-    dprintf(log_file,"dbg: busy_max=%3i\n",busy_max);
-    dprintf(log_file,"dbg: busy_key="); for (i=0; i<MXHSX; ++i) dprintf(log_file,"%1i",busy_key[i]); dprintf(log_file,"\n");
+    printf(stdout,"\n");
+    printf(stdout,"dbg: busy_min=%3i\n",busy_min);
+    printf(stdout,"dbg: busy_max=%3i\n",busy_max);
+    printf(stdout,"dbg: busy_key="); for (i=0; i<MXHSX; ++i) printf(stdout,"%1i",busy_key[i]); printf(stdout,"\n");
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 7A: 1/2-Strip Priority Encoder
@@ -653,9 +635,9 @@ void pattern_finder
     }
     if (hs_bsy_2nd!=0) pause("pattern_finder hs_busy_2nd!=0 wtf?!");
 
-    dprintf(log_file,"dbg: hs_key_2nd=%3i\n",hs_key_2nd);
-    dprintf(log_file,"dbg: hs_pid_2nd=%3X\n",hs_pid_2nd);
-    dprintf(log_file,"dbg: hs_hit_2nd=%3i\n",hs_hit_2nd);
+    printf(stdout,"dbg: hs_key_2nd=%3i\n",hs_key_2nd);
+    printf(stdout,"dbg: hs_pid_2nd=%3X\n",hs_pid_2nd);
+    printf(stdout,"dbg: hs_hit_2nd=%3i\n",hs_hit_2nd);
 
     return;
 }

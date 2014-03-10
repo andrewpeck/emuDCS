@@ -34,13 +34,7 @@
 //	reg [3:0] Q;
 //
 //	always @* begin
-//
-    //------------------------------------------------------------------------------
-    // Log File
-    //------------------------------------------------------------------------------
-    FILE     *log_file;
-    string	log_file_name="vmetst_log.txt";
-    log_file = fopen(log_file_name.c_str(),"w");
+
 	if		(C4 && (P == 10)          && A4 && !ACC)	Q=15;	// HQ muon, straight
 	else if	(C4 && (P == 8 || P == 9) && A4 && !ACC)	Q=14;	// HQ muon, slight bend
 	else if	(C4 && (P == 6 || P == 7) && A4 && !ACC)	Q=13;	// HQ muon, more	"
@@ -59,6 +53,6 @@
 	else												Q=0;	// should never be assigned
 	
 //	endmodule
-	fprintf(log_file,"ACC=%3i A=%3i C=%3i A4=%3i C4=%3i P=%3i CPAT=%3i,Q=%3i\n",ACC,A,C,A4,C4,P,CPAT,Q);
+	fprintf(stdout,"ACC=%3i A=%3i C=%3i A4=%3i C4=%3i P=%3i CPAT=%3i,Q=%3i\n",ACC,A,C,A4,C4,P,CPAT,Q);
 	return;
 }

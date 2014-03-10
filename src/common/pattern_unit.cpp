@@ -16,13 +16,7 @@
 //------------------------------------------------------------------------------
 //	Debug print mode
 //------------------------------------------------------------------------------
-	#define debug 1	// comment this line to turn off debug print
-
-	#ifdef debug
-	 #define dprintf fprintf
-	#else
-	 #define dprintf //
-	#endif
+//#define debug 1	// comment this line to turn off debug print
 
 //------------------------------------------------------------------------------
 //	Prototypes
@@ -46,10 +40,6 @@
 	int	&pat_id
 	)
 {
-//Log file
-FILE     *log_file;
-string  log_file_name="vmetst_log.txt";
-log_file = fopen(log_file_name.c_str(),"w");
         
 //------------------------------------------------------------------------------
 // Local
@@ -66,15 +56,15 @@ log_file = fopen(log_file_name.c_str(),"w");
 
 	#ifdef debug
 	int i;
-	dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: pattern_unit:\n");
-	dprintf(log_file,"dbg: hs ="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1X",i     ); dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: ly0="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1i",ly0[i]); dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: ly1="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1i",ly1[i]); dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: ly2="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1i",ly2[i]); dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: ly3="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1i",ly3[i]); dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: ly4="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1i",ly4[i]); dprintf(log_file,"\n");
-	dprintf(log_file,"dbg: ly5="); for (i=0; i<=0xA; ++i) dprintf(log_file,"%1i",ly5[i]); dprintf(log_file,"\n");
+	printf(stdout,"\n");
+	printf(stdout,"dbg: pattern_unit:\n");
+	printf(stdout,"dbg: hs ="); for (i=0; i<=0xA; ++i) printf(stdout,"%1X",i     ); printf(stdout,"\n");
+	printf(stdout,"dbg: ly0="); for (i=0; i<=0xA; ++i) printf(stdout,"%1i",ly0[i]); printf(stdout,"\n");
+	printf(stdout,"dbg: ly1="); for (i=0; i<=0xA; ++i) printf(stdout,"%1i",ly1[i]); printf(stdout,"\n");
+	printf(stdout,"dbg: ly2="); for (i=0; i<=0xA; ++i) printf(stdout,"%1i",ly2[i]); printf(stdout,"\n");
+	printf(stdout,"dbg: ly3="); for (i=0; i<=0xA; ++i) printf(stdout,"%1i",ly3[i]); printf(stdout,"\n");
+	printf(stdout,"dbg: ly4="); for (i=0; i<=0xA; ++i) printf(stdout,"%1i",ly4[i]); printf(stdout,"\n");
+	printf(stdout,"dbg: ly5="); for (i=0; i<=0xA; ++i) printf(stdout,"%1i",ly5[i]); printf(stdout,"\n");
 	#endif
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -175,7 +165,9 @@ log_file = fopen(log_file_name.c_str(),"w");
 // Count number of layers hit for each pattern
 	for (pid=0x2; pid<=0xA; ++pid) {
 	nhits[pid] = count1s(pat[pid]);
-	dprintf(log_file,"dbg: pid=%1X nhits=%1i\n",pid,nhits[pid]);
+#ifdef debug
+	printf(stdout,"dbg: pid=%1X nhits=%1i\n",pid,nhits[pid]);
+#endif
 	}
 
 // Best 1 of 8 Priority Encoder, perfers higher pattern number if hits are equal

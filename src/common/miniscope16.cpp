@@ -27,11 +27,6 @@ using namespace std;
 //------------------------------------------------------------------------------
 void miniscope16 (int ntbins, int miniscope_data[16]) {
 
-    //Log file
-    FILE     *log_file;
-    string	log_file_name="vmetst_log.txt";
-    log_file = fopen(log_file_name.c_str(),"w");
-
     const int		NCHANNELS	= 16;
     const int		MXTBINS		= 32;			// tbins per channel
     //const int		MXDSP		= 32;			// max tbins to display
@@ -99,19 +94,19 @@ void miniscope16 (int ntbins, int miniscope_data[16]) {
     //------------------------------------------------------------------------------
     //	Display
     //------------------------------------------------------------------------------
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
     ndisp = min(ntbins,MXTBINS);
     tb0   = (skip_1st_tbin) ? 1:0;
 
     // Display tbin numbers or x if 1st channel blanked
     for (irow =0; irow <=1;       ++irow ) {
-        fprintf(log_file,"                          ");
+        fprintf(stdout,"                          ");
         for (itbin=tb0; itbin<=ndisp-1; ++itbin) {
             if  (irow==0) it = itbin/16;
             else          it = itbin%16;
-            fprintf(log_file,"%X",it);
+            fprintf(stdout,"%X",it);
         }	// close itbin
-        fprintf(log_file,"\n");
+        fprintf(stdout,"\n");
     }	// close irow
 
     // Construct waveform
@@ -134,9 +129,9 @@ void miniscope16 (int ntbins, int miniscope_data[16]) {
         chblank=(ch[ich].nbits!=1) && !DISP_ALL;		// Dont display channels that are hex digits
 
         if(!chblank) {
-            fprintf(log_file,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-            for(itbin=tb0;itbin<ndisp;++itbin) fprintf(log_file,"%c",scope_ch[itbin]);
-            fprintf(log_file,"\n");
+            fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
+            for(itbin=tb0;itbin<ndisp;++itbin) fprintf(stdout,"%c",scope_ch[itbin]);
+            fprintf(stdout,"\n");
         }
 
         // Display hex integers for special channel groups
@@ -145,20 +140,20 @@ void miniscope16 (int ntbins, int miniscope_data[16]) {
             if (last_bit) {
                 ndigits=(ch[ich].nbits+3)/4;
                 for (idigit=ndigits-1; idigit>=0; --idigit) {
-                    fprintf(log_file,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-                    for(itbin=tb0;itbin<ndisp;++itbin) fprintf(log_file,"%1.1X",(ihex[itbin] >> (4*idigit)) & 0xF);
-                    fprintf(log_file,"\n");
+                    fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
+                    for(itbin=tb0;itbin<ndisp;++itbin) fprintf(stdout,"%1.1X",(ihex[itbin] >> (4*idigit)) & 0xF);
+                    fprintf(stdout,"\n");
                 }}}
 
         // Display machine state ascii
         if(ich==3) {
-            fprintf(log_file,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-            for(itbin=tb0;itbin<ndisp;++itbin) fprintf(log_file,"%c",state[ihex[itbin]]);
-            fprintf(log_file,"\n");
+            fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
+            for(itbin=tb0;itbin<ndisp;++itbin) fprintf(stdout,"%c",state[ihex[itbin]]);
+            fprintf(stdout,"\n");
         }	// close if ich
     }	// close ich
 
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
 
     //------------------------------------------------------------------------------
     // We be done

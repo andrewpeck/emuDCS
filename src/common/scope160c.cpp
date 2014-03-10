@@ -56,11 +56,6 @@ void    scope160c (
         int				 scp_raw_data[512*160/16]
         ) {
 
-    //Log file
-    FILE    *log_file;
-    string      log_file_name="vmetst_log.txt";
-    log_file =  fopen("vmetst_log.txt","w");
-
     const int		NCHANNELS	= 160;
     const int		NRAMS		= NCHANNELS/16;
     //const int		NBITS		= NCHANNELS*16;
@@ -348,23 +343,23 @@ void    scope160c (
     scp_waiting		= (rd_data >>12) & 0x1;
     scp_trig_done	= (rd_data >>13) & 0x1;
 
-    fprintf(log_file,"\nScope Call\n");
-    fprintf(log_file,"----------\n");
-    fprintf(log_file,"scp_arm        =%c\n",logical(scp_arm));
-    fprintf(log_file,"scp_readout    =%c\n",logical(scp_readout));
-    fprintf(log_file,"scp_raw_decode =%c\n",logical(scp_raw_decode));
-    fprintf(log_file,"scp_silent     =%c\n",logical(scp_silent));
-    fprintf(log_file,"scp_playback   =%c\n",logical(scp_playback));
-    fprintf(log_file,"\n");
-    fprintf(log_file,"scp_ch_trig_en =%i\n",scp_ch_trig_en);
-    fprintf(log_file,"scp_runstop    =%i\n",scp_runstop);
-    fprintf(log_file,"scp_forcetrig  =%i\n",scp_forcetrig);
-    fprintf(log_file,"scp_auto       =%i\n",scp_auto);
-    fprintf(log_file,"scp_nowrite    =%i\n",scp_nowrite);
-    fprintf(log_file,"scp_tbins      =%i\n",scp_tbins);
-    fprintf(log_file,"scp_ramsel     =%i\n",scp_ramsel);
-    fprintf(log_file,"scp_waiting    =%i\n",scp_waiting);
-    fprintf(log_file,"scp_trig_done  =%i\n",scp_trig_done);
+    fprintf(stdout,"\nScope Call\n");
+    fprintf(stdout,"----------\n");
+    fprintf(stdout,"scp_arm        =%c\n",logical(scp_arm));
+    fprintf(stdout,"scp_readout    =%c\n",logical(scp_readout));
+    fprintf(stdout,"scp_raw_decode =%c\n",logical(scp_raw_decode));
+    fprintf(stdout,"scp_silent     =%c\n",logical(scp_silent));
+    fprintf(stdout,"scp_playback   =%c\n",logical(scp_playback));
+    fprintf(stdout,"\n");
+    fprintf(stdout,"scp_ch_trig_en =%i\n",scp_ch_trig_en);
+    fprintf(stdout,"scp_runstop    =%i\n",scp_runstop);
+    fprintf(stdout,"scp_forcetrig  =%i\n",scp_forcetrig);
+    fprintf(stdout,"scp_auto       =%i\n",scp_auto);
+    fprintf(stdout,"scp_nowrite    =%i\n",scp_nowrite);
+    fprintf(stdout,"scp_tbins      =%i\n",scp_tbins);
+    fprintf(stdout,"scp_ramsel     =%i\n",scp_ramsel);
+    fprintf(stdout,"scp_waiting    =%i\n",scp_waiting);
+    fprintf(stdout,"scp_trig_done  =%i\n",scp_trig_done);
     //------------------------------------------------------------------------------
     //	scp_arm
     //------------------------------------------------------------------------------
@@ -421,7 +416,7 @@ void    scope160c (
 
         //	if(!scp_silent) {
         fprintf(stdout, "\tScope never triggered\n");// Bummer, dude
-        fprintf(log_file, "Scope never triggered\n");// Bummer, dude
+        fprintf(stdout, "Scope never triggered\n");// Bummer, dude
         goto exit;
         //	}
 
@@ -447,7 +442,7 @@ triggered:
                 status = vme_read(adr,rd_data);				// Read scope data at this address
                 scope_ram[itbin][iram]=rd_data;				// Store 16 parallel in local array
 
-                //	fprintf(log_file,"%3.3i %1i %4.4X\n",itbin,iram,rd_data);
+                //	fprintf(stdout,"%3.3i %1i %4.4X\n",itbin,iram,rd_data);
             }		//close iram
         }		//close itbin
         goto display;
@@ -475,7 +470,7 @@ triggered:
         //	iframe=0;
         //	for (iram=0;  iram <=NRAMS-1;  ++iram)  {	// Loop over RAM chips
         //	for (itbin=0; itbin<=itbin_max;++itbin) {	// Loop over time bins in ram chip	
-        //	fprintf(log_file,"scope160c frame=%4i%5.4X\n",iframe,scope_ram[itbin][iram]);
+        //	fprintf(stdout,"scope160c frame=%4i%5.4X\n",iframe,scope_ram[itbin][iram]);
         //	iframe++;
         //	}}
 
@@ -486,7 +481,7 @@ triggered:
     //------------------------------------------------------------------------------
     // Construct waveform
 display:
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
 
     for (ich=0; ich<=NCHANNELS-1; ++ich)    {	//Loop over scope channels
         iram=ich/16;								//RAM chip has 16 channels
@@ -508,9 +503,9 @@ display:
         int chblank=(ch[ich].nbits!=1) && !DISP_ALL;	// dont display channels that are hex digits
 
         if(!chblank) {
-            fprintf(log_file,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-            for(i=0;i<NDSP;++i) fprintf(log_file,"%c",scope_ch[i]);
-            fprintf(log_file,"\n");
+            fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
+            for(i=0;i<NDSP;++i) fprintf(stdout,"%c",scope_ch[i]);
+            fprintf(stdout,"\n");
         }
 
         // Display hex integers for special channel groups
@@ -519,13 +514,13 @@ display:
             if (last_bit) {
                 ndigits=(ch[ich].nbits+3)/4;
                 for (idigit=ndigits-1; idigit>=0; --idigit) {
-                    fprintf(log_file,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-                    for(i=0;i<NDSP;++i) fprintf(log_file,"%1.1X",(ihex[i] >> (4*idigit)) & 0xF);
-                    fprintf(log_file,"\n");
+                    fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
+                    for(i=0;i<NDSP;++i) fprintf(stdout,"%1.1X",(ihex[i] >> (4*idigit)) & 0xF);
+                    fprintf(stdout,"\n");
                 }}}
     }	//close ich
 
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
 
     //------------------------------------------------------------------------------
     // We be done

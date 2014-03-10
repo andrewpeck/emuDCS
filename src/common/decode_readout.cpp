@@ -45,12 +45,6 @@ using namespace std;
 // Entry decode_raw_hits()
 //------------------------------------------------------------------------------
 void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
-    //Log file
-    FILE     *log_file;
-    string	log_file_name="vmetst_log.txt";
-    log_file = fopen(log_file_name.c_str(),"w");
-
-
     bool			header_ok;
     bool			header_only_short;
     bool			header_only_long;
@@ -542,7 +536,7 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
     //---------------------------------------------------------------------------------
     //	Entry
     //---------------------------------------------------------------------------------
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
 
     // Init check bits
     first_entry       = false;
@@ -567,7 +561,7 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
     // Scan for DB0C and DE0F/DEEF markers, DEEF might be crc in full dump, nb Dxxx markers are not unique, could be bxn or wdcnt
     for (i=0; i<mxframe; ++i) {
         data=vf_data[i]&0xFFFF;		// Trim out-of band bits
-        fprintf(log_file,"Adr=%5i Data=%6.5X\n",i,data);
+        fprintf(stdout,"Adr=%5i Data=%6.5X\n",i,data);
         if ((data==0xDB0C) && (first_word < 0))	first_word=i;
         if (((data==0xDE0F) || (data==0xDEEF)) && (i > first_word+3) && (last_word < 0)) last_word=i+3;
         if (i==last_word) break;
@@ -579,30 +573,30 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
     if(first_word==-1) {
         header_ok=false;
         error_flag[0]=1;	 // 0xDB0C first frame marker not found
-        fprintf(log_file,"ERRs: 0xDB0C first frame marker not found\n");
+        fprintf(stdout,"ERRs: 0xDB0C first frame marker not found\n");
     }
     else
-        fprintf(log_file,"First frame marker found at Adr=%5i Data=%6.5X\n",first_word,vf_data[first_word]);
+        fprintf(stdout,"First frame marker found at Adr=%5i Data=%6.5X\n",first_word,vf_data[first_word]);
 
     // Did not find DE0F/DEEF
     if(last_word ==-1) {
         header_ok=false;
         error_flag[1]=1;	 // 0xDE0C or 0xDEEF last frame marker not found
-        fprintf(log_file,"ERRs: 0xDE0C or 0xDEEF last frame marker not found\n");
+        fprintf(stdout,"ERRs: 0xDE0C or 0xDEEF last frame marker not found\n");
     }
     else
-        fprintf(log_file,"Last  frame marker found at Adr=%5i Data=%6.5X\n",last_word,vf_data[last_word]);
+        fprintf(stdout,"Last  frame marker found at Adr=%5i Data=%6.5X\n",last_word,vf_data[last_word]);
 
     // Compare word count to callers value [caller may not have supplied a word count]
     wdcnt=1+last_word-first_word;
 
-    fprintf(log_file,"Calculated word count=%5i\n",wdcnt);
-    fprintf(log_file,"Callers    word count=%5i\n",dmb_wdcnt);
+    fprintf(stdout,"Calculated word count=%5i\n",wdcnt);
+    fprintf(stdout,"Callers    word count=%5i\n",dmb_wdcnt);
 
     if(wdcnt != dmb_wdcnt) {
         header_ok=false;
         error_flag[2]=1;	 // Calculated word count does not match caller
-        fprintf(log_file,"ERRs: Calculated word count does not match caller: wdcnt=%5i dmb_wdcnt=%5i\n",wdcnt,dmb_wdcnt);
+        fprintf(stdout,"ERRs: Calculated word count does not match caller: wdcnt=%5i dmb_wdcnt=%5i\n",wdcnt,dmb_wdcnt);
     }
 
     //	dmb_wdcnt=wdcnt;	// Uncomment if caller did not supply a word count
@@ -614,8 +608,7 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
     if(dmb_wdcnt <= 0) {
         header_ok=false;
         error_flag[3]=1;	// Wordcount <=0
-        fprintf(log_file,"ERRs: No TMB readout to decode. wdcnt=%i\n",dmb_wdcnt);
-        fprintf(stderr,  "ERRs: No TMB readout to decode. wdcnt=%i\n",dmb_wdcnt);
+        fprintf(stdout,"ERRs: No TMB readout to decode. wdcnt=%i\n",dmb_wdcnt);
         goto exit;
     }
 
@@ -623,48 +616,46 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
     if(dmb_wdcnt%4 != 0) {
         header_ok=false;
         error_flag[4]=1;	// Wordcount not multiple of 4
-        fprintf(log_file,"ERRs: TMB wdcnt is not a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
-        fprintf(stderr,  "ERRs: TMB wdcnt is not a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
+        fprintf(stdout,"ERRs: TMB wdcnt is not a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
     }
-    fprintf(log_file,"TMB wdcnt is a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
+    fprintf(stdout,"TMB wdcnt is a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
 
     // Short header-only mode
     if(dmb_wdcnt == wdcnt_short_hdr) {
         header_only_short=true;
-        fprintf(log_file,"TMB readout short header-only mode. wdcnt=%i\n",dmb_wdcnt);
+        fprintf(stdout,"TMB readout short header-only mode. wdcnt=%i\n",dmb_wdcnt);
     }
 
     // Long header-only mode
     if(dmb_wdcnt == wdcnt_long_hdr) {
         header_only_long=true;
-        fprintf(log_file,"TMB readout long header-only mode. wdcnt=%i\n",dmb_wdcnt);
+        fprintf(stdout,"TMB readout long header-only mode. wdcnt=%i\n",dmb_wdcnt);
     }
 
     // Long header with raw hits mode
     if(dmb_wdcnt > wdcnt_long_hdr) {
         header_full=true;
-        fprintf(log_file,"TMB readout long header with raw hits mode. wdcnt=%i\n",dmb_wdcnt);
+        fprintf(stdout,"TMB readout long header with raw hits mode. wdcnt=%i\n",dmb_wdcnt);
     }
 
     // Check that header format is recognized
     if (!(header_only_short || header_only_long || header_full)) {
         header_ok=false;
         error_flag[5]=1;	// Wordcount does not match short or long header format
-        fprintf(log_file,"ERRs: TMB wdcnt does not match a defined header format. wdcnt=%i\n",dmb_wdcnt);
-        fprintf(stderr,  "ERRs: TMB wdcnt does not match a defined header format. wdcnt=%i\n",dmb_wdcnt);
+        fprintf(stdout,"ERRs: TMB wdcnt does not match a defined header format. wdcnt=%i\n",dmb_wdcnt);
     }
 
-    fprintf(log_file,"header_only_short = %c\n",logical(header_only_short));
-    fprintf(log_file,"header_only_long  = %c\n",logical(header_only_long));
-    fprintf(log_file,"header_full       = %c\n",logical(header_full));
-    fprintf(log_file,"header_filler     = %c\n",logical(header_filler));
+    fprintf(stdout,"header_only_short = %c\n",logical(header_only_short));
+    fprintf(stdout,"header_only_long  = %c\n",logical(header_only_long));
+    fprintf(stdout,"header_full       = %c\n",logical(header_full));
+    fprintf(stdout,"header_filler     = %c\n",logical(header_filler));
 
     //------------------------------------------------------------------------------
     //	Check CRC
     //------------------------------------------------------------------------------
     // Calculate CRC for data stream
     if(dmb_wdcnt < 12) {	// should not ever get here
-        fprintf(log_file,"TMB raw hits dump too short for crc calculation, exiting.\n");
+        fprintf(stdout,"TMB raw hits dump too short for crc calculation, exiting.\n");
         pause("TMB raw hits dump too short for crc calculation");
         header_ok=false;
         goto exit;
@@ -677,7 +668,7 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
         if(iframe==0) crc22a(din,crc,1);				// Reset crc
         crc22a(din,crc,0);								// Calc  crc
         if(iframe==dmb_wdcnt-1-4) crc_calc=crc;			// Latch result prior to de0f marker beco ddu fails to process de0f frame
-        fprintf(log_file,"%5i%6.5ld%9.8ld \n",iframe,din,crc);
+        fprintf(stdout,"%5i%6.5ld%9.8ld \n",iframe,din,crc);
     }
 
     // Compare our computed CRC to what TMB computed
@@ -687,16 +678,16 @@ void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check) {
     tmb_crc=tmb_crc_lsb | (tmb_crc_msb << 11);		// Full 22 bit crc
     crc_match=crc_calc==tmb_crc;
 
-    fprintf(log_file,"calc crc=%6.6ld ",crc_calc);
-    fprintf(log_file,"tmb crc=%6.6ld ",tmb_crc);
-    fprintf(log_file,"crc_match=%c\n",logical(crc_match));
+    fprintf(stdout,"calc crc=%6.6ld ",crc_calc);
+    fprintf(stdout,"tmb crc=%6.6ld ",tmb_crc);
+    fprintf(stdout,"crc_match=%c\n",logical(crc_match));
 
     // CRC mismatch
     if(!crc_match) {
         header_ok=false;
         error_flag[6]=1;	// CRC error, embedded does not match calculated
-        fprintf(log_file,"Expect vf_data[%i]=%5.5ld \n",(dmb_wdcnt-1-2),((crc_calc>> 0) & 0x07FF));	
-        fprintf(log_file,"Expect vf_data[%i]=%5.5ld \n",(dmb_wdcnt-1-1),((crc_calc>>11) & 0x07FF));	
+        fprintf(stdout,"Expect vf_data[%i]=%5.5ld \n",(dmb_wdcnt-1-2),((crc_calc>> 0) & 0x07FF));	
+        fprintf(stdout,"Expect vf_data[%i]=%5.5ld \n",(dmb_wdcnt-1-1),((crc_calc>>11) & 0x07FF));	
         pause ("TMB crc ERROR in decode_raw_hits, WTF!?");
     }
 
@@ -1042,7 +1033,7 @@ unpack_trailer:
     if ((vf_data[iframe]&0xFFFF)!=0xDB0C) {
         header_ok=false; 
         error_flag[7]=1;		// First frame missing 0xDB0C marker
-        fprintf(log_file,"ERRs: Expected 0xDB0C marker in vf_data[%i], found %5.5X\n",iframe,vf_data[iframe]);
+        fprintf(stdout,"ERRs: Expected 0xDB0C marker in vf_data[%i], found %5.5X\n",iframe,vf_data[iframe]);
     }
 
     // First 4 frames must have DDU special D-code set
@@ -1050,7 +1041,7 @@ unpack_trailer:
         if (ddu[iframe]!=0xD) {
             header_ok=false; 
             error_flag[8]=1;		// First 4 frames do not have DDU-special codes
-            fprintf(log_file,"ERRs: Expected DDU special code in vf_data[%iframe], found %5.5X\n",iframe,vf_data[iframe]);
+            fprintf(stdout,"ERRs: Expected DDU special code in vf_data[%iframe], found %5.5X\n",iframe,vf_data[iframe]);
         } //close if 
     } //close for
 
@@ -1067,14 +1058,14 @@ unpack_trailer:
         if (eof != 0xEEF) {
             header_ok=false;
             error_flag[10]=1;		// Last frame-3 missing EEF marker
-            fprintf(log_file,"ERRs: Expected EEF at vf_data[%i], found %3.3X\n",last_frame-3,eof);
+            fprintf(stdout,"ERRs: Expected EEF at vf_data[%i], found %3.3X\n",last_frame-3,eof);
         } 
     }
     else {
         if (eof != 0xE0F) {
             header_ok=false;
             error_flag[11]=1;		// Last frame-3 missing E0F marker
-            fprintf(log_file,"ERRs: Expected EOF at vf_data[%i], found %3.3X\n",last_frame-3,eof);
+            fprintf(stdout,"ERRs: Expected EOF at vf_data[%i], found %3.3X\n",last_frame-3,eof);
         }
     }
 
@@ -1082,7 +1073,7 @@ unpack_trailer:
     if ((lctype0 != 1) || (lctype1 != 1) || (lctype2 != 1) || (lctype3 != 1)) {
         header_ok=false;
         error_flag[12]=1;		// Last 4 frames missing bit[11]=1
-        fprintf(log_file,"ERRs: Expected bit11=1 in last 4 frames, found %i%i%i%i\n",lctype0,lctype1,lctype2,lctype3);
+        fprintf(stdout,"ERRs: Expected bit11=1 in last 4 frames, found %i%i%i%i\n",lctype0,lctype1,lctype2,lctype3);
     }
 
     //------------------------------------------------------------------------------
@@ -1137,7 +1128,7 @@ unpack_trailer:
     csc_type_code      = 'X';
 
     if(header_only_short) {
-        fprintf(log_file,"Header inferred CSC Type=%c %s\n",csc_type_code,scsc_type_inferred.c_str());
+        fprintf(stdout,"Header inferred CSC Type=%c %s\n",csc_type_code,scsc_type_inferred.c_str());
         goto check_types;
     }
 
@@ -1161,7 +1152,7 @@ unpack_trailer:
         scsc_type_inferred = "ME1A_Normal_ME1B_Reverse";
     }
 
-    fprintf(log_file,"Header inferred CSC Type=%c %s\n",csc_type_code,scsc_type_inferred.c_str());
+    fprintf(stdout,"Header inferred CSC Type=%c %s\n",csc_type_code,scsc_type_inferred.c_str());
 
     //------------------------------------------------------------------------------
     // Check event type codes match actual header size
@@ -1173,12 +1164,12 @@ check_types:
         if (fifo_mode!=0x3) {
             header_ok=false;
             error_flag[13]=1;	// Fifo mode does not match short header format
-            fprintf(log_file,"ERRs: fifo_mode does not match short header format %i%i\n",fifo_mode,header_only_short);
+            fprintf(stdout,"ERRs: fifo_mode does not match short header format %i%i\n",fifo_mode,header_only_short);
         }
         if (readout_type!=0x3) {
             header_ok=false;
             error_flag[14]=1;	// Readout type does not match short header format
-            fprintf(log_file,"ERRs: readout_type does not match short header format %i%i\n",readout_type,header_only_short);
+            fprintf(stdout,"ERRs: readout_type does not match short header format %i%i\n",readout_type,header_only_short);
         }
     }
 
@@ -1186,7 +1177,7 @@ check_types:
         if (!((fifo_mode==0x0) || (fifo_mode==0x1) || (fifo_mode==0x2))) {
             header_ok=false;
             error_flag[15]=1;	// Fifo mode does not match long header format
-            fprintf(log_file,"ERRs: fifo_mode does not match long header format %i%i\n",fifo_mode,header_only_short);
+            fprintf(stdout,"ERRs: fifo_mode does not match long header format %i%i\n",fifo_mode,header_only_short);
         }
     }
 
@@ -1194,7 +1185,7 @@ check_types:
         if (readout_type!=0x0) {
             header_ok=false;
             error_flag[16]=1;	// Readout type does not match long header format
-            fprintf(log_file,"ERRs: readout_type does not match long header format %i%i\n",readout_type,header_only_short);
+            fprintf(stdout,"ERRs: readout_type does not match long header format %i%i\n",readout_type,header_only_short);
         }
     }
 
@@ -1202,23 +1193,23 @@ check_types:
         if (!((readout_type==0x1) || (readout_type==0x2))) {
             header_ok=false;
             error_flag[17]=1;	// Readout type does not match full header format
-            fprintf(log_file,"ERRs: readout_type does not match full header format %i%i\n",readout_type,header_only_short);
+            fprintf(stdout,"ERRs: readout_type does not match full header format %i%i\n",readout_type,header_only_short);
         }
     }
 
     if (fifo_mode!=readout_type) {
         header_ok=false;
         error_flag[18]=1;
-        fprintf(log_file,"ERRs: readout type does not match FIFO mode r_type=%i fifo_mode=%i\n",readout_type,fifo_mode);
+        fprintf(stdout,"ERRs: readout type does not match FIFO mode r_type=%i fifo_mode=%i\n",readout_type,fifo_mode);
     }
 
     // L1A Types...in progress
     l1a_type_expect=0;
 
-    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==0)) fprintf(log_file,"ERRs: l1a_type =%1.1i Buffer=yes CLCT trig+L1A match, expected=%1.1i\n",l1a_type,l1a_type_expect);
-    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==1)) fprintf(log_file,"ERRs: l1a_type =%1.1i Buffer=no  ALCT trig,           expected=%1.1i\n",l1a_type,l1a_type_expect);
-    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==2)) fprintf(log_file,"ERRs: l1a_type =%1.1i Buffer=no  L1A  only,           expected=%1.1i\n",l1a_type,l1a_type_expect);
-    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==3)) fprintf(log_file,"ERRs: l1a_type =%1.1i Buffer=yes TMB  trig,           expected=%1.1i\n",l1a_type,l1a_type_expect);
+    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==0)) fprintf(stdout,"ERRs: l1a_type =%1.1i Buffer=yes CLCT trig+L1A match, expected=%1.1i\n",l1a_type,l1a_type_expect);
+    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==1)) fprintf(stdout,"ERRs: l1a_type =%1.1i Buffer=no  ALCT trig,           expected=%1.1i\n",l1a_type,l1a_type_expect);
+    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==2)) fprintf(stdout,"ERRs: l1a_type =%1.1i Buffer=no  L1A  only,           expected=%1.1i\n",l1a_type,l1a_type_expect);
+    if ((l1a_type!=l1a_type_expect) && (l1a_type_expect==3)) fprintf(stdout,"ERRs: l1a_type =%1.1i Buffer=yes TMB  trig,           expected=%1.1i\n",l1a_type,l1a_type_expect);
 
     //------------------------------------------------------------------------------
     // Check word count matches expected, assumes mode 1 full readout for now
@@ -1285,31 +1276,30 @@ check_types:
     if((frame_cnt_expect/4)*4 != frame_cnt_expect)		// Check we are still mod 4 happy
         pause ("expected frame count not mod 4..wtf?");
 
-    fprintf(log_file,"Expected header             frames =%5i\n",frame_cntex_nheaders);
-    fprintf(log_file,"Expected cfeb  tbins        frames =%5i\n",frame_cntex_ntbins);
-    fprintf(log_file,"Expected cfeb  e0b/e0c      frames =%5i\n",frame_cntex_b0ce0c);
-    fprintf(log_file,"Expected rpc   tbins        frames =%5i\n",frame_cntex_rpc);
-    fprintf(log_file,"Expected rpc   b04e04       frames =%5i\n",frame_cntex_b04e04);
-    fprintf(log_file,"Expected scope data         frames =%5i\n",frame_cntex_scope);
-    fprintf(log_file,"Expected scope b05e05       frames =%5i\n",frame_cntex_b05e05);
-    fprintf(log_file,"Expected miniscope data     frames =%5i\n",frame_cntex_miniscope);
-    fprintf(log_file,"Expected miniscope b07e07   frames =%5i\n",frame_cntex_b07e07);
-    fprintf(log_file,"Expected blockedbits bcbecb frames =%5i\n",frame_cntex_bcbecb);
-    fprintf(log_file,"Expected blockedbits data   frames =%5i\n",frame_cntex_blockedbits);
-    fprintf(log_file,"Expected filler             frames =%5i\n",frame_cntex_fill);
-    fprintf(log_file,"Expected trailer            frames =%5i\n",frame_cntex_trailer);
+    fprintf(stdout,"Expected header             frames =%5i\n",frame_cntex_nheaders);
+    fprintf(stdout,"Expected cfeb  tbins        frames =%5i\n",frame_cntex_ntbins);
+    fprintf(stdout,"Expected cfeb  e0b/e0c      frames =%5i\n",frame_cntex_b0ce0c);
+    fprintf(stdout,"Expected rpc   tbins        frames =%5i\n",frame_cntex_rpc);
+    fprintf(stdout,"Expected rpc   b04e04       frames =%5i\n",frame_cntex_b04e04);
+    fprintf(stdout,"Expected scope data         frames =%5i\n",frame_cntex_scope);
+    fprintf(stdout,"Expected scope b05e05       frames =%5i\n",frame_cntex_b05e05);
+    fprintf(stdout,"Expected miniscope data     frames =%5i\n",frame_cntex_miniscope);
+    fprintf(stdout,"Expected miniscope b07e07   frames =%5i\n",frame_cntex_b07e07);
+    fprintf(stdout,"Expected blockedbits bcbecb frames =%5i\n",frame_cntex_bcbecb);
+    fprintf(stdout,"Expected blockedbits data   frames =%5i\n",frame_cntex_blockedbits);
+    fprintf(stdout,"Expected filler             frames =%5i\n",frame_cntex_fill);
+    fprintf(stdout,"Expected trailer            frames =%5i\n",frame_cntex_trailer);
 
-    fprintf(log_file,"Expected frame count from header =%5i\n",frame_cnt_expect);
-    fprintf(log_file,"Frame count stored in trailer    =%5i\n",frame_cnt);
-    fprintf(log_file,"Frame count from DMB RAM         =%5i\n",dmb_wdcnt);
+    fprintf(stdout,"Expected frame count from header =%5i\n",frame_cnt_expect);
+    fprintf(stdout,"Frame count stored in trailer    =%5i\n",frame_cnt);
+    fprintf(stdout,"Frame count from DMB RAM         =%5i\n",dmb_wdcnt);
 
     if((dmb_wdcnt_trun==frame_cnt)&&(frame_cnt==frame_cnt_expect_trun))
-        fprintf(log_file,"Frame count OK %5i\n",frame_cnt);
+        fprintf(stdout,"Frame count OK %5i\n",frame_cnt);
     else {
         header_ok=false;
         error_flag[19]=1;	// Expected frame count does not match actual frame count
-        fprintf(log_file,"ERRs: Bad frame count: read=%5i expect=%5i\n",frame_cnt,frame_cnt_expect_trun);
-        fprintf(stderr,  "ERRs: Bad frame count: read=%5i expect=%5i\n",frame_cnt,frame_cnt_expect_trun);
+        fprintf(stdout,"ERRs: Bad frame count: read=%5i expect=%5i\n",frame_cnt,frame_cnt_expect_trun);
     }
 
     //------------------------------------------------------------------------------
@@ -1355,97 +1345,97 @@ check_types:
     //------------------------------------------------------------------------------
     // Check that markers and filler frames exist at the predicted locations
     //------------------------------------------------------------------------------
-    fprintf(log_file,"adr_b0c=%5i",adr_b0c); if(adr_b0c!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_b0c]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_e0b=%5i",adr_e0b); if(adr_e0b!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_e0b]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_b04=%5i",adr_b04); if(adr_b04!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_b04]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_e04=%5i",adr_e04); if(adr_e04!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_e04]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_b05=%5i",adr_b05); if(adr_b05!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_b05]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_e05=%5i",adr_e05); if(adr_e05!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_e05]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_b07=%5i",adr_b07); if(adr_b07!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_b07]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_e07=%5i",adr_e07); if(adr_e07!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_e07]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_bcb=%5i",adr_bcb); if(adr_bcb!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_bcb]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_ecb=%5i",adr_ecb); if(adr_ecb!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_ecb]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_e0c=%5i",adr_e0c); if(adr_e0c!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_e0c]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_fil=%5i",adr_fil); if(adr_fil!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_fil]); fprintf(log_file,"\n");
-    fprintf(log_file,"adr_e0f=%5i",adr_e0f); if(adr_e0f!=-1)fprintf(log_file," data=%4.4X",vf_data[adr_e0f]); fprintf(log_file,"\n");
+    fprintf(stdout,"adr_b0c=%5i",adr_b0c); if(adr_b0c!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_b0c]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_e0b=%5i",adr_e0b); if(adr_e0b!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_e0b]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_b04=%5i",adr_b04); if(adr_b04!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_b04]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_e04=%5i",adr_e04); if(adr_e04!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_e04]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_b05=%5i",adr_b05); if(adr_b05!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_b05]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_e05=%5i",adr_e05); if(adr_e05!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_e05]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_b07=%5i",adr_b07); if(adr_b07!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_b07]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_e07=%5i",adr_e07); if(adr_e07!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_e07]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_bcb=%5i",adr_bcb); if(adr_bcb!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_bcb]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_ecb=%5i",adr_ecb); if(adr_ecb!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_ecb]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_e0c=%5i",adr_e0c); if(adr_e0c!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_e0c]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_fil=%5i",adr_fil); if(adr_fil!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_fil]); fprintf(stdout,"\n");
+    fprintf(stdout,"adr_e0f=%5i",adr_e0f); if(adr_e0f!=-1)fprintf(stdout," data=%4.4X",vf_data[adr_e0f]); fprintf(stdout,"\n");
 
     // Check E0B Header
     if ((adr_e0b>0) && ((vf_data[adr_e0b]&0xFFFF)!=0x6E0B)) {
         header_ok=false;
         error_flag[20]=1;	// E0B marker not found at expected address
-        fprintf(log_file,"\n");
+        fprintf(stdout,"\n");
     }
 
     // Check B04 | E04 RPC
     if ((adr_b04>0) && ((vf_data[adr_b04]&0xFFFF)!=0x6B04)) {
         header_ok=false;
         error_flag[21]=1;    // B04 marker not found at expected address
-        fprintf(log_file,"ERRs: B04 marker not found at expected address\n");
+        fprintf(stdout,"ERRs: B04 marker not found at expected address\n");
     }
 
     if ((adr_e04>0) && ((vf_data[adr_e04]&0xFFFF)!=0x6E04)) {
         header_ok=false;
         error_flag[22]=1;	 // E04 marker not found at expected address
-        fprintf(log_file,"ERRs: E04 marker not found at expected address\n");
+        fprintf(stdout,"ERRs: E04 marker not found at expected address\n");
     }
 
     // Check B05 | E05 Scope
     if ((adr_b05>0) && ((vf_data[adr_b05]&0xFFFF)!=0x6B05)) {
         header_ok=false;
         error_flag[23]=1;	 // B05 marker not found at expected address
-        fprintf(log_file,"ERRs: B05 marker not found at expected address\n");
+        fprintf(stdout,"ERRs: B05 marker not found at expected address\n");
     }
 
     if ((adr_e05>0) && ((vf_data[adr_e05]&0xFFFF)!=0x6E05)) {
         header_ok=false;
         error_flag[24]=1;	 // E05 marker not found at expected address
-        fprintf(log_file,"ERRs: E05 marker not found at expected address\n");
+        fprintf(stdout,"ERRs: E05 marker not found at expected address\n");
     }
 
     // Check B07 | E07 Miniscope
     if ((adr_b07>0) && ((vf_data[adr_b07]&0xFFFF)!=0x6B07)) {
         header_ok=false;
         error_flag[23]=1;	 // B07 marker not found at expected address
-        fprintf(log_file,"ERRs: B07 marker not found at expected address\n");
+        fprintf(stdout,"ERRs: B07 marker not found at expected address\n");
     }
 
     if ((adr_e07>0) && ((vf_data[adr_e07]&0xFFFF)!=0x6E07)) {
         header_ok=false;
         error_flag[24]=1;	 // E07 marker not found at expected address
-        fprintf(log_file,"ERRs: E07 marker not found at expected address\n");
+        fprintf(stdout,"ERRs: E07 marker not found at expected address\n");
     }
 
     // Check BCB | ECB Blocked bits
     if ((adr_bcb>0) && ((vf_data[adr_bcb]&0xFFFF)!=0x6BCB)) {
         header_ok=false;
         error_flag[23]=1;	 // BCB marker not found at expected address
-        fprintf(log_file,"ERRs: BCB marker not found at expected address\n");
+        fprintf(stdout,"ERRs: BCB marker not found at expected address\n");
     }
 
     if ((adr_ecb>0) && ((vf_data[adr_ecb]&0xFFFF)!=0x6ECB)) {
         header_ok=false;
         error_flag[24]=1;	 // ECB marker not found at expected address
-        fprintf(log_file,"ERRs: ECB marker not found at expected address\n");
+        fprintf(stdout,"ERRs: ECB marker not found at expected address\n");
     }
 
     // Check E0C
     if ((adr_e0c>0) && ((vf_data[adr_e0c]&0xFFFF)!=0x6E0C)) {
         header_ok=false;
         error_flag[25]=1;	// E0C marker not found at expected address
-        fprintf(log_file,"ERRs: E0C marker not found at expected address\n");
+        fprintf(stdout,"ERRs: E0C marker not found at expected address\n");
     }
 
     // Check filler 02AAA 05555
     if ((adr_fil>0) && ((vf_data[adr_fil]&0xFFFF)!=0x2AAA)) {
         header_ok=false;
         error_flag[26]=1;	// 2AAA filler not found at expected address
-        fprintf(log_file,"ERRs: Filler frame 0x2AAA not found at expected address\n");
+        fprintf(stdout,"ERRs: Filler frame 0x2AAA not found at expected address\n");
     }
 
     if ((adr_fil>0) && ((vf_data[adr_fil+1]&0xFFFF)!=0x5555)) {
         header_ok=false;
         error_flag[27]=1;	// 5555 filler not found at expected address
-        fprintf(log_file,"ERRs: Filler frame 0x5555 not found at expected address\n");
+        fprintf(stdout,"ERRs: Filler frame 0x5555 not found at expected address\n");
     }
 
     //------------------------------------------------------------------------------
@@ -1471,7 +1461,7 @@ check_types:
         if(bd_status_vec[i]!=bd_status_expect[i]) {
             header_ok=false;
             error_flag[28]=1;
-            fprintf(log_file,"ERRs: Bad board status %s=%i expected=%i\n",bd_status_msg[i].c_str(),bd_status_vec[i],bd_status_expect[i]);
+            fprintf(stdout,"ERRs: Bad board status %s=%i expected=%i\n",bd_status_msg[i].c_str(),bd_status_vec[i],bd_status_expect[i]);
         }
     }
 
@@ -1483,23 +1473,23 @@ check_types:
     /*
     // Buffer Status
     iframe=37;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_wr_buf_adr       = %4.3X\n",	r_wr_buf_adr);
-    fprintf(log_file,"r_wr_buf_ready     = %4.1X\n",	r_wr_buf_ready);
-    fprintf(log_file,"wr_buf_ready       = %4.1X\n",	wr_buf_ready);
-    fprintf(log_file,"buf_q_full         = %4.1X\n",	buf_q_full);
-    fprintf(log_file,"buf_q_empty        = %4.1X\n",	buf_q_empty);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_wr_buf_adr       = %4.3X\n",	r_wr_buf_adr);
+    fprintf(stdout,"r_wr_buf_ready     = %4.1X\n",	r_wr_buf_ready);
+    fprintf(stdout,"wr_buf_ready       = %4.1X\n",	wr_buf_ready);
+    fprintf(stdout,"buf_q_full         = %4.1X\n",	buf_q_full);
+    fprintf(stdout,"buf_q_empty        = %4.1X\n",	buf_q_empty);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=38;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_buf_fence_dist   = %4.3X%5i\n",	r_buf_fence_dist,r_buf_fence_dist);
-    fprintf(log_file,"buf_q_ovf_err      = %4.1X\n",	buf_q_ovf_err);
-    fprintf(log_file,"buf_q_udf_err      = %4.1X\n",	buf_q_udf_err);
-    fprintf(log_file,"buf_q_adr_err      = %4.1X\n",	buf_q_adr_err);
-    fprintf(log_file,"buf_stalled_once   = %4.1X\n",	buf_stalled_once);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_buf_fence_dist   = %4.3X%5i\n",	r_buf_fence_dist,r_buf_fence_dist);
+    fprintf(stdout,"buf_q_ovf_err      = %4.1X\n",	buf_q_ovf_err);
+    fprintf(stdout,"buf_q_udf_err      = %4.1X\n",	buf_q_udf_err);
+    fprintf(stdout,"buf_q_adr_err      = %4.1X\n",	buf_q_adr_err);
+    fprintf(stdout,"buf_stalled_once   = %4.1X\n",	buf_stalled_once);
 
 */
     //------------------------------------------------------------------------------
@@ -1605,12 +1595,12 @@ check_types:
     if (r_dupe_alct_tmb != hdr_dupe_alct) fprintf(stdout,"\tERRs: r_dupe_alct_tmb=%1i does not match expected hdr_dupe_alct=%1i\n",r_dupe_alct_tmb,hdr_dupe_alct);
     if (r_dupe_clct_tmb != hdr_dupe_clct) fprintf(stdout,"\tERRs: r_dupe_clct_tmb=%1i does not match expected hdr_dupe_clct=%1i\n",r_dupe_clct_tmb,hdr_dupe_clct);
 
-    if (r_one_alct_tmb  != hdr_one_alct ) fprintf(log_file,"ERRs: r_one_alct_tmb =%1i does not match expected hdr_one_alct =%1i\n",r_one_alct_tmb, hdr_one_alct );
-    if (r_one_clct_tmb  != hdr_one_clct ) fprintf(log_file,"ERRs: r_one_clct_tmb =%1i does not match expected hdr_one_clct =%1i\n",r_one_clct_tmb, hdr_one_clct );
-    if (r_two_alct_tmb  != hdr_two_alct ) fprintf(log_file,"ERRs: r_two_alct_tmb =%1i does not match expected hdr_two_alct =%1i\n",r_two_alct_tmb, hdr_two_alct );
-    if (r_two_clct_tmb  != hdr_two_clct ) fprintf(log_file,"ERRs: r_two_clct_tmb =%1i does not match expected hdr_two_clct =%1i\n",r_two_clct_tmb, hdr_two_clct );
-    if (r_dupe_alct_tmb != hdr_dupe_alct) fprintf(log_file,"ERRs: r_dupe_alct_tmb=%1i does not match expected hdr_dupe_alct=%1i\n",r_dupe_alct_tmb,hdr_dupe_alct);
-    if (r_dupe_clct_tmb != hdr_dupe_clct) fprintf(log_file,"ERRs: r_dupe_clct_tmb=%1i does not match expected hdr_dupe_clct=%1i\n",r_dupe_clct_tmb,hdr_dupe_clct);
+    if (r_one_alct_tmb  != hdr_one_alct ) fprintf(stdout,"ERRs: r_one_alct_tmb =%1i does not match expected hdr_one_alct =%1i\n",r_one_alct_tmb, hdr_one_alct );
+    if (r_one_clct_tmb  != hdr_one_clct ) fprintf(stdout,"ERRs: r_one_clct_tmb =%1i does not match expected hdr_one_clct =%1i\n",r_one_clct_tmb, hdr_one_clct );
+    if (r_two_alct_tmb  != hdr_two_alct ) fprintf(stdout,"ERRs: r_two_alct_tmb =%1i does not match expected hdr_two_alct =%1i\n",r_two_alct_tmb, hdr_two_alct );
+    if (r_two_clct_tmb  != hdr_two_clct ) fprintf(stdout,"ERRs: r_two_clct_tmb =%1i does not match expected hdr_two_clct =%1i\n",r_two_clct_tmb, hdr_two_clct );
+    if (r_dupe_alct_tmb != hdr_dupe_alct) fprintf(stdout,"ERRs: r_dupe_alct_tmb=%1i does not match expected hdr_dupe_alct=%1i\n",r_dupe_alct_tmb,hdr_dupe_alct);
+    if (r_dupe_clct_tmb != hdr_dupe_clct) fprintf(stdout,"ERRs: r_dupe_clct_tmb=%1i does not match expected hdr_dupe_clct=%1i\n",r_dupe_clct_tmb,hdr_dupe_clct);
 
     //------------------------------------------------------------------------------
     // Check trigger type flags in header
@@ -1636,7 +1626,7 @@ check_types:
     non_trig_event    = (tmb_nontrig_keep==1);
     non_trig_override = (mpc_me1a_block  ==0);
 
-    if (non_trig_event) fprintf(log_file,"Info: This is a non-triggering-event readout tmb_alct_ro=%1i tmb_clct_ro=%1i tmb_match_ro=%1i\n",tmb_alct_ro,tmb_clct_ro,tmb_match_ro);
+    if (non_trig_event) fprintf(stdout,"Info: This is a non-triggering-event readout tmb_alct_ro=%1i tmb_clct_ro=%1i tmb_match_ro=%1i\n",tmb_alct_ro,tmb_clct_ro,tmb_match_ro);
 
     // Type A: Normal CSC
     if (csc_type_code=='A')
@@ -1711,42 +1701,42 @@ check_types:
     {
         header_ok=false;
         error_flag[31]=1;	// CLCT0 key does not match LCT0
-        fprintf(log_file,"ERRs: CLCT0 key does not match LCT0: clct0_fullkey=%3i mpc_clct0_key=%3i expect=%3i\n",clct0_fullkey,mpc_clct0_key,mpc_clct0_key_expect);
+        fprintf(stdout,"ERRs: CLCT0 key does not match LCT0: clct0_fullkey=%3i mpc_clct0_key=%3i expect=%3i\n",clct0_fullkey,mpc_clct0_key,mpc_clct0_key_expect);
     }
 
     // CLCT0 pattern ID
     if (mpc_clct0_pat != mpc_clct0_pat_expect) {
         header_ok=false;
         error_flag[32]=1;	// CLCT0 pattern ID does not match LCT0
-        fprintf(log_file,"ERRs: CLCT0 pattern ID does not match LCT0: clct0_pat=%1X mpc_clct0_pat=%1X expect=%1X\n",clct0_pat,mpc_clct0_pat,mpc_clct0_pat_expect);
+        fprintf(stdout,"ERRs: CLCT0 pattern ID does not match LCT0: clct0_pat=%1X mpc_clct0_pat=%1X expect=%1X\n",clct0_pat,mpc_clct0_pat,mpc_clct0_pat_expect);
     }
 
     // ALCT0 key
     if (mpc_alct0_key != mpc_alct0_key_expect) {
         header_ok=false;
         error_flag[33]=1;	// ALCT0 key does not match LCT0
-        fprintf(log_file,"ERRs: ALCT0 key does not match LCT0: r_alct0_key=%3i mpc_alct0_key=%3i expect=%3i\n",r_alct0_key,mpc_alct0_key,mpc_alct0_key_expect);
+        fprintf(stdout,"ERRs: ALCT0 key does not match LCT0: r_alct0_key=%3i mpc_alct0_key=%3i expect=%3i\n",r_alct0_key,mpc_alct0_key,mpc_alct0_key_expect);
     }
 
     // CLCT1 key
     if (mpc_clct1_key != mpc_clct1_key_expect) {
         header_ok=false;
         error_flag[34]=1;	// CLCT1 key does not match LCT1
-        fprintf(log_file,"ERRs: CLCT1 key does not match LCT1: clct1_fullkey=%3i mpc_clct1_key=%3i expect=%3i\n",clct1_fullkey,mpc_clct1_key,mpc_clct1_key_expect);
+        fprintf(stdout,"ERRs: CLCT1 key does not match LCT1: clct1_fullkey=%3i mpc_clct1_key=%3i expect=%3i\n",clct1_fullkey,mpc_clct1_key,mpc_clct1_key_expect);
     }
 
     // CLCT1 pattern ID
     if (mpc_clct1_pat != mpc_clct1_pat_expect) {
         header_ok=false;
         error_flag[35]=1;	// CLCT1 pattern ID does not match LCT1
-        fprintf(log_file,"ERRs: CLCT1 pattern ID does not match LCT1: clct1_pat=%1X mpc_clct1_pat=%1X expect=%1X\n",clct1_pat,mpc_clct1_pat,mpc_clct1_pat_expect);
+        fprintf(stdout,"ERRs: CLCT1 pattern ID does not match LCT1: clct1_pat=%1X mpc_clct1_pat=%1X expect=%1X\n",clct1_pat,mpc_clct1_pat,mpc_clct1_pat_expect);
     }
 
     // ALCT1 key
     if (mpc_alct1_key != mpc_alct1_key_expect) {
         header_ok=false;
         error_flag[36]=1;	// ALCT1 key does not match LCT1
-        fprintf(log_file,"ERRs: ALCT1 key does not match LCT1: r_alct1_key=%3i mpc_alct1_key=%3i expect=%3i\n",r_alct1_key,mpc_alct1_key,mpc_alct1_key_expect);
+        fprintf(stdout,"ERRs: ALCT1 key does not match LCT1: r_alct1_key=%3i mpc_alct1_key=%3i expect=%3i\n",r_alct1_key,mpc_alct1_key,mpc_alct1_key_expect);
     }
 
     //------------------------------------------------------------------------------
@@ -1761,7 +1751,7 @@ check_types:
         clctc_bxn_vme	 = (clctc_vme >> 0) & 0x0003;	// Bunch crossing number
         clctc_bxn_header = r_bxn_counter_ff & 0x0003;
 
-        fprintf(log_file,"\nclctc_vme=%8X clctc_bxn_vme=%8X r_bxn_counter_ff=%8X clctc_bxn_header,=%8X pop_l1a_bxn=%8X \n",
+        fprintf(stdout,"\nclctc_vme=%8X clctc_bxn_vme=%8X r_bxn_counter_ff=%8X clctc_bxn_header,=%8X pop_l1a_bxn=%8X \n",
                 clctc_vme,clctc_bxn_vme,r_bxn_counter_ff,clctc_bxn_header,pop_l1a_bxn);
 
         ck("clctc lctvmebxn, headerbxn", clctc_bxn_vme, clctc_bxn_header);
@@ -1783,7 +1773,7 @@ check_types:
     //------------------------------------------------------------------------------
 check_l1a:
 
-    fprintf(log_file,"first_event=%i\n",first_event);
+    fprintf(stdout,"first_event=%i\n",first_event);
 
     if(err_check) {
         if (first_event) {
@@ -1821,7 +1811,7 @@ check_l1a:
         //	if (err_check && scp_playback) 			// dont flag sync errors from reference tmb beco it always has sync errors	
         if (err_check && (vme_bx0_emu_en==1)) {		    // reference tmb now emulates bx0 so sync errors are detectable
             error_flag[29]=1;	
-            fprintf(log_file,"ERRs: Clock bx0 sync error: r_sync_err=%i clctc_sync=%i mpc_sync_err0=%i mpc_sync_err1=%i\n",
+            fprintf(stdout,"ERRs: Clock bx0 sync error: r_sync_err=%i clctc_sync=%i mpc_sync_err0=%i mpc_sync_err1=%i\n",
                     r_sync_err,clctc_sync,mpc_sync_err0,mpc_sync_err1);
         }
     } 
@@ -1833,7 +1823,7 @@ check_l1a:
         if ((perr_cfeb_ff!=0) || (perr_rpc_ff!=0) || (perr_ff!=0)) {
             header_ok=false;
             error_flag[30]=1;
-            fprintf(log_file,"ERRs: RAM SEU parity error: cfeb_ram=%X rpc_ram=%X sum=%X\n",perr_cfeb_ff,perr_rpc_ff,perr_ff);
+            fprintf(stdout,"ERRs: RAM SEU parity error: cfeb_ram=%X rpc_ram=%X sum=%X\n",perr_cfeb_ff,perr_rpc_ff,perr_ff);
         }
     }
 
@@ -1846,7 +1836,7 @@ check_l1a:
             ((fifo_mode==2) && (r_febs_read!=r_active_feb_ff))) {	// Expect hit cfebs
         header_ok=false;
         error_flag[39]=1;
-        fprintf(log_file,"ERRs: Active CFEB list sent to DMB does not match CFEBs read out aff=%2.2X read=%2.2X\n",r_active_feb_ff,r_febs_read);
+        fprintf(stdout,"ERRs: Active CFEB list sent to DMB does not match CFEBs read out aff=%2.2X read=%2.2X\n",r_active_feb_ff,r_febs_read);
     }
 
     // Construct expected active_feb from 1st and 2nd clcts
@@ -1936,7 +1926,7 @@ check_l1a:
 
     // Compare expected to indicated active febs
     if (active_febs_expect!=r_active_feb_ff) {
-        fprintf(log_file,"ERRs: Active feb list err active_febs_expect=%2.2X r_active_feb_ff=%2.2X\n",active_febs_expect,r_active_feb_ff);
+        fprintf(stdout,"ERRs: Active feb list err active_febs_expect=%2.2X r_active_feb_ff=%2.2X\n",active_febs_expect,r_active_feb_ff);
         fprintf(stdout  ,"ERRs: Active feb list err active_febs_expect=%2.2X r_active_feb_ff=%2.2X\n",active_febs_expect,r_active_feb_ff);
     }
 
@@ -1949,8 +1939,7 @@ unpack_cfebs:
     ncfebs_met      = 0;
 
     if ((!header_full) || (r_fifo_tbins<=0) || (r_ncfebs<=0) || (adr_e0b<0)) {
-        fprintf(log_file,"Info: No CFEB raw hits in this event\n");
-        //	fprintf(stderr,  "Info: No CFEB raw hits in this event\n");
+        fprintf(stdout,"Info: No CFEB raw hits in this event\n");
         goto cfeb_done;
     }
 
@@ -1958,7 +1947,7 @@ unpack_cfebs:
     if ((r_ncfebs<=0)||(r_ncfebs>mxcfeb)) {
         header_ok=false;
         error_flag[36]=1; // Expected number of CFEBs 0<r_ncfebs<=5
-        fprintf(log_file,"ERRs: Expected number of CFEBs 0<r_ncfebs<=5 %i\n",r_ncfebs);
+        fprintf(stdout,"ERRs: Expected number of CFEBs 0<r_ncfebs<=5 %i\n",r_ncfebs);
         goto cfeb_done;
     }
 
@@ -1966,7 +1955,7 @@ unpack_cfebs:
     if (r_fifo_tbins<0 || r_fifo_tbins>32) {
         header_ok=false;
         error_flag[37]=1; // Expected number of CFEB tbins 0<=r_fifo_tbins<=32
-        fprintf(log_file,"ERRs: Expected number of CFEB tbins 0<=r_fifo_tbins<=32 %i\n",r_fifo_tbins);
+        fprintf(stdout,"ERRs: Expected number of CFEB tbins 0<=r_fifo_tbins<=32 %i\n",r_fifo_tbins);
         goto cfeb_done;
     }
 
@@ -1997,13 +1986,11 @@ unpack_cfebs:
                 itbin_expect = itbin & 0xF;								// Tbin numbers wrap at 16
 
                 if(rdcid != icfeb) {
-                    fprintf(log_file,"ERRs: cfeb id err in dump: rdcid=%i icfeb=%i iframe=%i\n",rdcid,icfeb,iframe);
-                    fprintf(stderr,  "ERRs: cfeb id err in dump: rdcid=%i icfeb=%i iframe=%i\n",rdcid,icfeb,iframe);
+                    fprintf(stdout,"ERRs: cfeb id err in dump: rdcid=%i icfeb=%i iframe=%i\n",rdcid,icfeb,iframe);
                 }
 
                 if(rdtbin != itbin_expect) {
-                    fprintf(log_file,"ERRs: tbin id err in dump: rdtbin=%i itbin_expect=%i iframe=%i\n",rdtbin,itbin,iframe);
-                    fprintf(stderr,  "ERRs: tbin id err in dump: rdtbin=%i itbin_expect=%i iframe=%i\n",rdtbin,itbin,iframe);
+                    fprintf(stdout,"ERRs: tbin id err in dump: rdtbin=%i itbin_expect=%i iframe=%i\n",rdtbin,itbin,iframe);
                 }
 
                 if((rdcid != icfeb) || (rdtbin != itbin_expect)) 
@@ -2014,14 +2001,13 @@ unpack_cfebs:
                     ids_abs=ids+icfeb*8;							// Absolute distrip id
                     read_pat[itbin][ilayer][ids_abs]=hits1;			// hit this distrip
                     if(hits1 != 0) nonzero_triads++;				// Count nonzero triads
-                    fprintf(log_file,"iframe=%4i vf_data=%5.5X hits8=%i icfeb=%i itbin=%i ids_abs=%i hits1=%i\n",
+                    fprintf(stdout,"iframe=%4i vf_data=%5.5X hits8=%i icfeb=%i itbin=%i ids_abs=%i hits1=%i\n",
                             iframe,vf_data[iframe],hits8,icfeb,itbin,ids_abs,hits1);
                 }												// Close for ihit
 
                 iframe++;										// Next frame
                 if(iframe >= last_frame) {						// Bummer, dude
-                    fprintf(log_file,"ERRs: raw hits frame over-run iframe=%i\n",iframe);
-                    fprintf(stderr,  "ERRs: raw hits frame over-run iframe=%i\n",iframe);
+                    fprintf(stdout,"ERRs: raw hits frame over-run iframe=%i\n",iframe);
                     goto cfeb_done;
                 }
             }												// Close for ilayer
@@ -2031,12 +2017,11 @@ next_cfeb:
     }												// Close for icfeb
 
 cfeb_done:
-    fprintf(log_file,"Non-zero triad bits=%i\n",nonzero_triads);
+    fprintf(stdout,"Non-zero triad bits=%i\n",nonzero_triads);
 
     // Check if number of cfebs is correct
     if (ncfebs_met!=r_ncfebs) {
-        fprintf(log_file,"ERRs: cfebs in dump do not match included-cfeb list, met=%1i included=%1i\n",ncfebs_met,r_ncfebs);
-        fprintf(stderr,  "ERRs: cfebs in dump do not match included-cfeb list, met=%1i included=%1i\n",ncfebs_met,r_ncfebs);
+        fprintf(stdout,"ERRs: cfebs in dump do not match included-cfeb list, met=%1i included=%1i\n",ncfebs_met,r_ncfebs);
     }
 
     //------------------------------------------------------------------------------
@@ -2044,7 +2029,7 @@ cfeb_done:
     //------------------------------------------------------------------------------
     // Check for RPC readout enabled
     if(rd_nrpcs==0 || adr_b04<0) {
-        fprintf(log_file,"No RPC frames in this event\n");
+        fprintf(stdout,"No RPC frames in this event\n");
         goto rpc_done;
     }
 
@@ -2069,20 +2054,19 @@ cfeb_done:
 
         rpc_data = (rpc_msbs  <<  8) | rpc_lsbs;
 
-        fprintf(log_file,"pair=%3i  ",ipair);
-        fprintf(log_file,"frame=%5i  ",iframe); 
-        fprintf(log_file,"raw=%5.5X  ",vf_data[iframe]);
-        fprintf(log_file,"raw=%5.5X  ",vf_data[iframe+1]);
-        fprintf(log_file,"rpc_id0=%1i  ",rpc_id0);
-        fprintf(log_file,"rpc_id1=%1i  ",rpc_id1);
-        fprintf(log_file,"tbin=%2i  ",rpc_tbin);
-        fprintf(log_file,"bxn=%2i  ",rpc_bxn);
-        fprintf(log_file,"flag=%1i  ",rpc_flag);
-        fprintf(log_file,"pads=%4.4X\n",rpc_data);
+        fprintf(stdout,"pair=%3i  ",ipair);
+        fprintf(stdout,"frame=%5i  ",iframe); 
+        fprintf(stdout,"raw=%5.5X  ",vf_data[iframe]);
+        fprintf(stdout,"raw=%5.5X  ",vf_data[iframe+1]);
+        fprintf(stdout,"rpc_id0=%1i  ",rpc_id0);
+        fprintf(stdout,"rpc_id1=%1i  ",rpc_id1);
+        fprintf(stdout,"tbin=%2i  ",rpc_tbin);
+        fprintf(stdout,"bxn=%2i  ",rpc_bxn);
+        fprintf(stdout,"flag=%1i  ",rpc_flag);
+        fprintf(stdout,"pads=%4.4X\n",rpc_data);
 
         if(rpc_id0 != rpc_id1) {
-            fprintf(log_file,"rpc_id mismatch wtf?\n");
-            fprintf(stderr,  "rpc_id mismatch wtf?\n");
+            fprintf(stdout,"rpc_id mismatch wtf?\n");
         }
         ipair++;
     }	// close for (iframe ..)
@@ -2094,9 +2078,9 @@ rpc_done:
     //------------------------------------------------------------------------------
     // Check for blocked bits readout enabled
     if (h_bcb_read_enable==1 && adr_bcb==-1) {
-        fprintf(log_file,"ERRb: h_bcb_read_enable=%1i adr_bcb=%4i\n",h_bcb_read_enable,adr_bcb);
+        fprintf(stdout,"ERRb: h_bcb_read_enable=%1i adr_bcb=%4i\n",h_bcb_read_enable,adr_bcb);
         if (adr_bcb<0) {
-            fprintf(log_file,"No CFEB blocked bit frames in this event\n");
+            fprintf(stdout,"No CFEB blocked bit frames in this event\n");
             goto bcb_done;
         }
 
@@ -2118,7 +2102,7 @@ rpc_done:
             icfeb = (iframe-first_bcb_frame)/4;			// Expected cfeb id
 
             for (i=0; i<=3; ++i) {
-                if (bcb_cfebid[i]!=icfeb) fprintf(log_file,"ERRb: Blocked bits format mismatch: bcb_cfebid=%i icfeb=%i\n",bcb_cfebid[i],icfeb);
+                if (bcb_cfebid[i]!=icfeb) fprintf(stdout,"ERRb: Blocked bits format mismatch: bcb_cfebid=%i icfeb=%i\n",bcb_cfebid[i],icfeb);
             }
 
             bcb_cfeb_ly[icfeb][0] = ( bcb_data[0] >> 0) & 0xFF;
@@ -2140,38 +2124,38 @@ rpc_done:
         }
 
         // Display cfeb and ids column markers
-        fprintf(log_file,"\n");
-        fprintf(log_file,"     Blocked DiStrip Triad Bits Table\n");
+        fprintf(stdout,"\n");
+        fprintf(stdout,"     Blocked DiStrip Triad Bits Table\n");
 
-        fprintf(log_file,"Cfeb-");
+        fprintf(stdout,"Cfeb-");
         for (icfeb=0; icfeb < mxcfeb; ++icfeb) { 
-            fprintf(log_file,"|"); // display cfeb columns
+            fprintf(stdout,"|"); // display cfeb columns
             for (ids=0;   ids   < mxds;   ++ids  )   
-                fprintf(log_file,"%1.1i",icfeb);
+                fprintf(stdout,"%1.1i",icfeb);
         }
 
-        fprintf(log_file,"|\n");
+        fprintf(stdout,"|\n");
 
-        fprintf(log_file,"Ds---");
+        fprintf(stdout,"Ds---");
         for (icfeb=0; icfeb < mxcfeb; ++icfeb) { 
-            fprintf(log_file,"%s|",x);	// display ids columns
+            fprintf(stdout,"%s|",x);	// display ids columns
             for (ids=0;   ids   < mxds;   ++ids  )   
-                fprintf(log_file,"%1.1i",ids%10);}
-        fprintf(log_file,"|\n");
-        fprintf(log_file,"     ----------------------------------------------\n");
+                fprintf(stdout,"%1.1i",ids%10);}
+        fprintf(stdout,"|\n");
+        fprintf(stdout,"     ----------------------------------------------\n");
 
         // Display blocked distrip triads
         for (ilayer=0; ilayer <= mxly-1;         ++ilayer) {
-            fprintf(log_file,"Ly%1i  ",ilayer);
+            fprintf(stdout,"Ly%1i  ",ilayer);
             for (ids_abs=0;ids_abs<=39;++ids_abs) {
                 if (ids_abs%8==0)
-                    fprintf(log_file,"|");
+                    fprintf(stdout,"|");
 
                 ids   = ids_abs%8;
                 icfeb = ids_abs/8;
-                fprintf(log_file,"%1.1x",blocked_distrips[icfeb][ilayer][ids]);
+                fprintf(stdout,"%1.1x",blocked_distrips[icfeb][ilayer][ids]);
             }	// close for ids_abs
-            fprintf(log_file,"|\n");
+            fprintf(stdout,"|\n");
         }	// close ilayer
 
         // Read Hot Channel Mask 15 registers, 2 layers each, 3 adrs per cfeb
@@ -2209,31 +2193,31 @@ rpc_done:
                 }}
 
             // Display Hot Channel Mask  cfeb and ids column markers
-            fprintf(log_file,"\n");
-            fprintf(log_file,"     Hot Channel Mask\n");
+            fprintf(stdout,"\n");
+            fprintf(stdout,"     Hot Channel Mask\n");
 
-            fprintf(log_file,"Cfeb-");
-            for (icfeb=0; icfeb < mxcfeb; ++icfeb) { fprintf(log_file,"|"); // display cfeb columns
-                for (ids=0;   ids   < mxds;   ++ids  )   fprintf(log_file,"%1.1i",icfeb);}
-            fprintf(log_file,"|\n");
+            fprintf(stdout,"Cfeb-");
+            for (icfeb=0; icfeb < mxcfeb; ++icfeb) { fprintf(stdout,"|"); // display cfeb columns
+                for (ids=0;   ids   < mxds;   ++ids  )   fprintf(stdout,"%1.1i",icfeb);}
+            fprintf(stdout,"|\n");
 
-            fprintf(log_file,"Ds---");
-            for (icfeb=0; icfeb < mxcfeb; ++icfeb) { fprintf(log_file,"%s|",x);	// display ids columns
-                for (ids=0;   ids   < mxds;   ++ids  )   fprintf(log_file,"%1.1i",ids%10);}
-            fprintf(log_file,"|\n");
-            fprintf(log_file,"     ----------------------------------------------\n");
+            fprintf(stdout,"Ds---");
+            for (icfeb=0; icfeb < mxcfeb; ++icfeb) { fprintf(stdout,"%s|",x);	// display ids columns
+                for (ids=0;   ids   < mxds;   ++ids  )   fprintf(stdout,"%1.1i",ids%10);}
+            fprintf(stdout,"|\n");
+            fprintf(stdout,"     ----------------------------------------------\n");
 
             // Display HCM masked distrip triads
             for (ilayer=0; ilayer <= mxly-1;         ++ilayer)        {
-                fprintf(log_file,"Ly%1i  ",ilayer);
+                fprintf(stdout,"Ly%1i  ",ilayer);
 
                 for (ids_abs=0;ids_abs<=39;++ids_abs) {
-                    if (ids_abs%8==0) {fprintf(log_file,"|");}
+                    if (ids_abs%8==0) {fprintf(stdout,"|");}
                     ids   = ids_abs%8;
                     icfeb = ids_abs/8;
-                    fprintf(log_file,"%1.1x",hot_channel_mask[icfeb][ilayer][ids]);
+                    fprintf(stdout,"%1.1x",hot_channel_mask[icfeb][ilayer][ids]);
                 }	// close for ids_abs
-                fprintf(log_file,"|\n");
+                fprintf(stdout,"|\n");
             }	// close ilayer
 
         }	// close if display_hcm
@@ -2248,450 +2232,450 @@ display_header:
 
     // First 4 header words must conform to DDU specification
     iframe=0;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"boc                = %4.3X\n",	boc);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"boc                = %4.3X\n",	boc);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=1;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"pop_l1a_bxn        = %4.4X\n",	pop_l1a_bxn);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"pop_l1a_bxn        = %4.4X\n",	pop_l1a_bxn);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=2;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"pop_l1a_rx_counter = %4.4X\n",	pop_l1a_rx_counter);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"pop_l1a_rx_counter = %4.4X\n",	pop_l1a_rx_counter);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=3;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"readout_counter    = %4.4X\n",	readout_counter);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"readout_counter    = %4.4X\n",	readout_counter);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // Next 4 words for short header mode
     iframe=4;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"board_id           = %4i\n",		board_id);
-    fprintf(log_file,"csc_id             = %4i\n",		csc_id);
-    fprintf(log_file,"run_id             = %4i\n",		run_id);
-    fprintf(log_file,"h4_buf_q_ovf_err   = %4.1X\n",	h4_buf_q_ovf_err);
-    fprintf(log_file,"r_sync_err         = %4.1X\n",	r_sync_err);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"board_id           = %4i\n",		board_id);
+    fprintf(stdout,"csc_id             = %4i\n",		csc_id);
+    fprintf(stdout,"run_id             = %4i\n",		run_id);
+    fprintf(stdout,"h4_buf_q_ovf_err   = %4.1X\n",	h4_buf_q_ovf_err);
+    fprintf(stdout,"r_sync_err         = %4.1X\n",	r_sync_err);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=5;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_nheaders         = %4i\n",		r_nheaders);
-    fprintf(log_file,"fifo_mode          = %4i  %s\n",	fifo_mode,sfifo_mode.c_str());
-    fprintf(log_file,"readout_type       = %4i  %s\n",	readout_type,sreadout_type.c_str());
-    fprintf(log_file,"l1a_type           = %4i  %s\n",	l1a_type,sl1a_type.c_str());
-    fprintf(log_file,"r_has_buf          = %4i\n",		r_has_buf);
-    fprintf(log_file,"r_buf_stalled      = %4i\n",		r_buf_stalled);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_nheaders         = %4i\n",		r_nheaders);
+    fprintf(stdout,"fifo_mode          = %4i  %s\n",	fifo_mode,sfifo_mode.c_str());
+    fprintf(stdout,"readout_type       = %4i  %s\n",	readout_type,sreadout_type.c_str());
+    fprintf(stdout,"l1a_type           = %4i  %s\n",	l1a_type,sl1a_type.c_str());
+    fprintf(stdout,"r_has_buf          = %4i\n",		r_has_buf);
+    fprintf(stdout,"r_buf_stalled      = %4i\n",		r_buf_stalled);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=6;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"bd_status_ok       = %4.1i\n",	bd_status_vec[0]);
-    fprintf(log_file,"vstat_5p0vs        = %4.1i\n",	bd_status_vec[1]);
-    fprintf(log_file,"vstat_3p3v         = %4.1i\n",	bd_status_vec[2]);
-    fprintf(log_file,"vstat_1p8v         = %4.1i\n",	bd_status_vec[3]);
-    fprintf(log_file,"vstat_1p5v         = %4.1i\n",	bd_status_vec[4]);
-    fprintf(log_file,"_t_crit            = %4.1i\n",	bd_status_vec[5]);
-    fprintf(log_file,"vsm_ok             = %4.1i\n",	bd_status_vec[6]);
-    fprintf(log_file,"vsm_aborted        = %4.1i\n",	bd_status_vec[7]);
-    fprintf(log_file,"vsm_cksum_ok       = %4.1i\n",	bd_status_vec[8]);
-    fprintf(log_file,"vsm_wdcnt_ok       = %4.1i\n",	bd_status_vec[9]);
-    fprintf(log_file,"jsm_ok             = %4.1i\n",	bd_status_vec[10]);
-    fprintf(log_file,"jsm_aborted        = %4.1i\n",	bd_status_vec[11]);
-    fprintf(log_file,"jsm_cksum_ok       = %4.1i\n",	bd_status_vec[12]);
-    fprintf(log_file,"jsm_wdcnt_ok       = %4.1i\n",	bd_status_vec[13]);
-    fprintf(log_file,"sm_tck_fpga_ok     = %4.1i\n",	bd_status_vec[14]);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"bd_status_ok       = %4.1i\n",	bd_status_vec[0]);
+    fprintf(stdout,"vstat_5p0vs        = %4.1i\n",	bd_status_vec[1]);
+    fprintf(stdout,"vstat_3p3v         = %4.1i\n",	bd_status_vec[2]);
+    fprintf(stdout,"vstat_1p8v         = %4.1i\n",	bd_status_vec[3]);
+    fprintf(stdout,"vstat_1p5v         = %4.1i\n",	bd_status_vec[4]);
+    fprintf(stdout,"_t_crit            = %4.1i\n",	bd_status_vec[5]);
+    fprintf(stdout,"vsm_ok             = %4.1i\n",	bd_status_vec[6]);
+    fprintf(stdout,"vsm_aborted        = %4.1i\n",	bd_status_vec[7]);
+    fprintf(stdout,"vsm_cksum_ok       = %4.1i\n",	bd_status_vec[8]);
+    fprintf(stdout,"vsm_wdcnt_ok       = %4.1i\n",	bd_status_vec[9]);
+    fprintf(stdout,"jsm_ok             = %4.1i\n",	bd_status_vec[10]);
+    fprintf(stdout,"jsm_aborted        = %4.1i\n",	bd_status_vec[11]);
+    fprintf(stdout,"jsm_cksum_ok       = %4.1i\n",	bd_status_vec[12]);
+    fprintf(stdout,"jsm_wdcnt_ok       = %4.1i\n",	bd_status_vec[13]);
+    fprintf(stdout,"sm_tck_fpga_ok     = %4.1i\n",	bd_status_vec[14]);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=7;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"revcode            = %4.4X  ",	revcode);
-    fprintf(log_file,"Decodes as ");
-    fprintf(log_file,"%2.2i/",							id_rev_month);
-    fprintf(log_file,"%2.2i/",							id_rev_day);
-    fprintf(log_file,"%2.2i xc2v",						id_rev_year);
-    fprintf(log_file,"%1.1X000\n",						id_rev_fpga);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"revcode            = %4.4X  ",	revcode);
+    fprintf(stdout,"Decodes as ");
+    fprintf(stdout,"%2.2i/",							id_rev_month);
+    fprintf(stdout,"%2.2i/",							id_rev_day);
+    fprintf(stdout,"%2.2i xc2v",						id_rev_year);
+    fprintf(stdout,"%1.1X000\n",						id_rev_fpga);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     if(header_only_short) goto display_trailer;
 
     // Full Header-mode words 8-41: Event counters
     iframe=8;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_bxn_counter_ff   = %4.3X\n",	r_bxn_counter_ff);
-    fprintf(log_file,"r_tmb_clct0_discard= %4.1X\n",	r_tmb_clct0_discard);
-    fprintf(log_file,"r_tmb_clct1_discard= %4.1X\n",	r_tmb_clct1_discard);
-    fprintf(log_file,"clock_lock_lost    = %4.1X\n",	clock_lock_lost);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_bxn_counter_ff   = %4.3X\n",	r_bxn_counter_ff);
+    fprintf(stdout,"r_tmb_clct0_discard= %4.1X\n",	r_tmb_clct0_discard);
+    fprintf(stdout,"r_tmb_clct1_discard= %4.1X\n",	r_tmb_clct1_discard);
+    fprintf(stdout,"clock_lock_lost    = %4.1X\n",	clock_lock_lost);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=9;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_pretrig_cnt_lsb  = %4.4X\n",	r_pretrig_counter_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_pretrig_cnt_lsb  = %4.4X\n",	r_pretrig_counter_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=10;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_pretrig_cnt_msb  = %4.4X  ",	r_pretrig_counter_msb);
-    fprintf(log_file,"Full pretrig_countr= %9i\n",		pretrig_counter);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_pretrig_cnt_msb  = %4.4X  ",	r_pretrig_counter_msb);
+    fprintf(stdout,"Full pretrig_countr= %9i\n",		pretrig_counter);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=11;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_clct_cnt_lsb     = %4.4X\n",	r_clct_counter_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_clct_cnt_lsb     = %4.4X\n",	r_clct_counter_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=12;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_clct_cnt_msb     = %4.4X  ",	r_clct_counter_msb);
-    fprintf(log_file,"Full clct_counter  = %9i\n",		clct_counter);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_clct_cnt_msb     = %4.4X  ",	r_clct_counter_msb);
+    fprintf(stdout,"Full clct_counter  = %9i\n",		clct_counter);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=13;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_trig_cnt_lsb     = %4.4X\n",	r_trig_counter_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_trig_cnt_lsb     = %4.4X\n",	r_trig_counter_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=14;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_trig_cnt_msb     = %4.4X  ",	r_trig_counter_msb);
-    fprintf(log_file,"Full trig_counter  = %9i\n",		trig_counter);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_trig_cnt_msb     = %4.4X  ",	r_trig_counter_msb);
+    fprintf(stdout,"Full trig_counter  = %9i\n",		trig_counter);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=15;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_alct_cnt_lsb     = %4.4X\n",	r_alct_counter_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_alct_cnt_lsb     = %4.4X\n",	r_alct_counter_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=16;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_alct_cnt_msb     = %4.4X  ",	r_alct_counter_msb);
-    fprintf(log_file,"Full alct_counter  = %9i\n",		alct_counter);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_alct_cnt_msb     = %4.4X  ",	r_alct_counter_msb);
+    fprintf(stdout,"Full alct_counter  = %9i\n",		alct_counter);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=17;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_orbit_cnt_lsb    = %4.4X\n",	r_orbit_counter_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_orbit_cnt_lsb    = %4.4X\n",	r_orbit_counter_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=18;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_orbit_cnt_msb    = %4.4X  ",	r_orbit_counter_msb);
-    fprintf(log_file,"Full orbit_counter = %9.8X  =",	uptime_counter);
-    fprintf(log_file,"%6i seconds\n",					uptime_sec);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_orbit_cnt_msb    = %4.4X  ",	r_orbit_counter_msb);
+    fprintf(stdout,"Full orbit_counter = %9.8X  =",	uptime_counter);
+    fprintf(stdout,"%6i seconds\n",					uptime_sec);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // CLCT Raw Hits Size
     iframe=19;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_ncfebs           = %4.1X\n",	r_ncfebs);
-    fprintf(log_file,"r_fifo_tbins       = %4i\n",		r_fifo_tbins);
-    fprintf(log_file,"fifo_pretrig       = %4i\n",		fifo_pretrig);
-    fprintf(log_file,"scope_exists       = %4.1X\n",	scope_exists);
-    fprintf(log_file,"miniscope_exists   = %4.1X\n",	miniscope_exists);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_ncfebs           = %4.1X\n",	r_ncfebs);
+    fprintf(stdout,"r_fifo_tbins       = %4i\n",		r_fifo_tbins);
+    fprintf(stdout,"fifo_pretrig       = %4i\n",		fifo_pretrig);
+    fprintf(stdout,"scope_exists       = %4.1X\n",	scope_exists);
+    fprintf(stdout,"miniscope_exists   = %4.1X\n",	miniscope_exists);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // CLCT Configuration
     iframe=20;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"hit_thresh_pretrig = %4.1X\n",	hit_thresh_pretrig);
-    fprintf(log_file,"pid_thresh_pretrig = %4.1X\n",	pid_thresh_pretrig);
-    fprintf(log_file,"hit_thresh_postdrf = %4.1X\n",	hit_thresh_postdrf);
-    fprintf(log_file,"pid_thresh_postdrf = %4.1X\n",	pid_thresh_postdrf);
-    fprintf(log_file,"stagger_csc        = %4.1X\n",	stagger_csc);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"hit_thresh_pretrig = %4.1X\n",	hit_thresh_pretrig);
+    fprintf(stdout,"pid_thresh_pretrig = %4.1X\n",	pid_thresh_pretrig);
+    fprintf(stdout,"hit_thresh_postdrf = %4.1X\n",	hit_thresh_postdrf);
+    fprintf(stdout,"pid_thresh_postdrf = %4.1X\n",	pid_thresh_postdrf);
+    fprintf(stdout,"stagger_csc        = %4.1X\n",	stagger_csc);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=21;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"triad_persist      = %4.1X\n",	triad_persist);
-    fprintf(log_file,"dmb_thresh         = %4.1X\n",	dmb_thresh);
-    fprintf(log_file,"alct_delay         = %4.1X\n",	alct_delay);
-    fprintf(log_file,"clct_window        = %4.1X\n",	clct_window);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"triad_persist      = %4.1X\n",	triad_persist);
+    fprintf(stdout,"dmb_thresh         = %4.1X\n",	dmb_thresh);
+    fprintf(stdout,"alct_delay         = %4.1X\n",	alct_delay);
+    fprintf(stdout,"clct_window        = %4.1X\n",	clct_window);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=22;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
 
-    fprintf(log_file,"r_trig_source_vec  = %4.4X  ",	r_trig_source_vec);
-    fprintf(log_file,"Decodes as ");
-    for (i=8;i>=0;--i) fprintf(log_file,"%1i",			(r_trig_source_vec>>i)&0x1);
-    fprintf(log_file,"\n");
+    fprintf(stdout,"r_trig_source_vec  = %4.4X  ",	r_trig_source_vec);
+    fprintf(stdout,"Decodes as ");
+    for (i=8;i>=0;--i) fprintf(stdout,"%1i",			(r_trig_source_vec>>i)&0x1);
+    fprintf(stdout,"\n");
 
-    fprintf(log_file,"r_layers_hit       = %4.4X  ",	r_layers_hit);
-    fprintf(log_file,"Decodes as ");
-    for (i=5;i>=0;--i) fprintf(log_file,"%1i",			(r_layers_hit>>i)&0x1);
-    fprintf(log_file,"\n");
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"r_layers_hit       = %4.4X  ",	r_layers_hit);
+    fprintf(stdout,"Decodes as ");
+    for (i=5;i>=0;--i) fprintf(stdout,"%1i",			(r_layers_hit>>i)&0x1);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=23;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
 
-    fprintf(log_file,"r_active_feb_ff    = %4.4X  ",	r_active_feb_ff);
-    fprintf(log_file,"Decodes as ");
-    for (i=4;i>=0;--i) fprintf(log_file,"%1i",			(r_active_feb_ff>>i)&0x1);
-    fprintf(log_file,"\n");
+    fprintf(stdout,"r_active_feb_ff    = %4.4X  ",	r_active_feb_ff);
+    fprintf(stdout,"Decodes as ");
+    for (i=4;i>=0;--i) fprintf(stdout,"%1i",			(r_active_feb_ff>>i)&0x1);
+    fprintf(stdout,"\n");
 
-    fprintf(log_file,"r_febs_read        = %4.4X  ",	r_febs_read);
-    fprintf(log_file,"Decodes as ");
-    for (i=4;i>=0;--i) fprintf(log_file,"%1i",			(r_febs_read>>i)&0x1);
-    fprintf(log_file,"\n");
+    fprintf(stdout,"r_febs_read        = %4.4X  ",	r_febs_read);
+    fprintf(stdout,"Decodes as ");
+    for (i=4;i>=0;--i) fprintf(stdout,"%1i",			(r_febs_read>>i)&0x1);
+    fprintf(stdout,"\n");
 
-    fprintf(log_file,"r_l1a_match_win    = %4.1X\n",	r_l1a_match_win);
-    fprintf(log_file,"active_feb_src     = %4.1X\n",	active_feb_src);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"r_l1a_match_win    = %4.1X\n",	r_l1a_match_win);
+    fprintf(stdout,"active_feb_src     = %4.1X\n",	active_feb_src);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
 
     // CLCT+ALCT Match Status
     iframe=24;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_tmb_match        = %4.1X\n",	r_tmb_match);
-    fprintf(log_file,"r_tmb_alct_only    = %4.1X\n",	r_tmb_alct_only);
-    fprintf(log_file,"r_tmb_clct_only    = %4.1X\n",	r_tmb_clct_only);
-    fprintf(log_file,"r_tmb_match_win    = %4.1X\n",	r_tmb_match_win);
-    fprintf(log_file,"r_no_alct_tmb      = %4.1X\n",	r_no_alct_tmb);
-    fprintf(log_file,"r_one_alct_tmb     = %4.1X\n",	r_one_alct_tmb);
-    fprintf(log_file,"r_one_clct_tmb     = %4.1X\n",	r_one_clct_tmb);
-    fprintf(log_file,"r_two_alct_tmb     = %4.1X\n",	r_two_alct_tmb);
-    fprintf(log_file,"r_two_clct_tmb     = %4.1X\n",	r_two_clct_tmb);
-    fprintf(log_file,"r_dupe_alct_tmb    = %4.1X\n",	r_dupe_alct_tmb);
-    fprintf(log_file,"r_dupe_clct_tmb    = %4.1X\n",	r_dupe_clct_tmb);
-    fprintf(log_file,"r_rank_err_tmb     = %4.1X\n",	r_rank_err_tmb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_tmb_match        = %4.1X\n",	r_tmb_match);
+    fprintf(stdout,"r_tmb_alct_only    = %4.1X\n",	r_tmb_alct_only);
+    fprintf(stdout,"r_tmb_clct_only    = %4.1X\n",	r_tmb_clct_only);
+    fprintf(stdout,"r_tmb_match_win    = %4.1X\n",	r_tmb_match_win);
+    fprintf(stdout,"r_no_alct_tmb      = %4.1X\n",	r_no_alct_tmb);
+    fprintf(stdout,"r_one_alct_tmb     = %4.1X\n",	r_one_alct_tmb);
+    fprintf(stdout,"r_one_clct_tmb     = %4.1X\n",	r_one_clct_tmb);
+    fprintf(stdout,"r_two_alct_tmb     = %4.1X\n",	r_two_alct_tmb);
+    fprintf(stdout,"r_two_clct_tmb     = %4.1X\n",	r_two_clct_tmb);
+    fprintf(stdout,"r_dupe_alct_tmb    = %4.1X\n",	r_dupe_alct_tmb);
+    fprintf(stdout,"r_dupe_clct_tmb    = %4.1X\n",	r_dupe_clct_tmb);
+    fprintf(stdout,"r_rank_err_tmb     = %4.1X\n",	r_rank_err_tmb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // CLCT Trigger Data
     iframe=25;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_clct0_tmb_lsb    = %4.4X\n",	r_clct0_tmb_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_clct0_tmb_lsb    = %4.4X\n",	r_clct0_tmb_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=26;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_clct1_tmb_lsb    = %4.4X\n",	r_clct1_tmb_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_clct1_tmb_lsb    = %4.4X\n",	r_clct1_tmb_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=27;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_clct0_tmb_msb    = %4.2X\n",	r_clct0_tmb_msb);
-    fprintf(log_file,"r_clct1_tmb_msb    = %4.2X\n",	r_clct1_tmb_msb);
-    fprintf(log_file,"r_clct0_invp       = %4.1X\n",	r_clct0_invp);
-    fprintf(log_file,"r_clct1_invp       = %4.1X\n",	r_clct1_invp);
-    fprintf(log_file,"r_clct1_busy       = %4.1X\n",	r_clct1_busy);
-    fprintf(log_file,"perr_cfeb_ff       = %4.1X  ",	perr_cfeb_ff);
-    fprintf(log_file,"Decodes as ");
-    for (i=4;i>=0;--i) fprintf(log_file,"%1i",			(perr_cfeb_ff>>i)&0x1);
-    fprintf(log_file,"\n");
-    fprintf(log_file,"perr_rpc_ff        = %4.1X\n",	perr_rpc_ff);
-    fprintf(log_file,"perr_ff            = %4.1X\n",	perr_ff);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_clct0_tmb_msb    = %4.2X\n",	r_clct0_tmb_msb);
+    fprintf(stdout,"r_clct1_tmb_msb    = %4.2X\n",	r_clct1_tmb_msb);
+    fprintf(stdout,"r_clct0_invp       = %4.1X\n",	r_clct0_invp);
+    fprintf(stdout,"r_clct1_invp       = %4.1X\n",	r_clct1_invp);
+    fprintf(stdout,"r_clct1_busy       = %4.1X\n",	r_clct1_busy);
+    fprintf(stdout,"perr_cfeb_ff       = %4.1X  ",	perr_cfeb_ff);
+    fprintf(stdout,"Decodes as ");
+    for (i=4;i>=0;--i) fprintf(stdout,"%1i",			(perr_cfeb_ff>>i)&0x1);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"perr_rpc_ff        = %4.1X\n",	perr_rpc_ff);
+    fprintf(stdout,"perr_ff            = %4.1X\n",	perr_ff);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // ALCT Trigger Data
     iframe=28;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_alct0_valid      = %4.1X\n",	r_alct0_valid);
-    fprintf(log_file,"r_alct0_quality    = %4.1X\n",	r_alct0_quality);
-    fprintf(log_file,"r_alct0_amu        = %4.1X\n",	r_alct0_amu);
-    fprintf(log_file,"r_alct0_key        = %4i\n",		r_alct0_key);
-    fprintf(log_file,"r_alct_pretrig_win = %4.1X\n",	r_alct_pretrig_win);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_alct0_valid      = %4.1X\n",	r_alct0_valid);
+    fprintf(stdout,"r_alct0_quality    = %4.1X\n",	r_alct0_quality);
+    fprintf(stdout,"r_alct0_amu        = %4.1X\n",	r_alct0_amu);
+    fprintf(stdout,"r_alct0_key        = %4i\n",		r_alct0_key);
+    fprintf(stdout,"r_alct_pretrig_win = %4.1X\n",	r_alct_pretrig_win);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=29;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_alct1_valid      = %4.1X\n",	r_alct1_valid);
-    fprintf(log_file,"r_alct1_quality    = %4.1X\n",	r_alct1_quality);
-    fprintf(log_file,"r_alct1_amu        = %4.1X\n",	r_alct1_amu);
-    fprintf(log_file,"r_alct1_key        = %4i\n",		r_alct1_key);
-    fprintf(log_file,"drift_delay        = %4i\n",		drift_delay);
-    fprintf(log_file,"h_bcb_read_enable  = %4.1X\n",	h_bcb_read_enable);
-    fprintf(log_file,"hs_layer_trig      = %4.1X\n",	hs_layer_trig);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_alct1_valid      = %4.1X\n",	r_alct1_valid);
+    fprintf(stdout,"r_alct1_quality    = %4.1X\n",	r_alct1_quality);
+    fprintf(stdout,"r_alct1_amu        = %4.1X\n",	r_alct1_amu);
+    fprintf(stdout,"r_alct1_key        = %4i\n",		r_alct1_key);
+    fprintf(stdout,"drift_delay        = %4i\n",		drift_delay);
+    fprintf(stdout,"h_bcb_read_enable  = %4.1X\n",	h_bcb_read_enable);
+    fprintf(stdout,"hs_layer_trig      = %4.1X\n",	hs_layer_trig);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=30;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_alct_bxn         = %4.2X\n",	r_alct_bxn);
-    fprintf(log_file,"alct_ecc_err       = %4.1X\n",	alct_ecc_err);
-    fprintf(log_file,"cfeb_badbits_found = %4.1X\n",	cfeb_badbits_found);
-    fprintf(log_file,"cfeb_badbits_blockd= %4.1X\n",	cfeb_badbits_blocked);
-    fprintf(log_file,"alct_cfg_done      = %4.1X\n",	alct_cfg_done);
-    fprintf(log_file,"bx0_match          = %4.1X\n",	bx0_match);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_alct_bxn         = %4.2X\n",	r_alct_bxn);
+    fprintf(stdout,"alct_ecc_err       = %4.1X\n",	alct_ecc_err);
+    fprintf(stdout,"cfeb_badbits_found = %4.1X\n",	cfeb_badbits_found);
+    fprintf(stdout,"cfeb_badbits_blockd= %4.1X\n",	cfeb_badbits_blocked);
+    fprintf(stdout,"alct_cfg_done      = %4.1X\n",	alct_cfg_done);
+    fprintf(stdout,"bx0_match          = %4.1X\n",	bx0_match);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // MPC Frames
     iframe=31;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_mpc0_frame0_lsb  = %4.4X\n",	r_mpc0_frame0_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_mpc0_frame0_lsb  = %4.4X\n",	r_mpc0_frame0_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=32;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_mpc0_frame1_lsb  = %4.4X\n",	r_mpc0_frame1_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_mpc0_frame1_lsb  = %4.4X\n",	r_mpc0_frame1_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=33;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_mpc1_frame0_lsb  = %4.4X\n",	r_mpc1_frame0_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_mpc1_frame0_lsb  = %4.4X\n",	r_mpc1_frame0_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=34;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_mpc1_frame1_lsb  = %4.4X\n",	r_mpc1_frame1_lsb);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_mpc1_frame1_lsb  = %4.4X\n",	r_mpc1_frame1_lsb);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=35;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_mpc0_frame0_msb  = %4.1X\n",	r_mpc0_frame0_msb);
-    fprintf(log_file,"r_mpc0_frame1_msb  = %4.1X\n",	r_mpc0_frame1_msb);
-    fprintf(log_file,"r_mpc1_frame0_msb  = %4.1X\n",	r_mpc1_frame0_msb);
-    fprintf(log_file,"r_mpc1_frame1_msb  = %4.1X\n",	r_mpc1_frame1_msb);
-    fprintf(log_file,"mpc_tx_delay       = %4.1X\n",	mpc_tx_delay);
-    fprintf(log_file,"r_mpc_accept       = %4.1X\n",	r_mpc_accept);
-    fprintf(log_file,"cfeb_en            = %4.2X  ",	cfeb_en);
-    fprintf(log_file,"Decodes as ");
-    for (i=4;i>=0;--i) fprintf(log_file,"%1i",			(cfeb_en>>i)&0x1);
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_mpc0_frame0_msb  = %4.1X\n",	r_mpc0_frame0_msb);
+    fprintf(stdout,"r_mpc0_frame1_msb  = %4.1X\n",	r_mpc0_frame1_msb);
+    fprintf(stdout,"r_mpc1_frame0_msb  = %4.1X\n",	r_mpc1_frame0_msb);
+    fprintf(stdout,"r_mpc1_frame1_msb  = %4.1X\n",	r_mpc1_frame1_msb);
+    fprintf(stdout,"mpc_tx_delay       = %4.1X\n",	mpc_tx_delay);
+    fprintf(stdout,"r_mpc_accept       = %4.1X\n",	r_mpc_accept);
+    fprintf(stdout,"cfeb_en            = %4.2X  ",	cfeb_en);
+    fprintf(stdout,"Decodes as ");
+    for (i=4;i>=0;--i) fprintf(stdout,"%1i",			(cfeb_en>>i)&0x1);
+    fprintf(stdout,"\n");
 
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // RPC Configuration
     iframe=36;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
 
-    fprintf(log_file,"rd_rpc_list        = %4.2X  ",	rd_rpc_list);
-    fprintf(log_file,"Decodes as ");
-    for (i=1;i>=0;--i) fprintf(log_file,"%1i",			(rd_rpc_list>>i)&0x1);
-    fprintf(log_file,"\n");
+    fprintf(stdout,"rd_rpc_list        = %4.2X  ",	rd_rpc_list);
+    fprintf(stdout,"Decodes as ");
+    for (i=1;i>=0;--i) fprintf(stdout,"%1i",			(rd_rpc_list>>i)&0x1);
+    fprintf(stdout,"\n");
 
-    fprintf(log_file,"rd_nrpcs           = %4.1X\n",	rd_nrpcs);
-    fprintf(log_file,"rpc_read_enable    = %4.1X\n",	rpc_read_enable);
-    fprintf(log_file,"fifo_tbins_rpc     = %4i\n",		fifo_tbins_rpc);
-    fprintf(log_file,"fifo_pretrig_rpc   = %4i\n",		fifo_pretrig_rpc);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"rd_nrpcs           = %4.1X\n",	rd_nrpcs);
+    fprintf(stdout,"rpc_read_enable    = %4.1X\n",	rpc_read_enable);
+    fprintf(stdout,"fifo_tbins_rpc     = %4i\n",		fifo_tbins_rpc);
+    fprintf(stdout,"fifo_pretrig_rpc   = %4i\n",		fifo_pretrig_rpc);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // Buffer Status
     iframe=37;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_wr_buf_adr       = %4.3X\n",	r_wr_buf_adr);
-    fprintf(log_file,"r_wr_buf_ready     = %4.1X\n",	r_wr_buf_ready);
-    fprintf(log_file,"wr_buf_ready       = %4.1X\n",	wr_buf_ready);
-    fprintf(log_file,"buf_q_full         = %4.1X\n",	buf_q_full);
-    fprintf(log_file,"buf_q_empty        = %4.1X\n",	buf_q_empty);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_wr_buf_adr       = %4.3X\n",	r_wr_buf_adr);
+    fprintf(stdout,"r_wr_buf_ready     = %4.1X\n",	r_wr_buf_ready);
+    fprintf(stdout,"wr_buf_ready       = %4.1X\n",	wr_buf_ready);
+    fprintf(stdout,"buf_q_full         = %4.1X\n",	buf_q_full);
+    fprintf(stdout,"buf_q_empty        = %4.1X\n",	buf_q_empty);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=38;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"r_buf_fence_dist   = %4.3X%5i\n",	r_buf_fence_dist,r_buf_fence_dist);
-    fprintf(log_file,"buf_q_ovf_err      = %4.1X\n",	buf_q_ovf_err);
-    fprintf(log_file,"buf_q_udf_err      = %4.1X\n",	buf_q_udf_err);
-    fprintf(log_file,"buf_q_adr_err      = %4.1X\n",	buf_q_adr_err);
-    fprintf(log_file,"buf_stalled_once   = %4.1X\n",	buf_stalled_once);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"r_buf_fence_dist   = %4.3X%5i\n",	r_buf_fence_dist,r_buf_fence_dist);
+    fprintf(stdout,"buf_q_ovf_err      = %4.1X\n",	buf_q_ovf_err);
+    fprintf(stdout,"buf_q_udf_err      = %4.1X\n",	buf_q_udf_err);
+    fprintf(stdout,"buf_q_adr_err      = %4.1X\n",	buf_q_adr_err);
+    fprintf(stdout,"buf_stalled_once   = %4.1X\n",	buf_stalled_once);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // Spare Frames
     iframe=39;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"buf_fence_cnt      = %4i\n",		buf_fence_cnt);
-    fprintf(log_file,"reverse_hs_csc     = %4.1X\n",	reverse_hs_csc);
-    fprintf(log_file,"reverse_hs_me1a    = %4.1X\n",	reverse_hs_me1a);
-    fprintf(log_file,"reverse_hs_me1b    = %4.1X\n",	reverse_hs_me1b);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"buf_fence_cnt      = %4i\n",		buf_fence_cnt);
+    fprintf(stdout,"reverse_hs_csc     = %4.1X\n",	reverse_hs_csc);
+    fprintf(stdout,"reverse_hs_me1a    = %4.1X\n",	reverse_hs_me1a);
+    fprintf(stdout,"reverse_hs_me1b    = %4.1X\n",	reverse_hs_me1b);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=40;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"buf_fence_cnt_peak = %4i\n",		buf_fence_cnt_peak);
-    fprintf(log_file,"r_trig_source_vec9 = %4.1X\n",	r_trig_source_vec9);
-    fprintf(log_file,"r_trig_source_vec10= %4.1X\n",	r_trig_source_vec10);
-    fprintf(log_file,"tmb_trig_pulse     = %4.1X\n",	tmb_trig_pulse);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"buf_fence_cnt_peak = %4i\n",		buf_fence_cnt_peak);
+    fprintf(stdout,"r_trig_source_vec9 = %4.1X\n",	r_trig_source_vec9);
+    fprintf(stdout,"r_trig_source_vec10= %4.1X\n",	r_trig_source_vec10);
+    fprintf(stdout,"tmb_trig_pulse     = %4.1X\n",	tmb_trig_pulse);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=41;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"tmb_allow_alct     = %4.1X\n",	tmb_allow_alct);
-    fprintf(log_file,"tmb_allow_clct     = %4.1X\n",	tmb_allow_clct);
-    fprintf(log_file,"tmb_allow_match    = %4.1X\n",	tmb_allow_match);
-    fprintf(log_file,"tmb_allow_alct_ro  = %4.1X\n",	tmb_allow_alct_ro);
-    fprintf(log_file,"tmb_allow_clct_ro  = %4.1X\n",	tmb_allow_clct_ro);
-    fprintf(log_file,"tmb_allow_match_ro = %4.1X\n",	tmb_allow_match_ro);
-    fprintf(log_file,"tmb_alct_ro        = %4.1X\n",	tmb_alct_ro);
-    fprintf(log_file,"tmb_clct_ro        = %4.1X\n",	tmb_clct_ro);
-    fprintf(log_file,"tmb_match_ro       = %4.1X\n",	tmb_match_ro);
-    fprintf(log_file,"tmb_trig_keep      = %4.1X\n",	tmb_trig_keep);
-    fprintf(log_file,"tmb_nontrig_keep   = %4.1X\n",	tmb_nontrig_keep);
-    fprintf(log_file,"lyr_thresh_pretrig = %4.1X\n",	lyr_thresh_pretrig);
-    fprintf(log_file,"layer_trig_en      = %4.1X\n",	layer_trig_en);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"tmb_allow_alct     = %4.1X\n",	tmb_allow_alct);
+    fprintf(stdout,"tmb_allow_clct     = %4.1X\n",	tmb_allow_clct);
+    fprintf(stdout,"tmb_allow_match    = %4.1X\n",	tmb_allow_match);
+    fprintf(stdout,"tmb_allow_alct_ro  = %4.1X\n",	tmb_allow_alct_ro);
+    fprintf(stdout,"tmb_allow_clct_ro  = %4.1X\n",	tmb_allow_clct_ro);
+    fprintf(stdout,"tmb_allow_match_ro = %4.1X\n",	tmb_allow_match_ro);
+    fprintf(stdout,"tmb_alct_ro        = %4.1X\n",	tmb_alct_ro);
+    fprintf(stdout,"tmb_clct_ro        = %4.1X\n",	tmb_clct_ro);
+    fprintf(stdout,"tmb_match_ro       = %4.1X\n",	tmb_match_ro);
+    fprintf(stdout,"tmb_trig_keep      = %4.1X\n",	tmb_trig_keep);
+    fprintf(stdout,"tmb_nontrig_keep   = %4.1X\n",	tmb_nontrig_keep);
+    fprintf(stdout,"lyr_thresh_pretrig = %4.1X\n",	lyr_thresh_pretrig);
+    fprintf(stdout,"layer_trig_en      = %4.1X\n",	layer_trig_en);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // EOB Frame
     iframe=42;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"eob                = %4.4X\n",	eob);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"eob                = %4.4X\n",	eob);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     // EOC Frame
     iframe=last_frame-6;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"eoc                = %4.3X\n",	eoc);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"eoc                = %4.3X\n",	eoc);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     //------------------------------------------------------------------------------
     //	Display Filler Frames
     //------------------------------------------------------------------------------
     if(header_filler) {
         iframe=last_frame-5;
-        fprintf(log_file,"\n");
-        fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-        fprintf(log_file,"opt2aaa            = %4.4X\n",	opt2aaa);
-        fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+        fprintf(stdout,"\n");
+        fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+        fprintf(stdout,"opt2aaa            = %4.4X\n",	opt2aaa);
+        fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
         iframe=last_frame-4;
-        fprintf(log_file,"\n");
-        fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-        fprintf(log_file,"opt5555            = %4.4X\n",	opt5555);
-        fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+        fprintf(stdout,"\n");
+        fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+        fprintf(stdout,"opt5555            = %4.4X\n",	opt5555);
+        fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
     }
 
     //------------------------------------------------------------------------------
@@ -2699,100 +2683,100 @@ display_header:
     //------------------------------------------------------------------------------
 display_trailer:
     iframe=last_frame-3;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"lctype3            = %4.1X\n",	lctype3);
-    fprintf(log_file,"eof                = %4.3X\n",	eof);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"lctype3            = %4.1X\n",	lctype3);
+    fprintf(stdout,"eof                = %4.3X\n",	eof);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=last_frame-2;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"crc22lsb           = %4.3X\n",	crc22lsb);
-    fprintf(log_file,"lctype2            = %4.1X\n",	lctype2);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"crc22lsb           = %4.3X\n",	crc22lsb);
+    fprintf(stdout,"lctype2            = %4.1X\n",	lctype2);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=last_frame-1;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"crc22msb           = %4.3X\n",	crc22msb);
-    fprintf(log_file,"lctype1            = %4.1X\n",	lctype1);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"crc22msb           = %4.3X\n",	crc22msb);
+    fprintf(stdout,"lctype1            = %4.1X\n",	lctype1);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     iframe=last_frame;
-    fprintf(log_file,"\n");
-    fprintf(log_file,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
-    fprintf(log_file,"frame_cnt          = %4i\n",		frame_cnt);
-    fprintf(log_file,"lctype0            = %4.1X\n",	lctype0);
-    fprintf(log_file,"ddu                = %4.1X\n",	ddu[iframe]);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"Header Frame%4i%3.3s %5.5X\n",	iframe,x,vf_data[iframe]);
+    fprintf(stdout,"frame_cnt          = %4i\n",		frame_cnt);
+    fprintf(stdout,"lctype0            = %4.1X\n",	lctype0);
+    fprintf(stdout,"ddu                = %4.1X\n",	ddu[iframe]);
 
     if(header_only_short) goto exit;
     //------------------------------------------------------------------------------
     //	Display decoded LCT data
     //------------------------------------------------------------------------------
     // CLCT0
-    fprintf(log_file,"\n");
-    fprintf(log_file,"CLCT0 Decode      %7.7X\n",		clct0);
-    fprintf(log_file,"clct0_vpf          = %4i\n",		clct0_vpf);
-    fprintf(log_file,"clct0_nhit         = %4i\n",		clct0_nhit);
-    fprintf(log_file,"clct0_pat          = %4X\n",		clct0_pat);
-    fprintf(log_file,"clct0_key          = %4i\n",		clct0_key);
-    fprintf(log_file,"clct0_cfeb         = %4i\n",		clct0_cfeb);
-    fprintf(log_file,"clct0_fullkey      = %4i\n",		clct0_fullkey);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"CLCT0 Decode      %7.7X\n",		clct0);
+    fprintf(stdout,"clct0_vpf          = %4i\n",		clct0_vpf);
+    fprintf(stdout,"clct0_nhit         = %4i\n",		clct0_nhit);
+    fprintf(stdout,"clct0_pat          = %4X\n",		clct0_pat);
+    fprintf(stdout,"clct0_key          = %4i\n",		clct0_key);
+    fprintf(stdout,"clct0_cfeb         = %4i\n",		clct0_cfeb);
+    fprintf(stdout,"clct0_fullkey      = %4i\n",		clct0_fullkey);
 
     // CLCT1
-    fprintf(log_file,"\n");
-    fprintf(log_file,"CLCT1 Decode      %7.7X\n",		clct1);
-    fprintf(log_file,"clct1_vpf          = %4i\n",		clct1_vpf);
-    fprintf(log_file,"clct1_nhit         = %4i\n",		clct1_nhit);
-    fprintf(log_file,"clct1_pat          = %4X\n",		clct1_pat);
-    fprintf(log_file,"clct1_key          = %4i\n",		clct1_key);
-    fprintf(log_file,"clct1_cfeb         = %4i\n",		clct1_cfeb);
-    fprintf(log_file,"clct1_fullkey      = %4i\n",		clct1_fullkey);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"CLCT1 Decode      %7.7X\n",		clct1);
+    fprintf(stdout,"clct1_vpf          = %4i\n",		clct1_vpf);
+    fprintf(stdout,"clct1_nhit         = %4i\n",		clct1_nhit);
+    fprintf(stdout,"clct1_pat          = %4X\n",		clct1_pat);
+    fprintf(stdout,"clct1_key          = %4i\n",		clct1_key);
+    fprintf(stdout,"clct1_cfeb         = %4i\n",		clct1_cfeb);
+    fprintf(stdout,"clct1_fullkey      = %4i\n",		clct1_fullkey);
 
     // Common
-    fprintf(log_file,"\n");
-    fprintf(log_file,"clctc_bxn          = %4.3X\n",	clctc_bxn);
-    fprintf(log_file,"clctc_sync         = %4i\n",		clctc_sync);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"clctc_bxn          = %4.3X\n",	clctc_bxn);
+    fprintf(stdout,"clctc_sync         = %4i\n",		clctc_sync);
 
     //------------------------------------------------------------------------------
     //	Display decoded MPC data
     //------------------------------------------------------------------------------
     // MPC0
-    fprintf(log_file,"\n");
-    fprintf(log_file,"MPC0 Decode From Header\n");
-    fprintf(log_file,"mpc_alct0_key      = %4i\n",		mpc_alct0_key);
-    fprintf(log_file,"mpc_clct0_pat      = %4.1X\n",	mpc_clct0_pat);
-    fprintf(log_file,"mpc_lct0_quality   = %4i\n",		mpc_lct0_quality);
-    fprintf(log_file,"mpc_lct0_vpf       = %4.1X\n",	mpc_lct0_vpf);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"MPC0 Decode From Header\n");
+    fprintf(stdout,"mpc_alct0_key      = %4i\n",		mpc_alct0_key);
+    fprintf(stdout,"mpc_clct0_pat      = %4.1X\n",	mpc_clct0_pat);
+    fprintf(stdout,"mpc_lct0_quality   = %4i\n",		mpc_lct0_quality);
+    fprintf(stdout,"mpc_lct0_vpf       = %4.1X\n",	mpc_lct0_vpf);
 
-    fprintf(log_file,"mpc_clct0_key      = %4i\n",		mpc_clct0_key);
-    fprintf(log_file,"mpc_clct0_bend     = %4.1X\n",	mpc_clct0_bend);
-    fprintf(log_file,"mpc_sync_err0      = %4.1X\n",	mpc_sync_err0);
-    fprintf(log_file,"mpc_alct0_bxn      = %4.1X\n",	mpc_alct0_bxn);
-    fprintf(log_file,"mpc_bx0_clct       = %4i\n",		mpc_bx0_clct);
-    fprintf(log_file,"mpc_csc_id0        = %4i\n",		mpc_csc_id0);
+    fprintf(stdout,"mpc_clct0_key      = %4i\n",		mpc_clct0_key);
+    fprintf(stdout,"mpc_clct0_bend     = %4.1X\n",	mpc_clct0_bend);
+    fprintf(stdout,"mpc_sync_err0      = %4.1X\n",	mpc_sync_err0);
+    fprintf(stdout,"mpc_alct0_bxn      = %4.1X\n",	mpc_alct0_bxn);
+    fprintf(stdout,"mpc_bx0_clct       = %4i\n",		mpc_bx0_clct);
+    fprintf(stdout,"mpc_csc_id0        = %4i\n",		mpc_csc_id0);
 
     // MPC1
-    fprintf(log_file,"\n");
-    fprintf(log_file,"MPC1 Decode From Header\n");
-    fprintf(log_file,"mpc_alct1_key      = %4i\n",		mpc_alct1_key);
-    fprintf(log_file,"mpc_clct1_pat      = %4.1X\n",	mpc_clct1_pat);
-    fprintf(log_file,"mpc_lct1_quality   = %4i\n",		mpc_lct1_quality);
-    fprintf(log_file,"mpc_lct1_vpf       = %4.1X\n",	mpc_lct1_vpf);
+    fprintf(stdout,"\n");
+    fprintf(stdout,"MPC1 Decode From Header\n");
+    fprintf(stdout,"mpc_alct1_key      = %4i\n",		mpc_alct1_key);
+    fprintf(stdout,"mpc_clct1_pat      = %4.1X\n",	mpc_clct1_pat);
+    fprintf(stdout,"mpc_lct1_quality   = %4i\n",		mpc_lct1_quality);
+    fprintf(stdout,"mpc_lct1_vpf       = %4.1X\n",	mpc_lct1_vpf);
 
-    fprintf(log_file,"mpc_clct1_key      = %4i\n",		mpc_clct1_key);
-    fprintf(log_file,"mpc_clct1_bend     = %4.1X\n",	mpc_clct1_bend);
-    fprintf(log_file,"mpc_sync_err1      = %4.1X\n",	mpc_sync_err1);
-    fprintf(log_file,"mpc_alct1_bxn      = %4.1X\n",	mpc_alct1_bxn);
-    fprintf(log_file,"mpc_bx0_alct       = %4i\n",		mpc_bx0_alct);
-    fprintf(log_file,"mpc_csc_id1        = %4i\n",		mpc_csc_id1);
+    fprintf(stdout,"mpc_clct1_key      = %4i\n",		mpc_clct1_key);
+    fprintf(stdout,"mpc_clct1_bend     = %4.1X\n",	mpc_clct1_bend);
+    fprintf(stdout,"mpc_sync_err1      = %4.1X\n",	mpc_sync_err1);
+    fprintf(stdout,"mpc_alct1_bxn      = %4.1X\n",	mpc_alct1_bxn);
+    fprintf(stdout,"mpc_bx0_alct       = %4i\n",		mpc_bx0_alct);
+    fprintf(stdout,"mpc_csc_id1        = %4i\n",		mpc_csc_id1);
 
     //------------------------------------------------------------------------------
     //	Display CFEB raw hits triads
     //------------------------------------------------------------------------------
     if (header_only_short || header_only_long) {
-        fprintf(log_file,"Skipping triad display for header-only event\n");
+        fprintf(stdout,"Skipping triad display for header-only event\n");
         goto check_scope;
     }
 
@@ -2800,32 +2784,32 @@ display_trailer:
     ntbinspre=fifo_pretrig;
 
     // Display cfeb and ids column markers
-    fprintf(log_file,"\n");
-    fprintf(log_file,"     Raw Hits Triads\n");
+    fprintf(stdout,"\n");
+    fprintf(stdout,"     Raw Hits Triads\n");
 
-    fprintf(log_file,"Cfeb-");
-    for (icfeb=0; icfeb < mxcfeb; ++icfeb) { fprintf(log_file,"|"); // display cfeb columns
-        for (ids=0;   ids   < mxds;   ++ids  )   fprintf(log_file,"%1.1i",icfeb);}
-    fprintf(log_file,"|\n");
+    fprintf(stdout,"Cfeb-");
+    for (icfeb=0; icfeb < mxcfeb; ++icfeb) { fprintf(stdout,"|"); // display cfeb columns
+        for (ids=0;   ids   < mxds;   ++ids  )   fprintf(stdout,"%1.1i",icfeb);}
+    fprintf(stdout,"|\n");
 
-    fprintf(log_file,"Ds---");
+    fprintf(stdout,"Ds---");
     for (icfeb=0; icfeb < mxcfeb; ++icfeb) { 
-        fprintf(log_file,"%s|",x);	// display ids columns
-        for (ids=0;   ids   < mxds;   ++ids  )   fprintf(log_file,"%1.1i",ids%10);}
-    fprintf(log_file,"|\n");
-    fprintf(log_file,"Ly Tb\n");
+        fprintf(stdout,"%s|",x);	// display ids columns
+        for (ids=0;   ids   < mxds;   ++ids  )   fprintf(stdout,"%1.1i",ids%10);}
+    fprintf(stdout,"|\n");
+    fprintf(stdout,"Ly Tb\n");
 
     // Display raw hits
     for (ilayer=0; ilayer <= mxly-1;         ++ilayer)        {
-        for (itbin=0;  itbin  <= r_fifo_tbins-1; ++itbin ) { fprintf(log_file,"%1i %2i ",ilayer,itbin);
+        for (itbin=0;  itbin  <= r_fifo_tbins-1; ++itbin ) { fprintf(stdout,"%1i %2i ",ilayer,itbin);
 
             for (ids_abs=0;ids_abs<=39;++ids_abs) {
-                if (ids_abs%8==0) {fprintf(log_file,"|");}
-                fprintf(log_file,"%1.1x",read_pat[itbin][ilayer][ids_abs]);
+                if (ids_abs%8==0) {fprintf(stdout,"|");}
+                fprintf(stdout,"%1.1x",read_pat[itbin][ilayer][ids_abs]);
             }	// close for ids_abs
-            fprintf(log_file,"|\n");
+            fprintf(stdout,"|\n");
         }	// close itbin
-        fprintf(log_file,"\n");
+        fprintf(stdout,"\n");
     }	// close ilayer
 
     //------------------------------------------------------------------------------
@@ -2848,7 +2832,7 @@ display_trailer:
                     if ((triad_write!=triad_read) && !triad_skipped) {
                         triad_error =true;
 
-                        fprintf(log_file,
+                        fprintf(stdout,
                                 "Triad readback match error: triad_read=%2X triad_write=%2X ilayer=%3i itbin=%3i ids_abs=%3i ntbinspre=%3i\n",
                                 triad_read,triad_write,ilayer,itbin,ids_abs,ntbinspre);
                         fprintf(stdout,
@@ -2860,7 +2844,7 @@ display_trailer:
             }	// close itbin
         }	// close ilayer
 
-        if (!triad_error) fprintf(log_file,"Triad readback OK\n");
+        if (!triad_error) fprintf(stdout,"Triad readback OK\n");
     }	// close if !scp_playback
 
     //------------------------------------------------------------------------------
@@ -2869,32 +2853,32 @@ display_trailer:
 check_scope:
     // Scan for 06B05 marker
     if(scope_exists !=1) {
-        fprintf(log_file,"Skipping scope readout because scope_exists=%1X\n",scope_exists);
+        fprintf(stdout,"Skipping scope readout because scope_exists=%1X\n",scope_exists);
         goto skip_scope;
     }
 
     for (iframe=0; iframe<=last_frame; ++iframe) {
         if(vf_data[iframe] == 0x06B05) {
             iscp_begin=iframe;
-            fprintf(log_file,"06B05 scope marker found at frame=%5i\n",iscp_begin);
+            fprintf(stdout,"06B05 scope marker found at frame=%5i\n",iscp_begin);
             goto extract_scope;
         }	// close if vf_data
     }	// close iframe
-    fprintf(log_file,"No 06B05 scope marker found\n");
+    fprintf(stdout,"No 06B05 scope marker found\n");
     goto skip_scope;
 
     // Extract scp data
 extract_scope:
     iscp_end=iscp_begin+frame_cntex_scope-1;
     if(iscp_end > last_frame) {
-        fprintf(log_file,"Not enough scp data, aborting scp read\n");
+        fprintf(stdout,"Not enough scp data, aborting scp read\n");
         goto skip_scope;
     }
 
     if(vf_data[iscp_end] == 0x6E05)
-        fprintf(log_file,"06E05 scope marker found at frame=%5i\n",iscp_end);
+        fprintf(stdout,"06E05 scope marker found at frame=%5i\n",iscp_end);
     else {
-        fprintf(log_file,"Missing 6E05 marker at adr=%5i. Aborting scope read\n",iscp_end);
+        fprintf(stdout,"Missing 6E05 marker at adr=%5i. Aborting scope read\n",iscp_end);
         //	goto skip_scope;	////////////////////// TEMPORARY SKIP
     }
 
@@ -2902,12 +2886,12 @@ extract_scope:
     for (iframe=iscp_begin+1; iframe<=iscp_end-1; ++iframe) {	//excludes 6B05 and 6E05 markers
         scp_raw_data[iscp]=vf_data[iframe];
         if(iscp > (512*160/16-1)) pause ("iscp ovf in decode_raw_hits.for wtf?");
-        fprintf(log_file,"scp debug: %5i%5i%5.4X\n",iscp,iframe,scp_raw_data[iscp]);
+        fprintf(stdout,"scp debug: %5i%5i%5.4X\n",iscp,iframe,scp_raw_data[iscp]);
         iscp++;
     }
 
     // Load scope arrays, display channel graph
-    fprintf(log_file,"Decode/display raw hits scope data\n");
+    fprintf(stdout,"Decode/display raw hits scope data\n");
     scp_arm			= false;
     scp_readout		= false;
     scp_raw_decode	= true;
@@ -2922,44 +2906,44 @@ skip_scope:
     //------------------------------------------------------------------------------
     // Scan for 06B07 marker
     if(miniscope_exists !=1) {
-        fprintf(log_file,"Skipping miniscope readout because miniscope_exists=%1X\n",miniscope_exists);
+        fprintf(stdout,"Skipping miniscope readout because miniscope_exists=%1X\n",miniscope_exists);
         goto skip_miniscope;
     }
 
     for (iframe=0; iframe<=last_frame; ++iframe) {
         if(vf_data[iframe] == 0x06B07) {
             iscp_begin=iframe;
-            fprintf(log_file,"06B07 miniscope marker found at frame=%5i\n",iscp_begin);
+            fprintf(stdout,"06B07 miniscope marker found at frame=%5i\n",iscp_begin);
             goto extract_miniscope;
         }	// close if vf_data
     }	// close iframe
-    fprintf(log_file,"No 06B07 scope marker found\n");
+    fprintf(stdout,"No 06B07 scope marker found\n");
     goto skip_miniscope;
 
     // Extract scp data
 extract_miniscope:
     iscp_end=iscp_begin+frame_cntex_miniscope+frame_cntex_b07e07-1;
     if(iscp_end > last_frame) {
-        fprintf(log_file,"Not enough miniscp data, aborting miniscp read\n");
+        fprintf(stdout,"Not enough miniscp data, aborting miniscp read\n");
         goto skip_miniscope;
     }
 
     if(vf_data[iscp_end] == 0x6E07)
-        fprintf(log_file,"06E07 miniscope marker found at frame=%5i\n",iscp_end);
+        fprintf(stdout,"06E07 miniscope marker found at frame=%5i\n",iscp_end);
     else {
-        fprintf(log_file,"Missing 6E07 marker at adr=%5i. Aborting miniscope read\n",iscp_end);
+        fprintf(stdout,"Missing 6E07 marker at adr=%5i. Aborting miniscope read\n",iscp_end);
     }
 
     iscp=0;
     for (iframe=iscp_begin+1; iframe<=iscp_end-1; ++iframe) {	//excludes 6B07 and 6E07 markers
         miniscope_data[iscp]=vf_data[iframe];
-        fprintf(log_file,"miniscp debug: %5i%5i%5.4X\n",iscp,iframe,miniscope_data[iscp]);
+        fprintf(stdout,"miniscp debug: %5i%5i%5.4X\n",iscp,iframe,miniscope_data[iscp]);
         iscp++;
         if(iscp >= 32) pause ("miniscope iscp ovf in decode_raw_hits.for wtf?");
     }
 
     // Load miniscope arrays, display channel graph
-    fprintf(log_file,"Decode/display miniscope data\n");
+    fprintf(stdout,"Decode/display miniscope data\n");
 
     miniscope16(fifo_tbins_mini,miniscope_data);
 
@@ -2972,7 +2956,7 @@ skip_miniscope:
     // All done...wheee
     //------------------------------------------------------------------------------
 exit:
-    fprintf(log_file,"\n");
+    fprintf(stdout,"\n");
 
     // Check error flags
     for (i=0; i<MXERF; ++ i) {
@@ -2996,13 +2980,12 @@ exit:
 void ck (char *data_string, int &data_read, int &data_expect)
 {
     //Log file
-    FILE     *log_file;
-    string	log_file_name="vmetst_log.txt";
-    log_file = fopen(log_file_name.c_str(),"w");
+    FILE     *stdout;
+    string	stdout_name="vmetst_log.txt";
+    stdout = fopen(stdout_name.c_str(),"w");
     
     if (data_read != data_expect) {
-        fprintf(log_file,"ERRs: Error in %s: read=%8.8X expect=%8.8X\n",data_string,data_read,data_expect);
-        fprintf(stderr,  "ERRs: Error in %s: read=%8.8X expect=%8.8X\n",data_string,data_read,data_expect);
+        fprintf(stdout,"ERRs: Error in %s: read=%8.8X expect=%8.8X\n",data_string,data_read,data_expect);
         //	pause ("pausing in ck()");
     }
 
