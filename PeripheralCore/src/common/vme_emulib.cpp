@@ -1,7 +1,12 @@
 //------------------------------------------------------------------------------
-// Headers
+// System Headers
 //------------------------------------------------------------------------------
 #include <cstdlib>                      
+#include <climits> 
+
+//------------------------------------------------------------------------------
+// Local Headers
+//------------------------------------------------------------------------------
 #include "emu/pc/vme_emulib.h"
 #include "emu/pc/TMB.h"
 
@@ -17,8 +22,21 @@ namespace emu {
 		int TMB::vme_write(unsigned long &adr, unsigned short &wr_data) {
 			int reg; 
 			int value;
-			reg = static_cast<int>(adr);                    //typecast long adr to int
-			value = static_cast<int>(wr_data);              //typecast short wr_data to int
+
+			if ((reg < INT_MAX) && (reg > INT_MIN))
+				reg = static_cast<int>(adr);                    //typecast long adr to int
+			else {
+				std::cout << "Failed to cast adr to int. Address too long."; 
+				return EXIT_FAILURE; 
+			}
+
+			if ((wr_data < INT_MAX) && (wr_data > INT_MIN))
+				value = static_cast<int>(wr_data);              //typecast short wr_data to int
+			else {
+				std::cout << "Failed to cast wr_data to int. Data too long."; 
+				return EXIT_FAILURE; 
+			}
+
 			WriteRegister(reg, value);         //write to VME register using emuLib native 
 			return EXIT_SUCCESS;
 		}
@@ -29,7 +47,13 @@ namespace emu {
 		//------------------------------------------------------------------------------
 		int TMB::vme_read(unsigned long &adr, unsigned short &rd_data) {
 			int reg;
-			reg = static_cast<int>(adr);                    //typcast long adr to int
+			if ((reg < INT_MAX) && (reg > INT_MIN))
+				reg = static_cast<int>(adr);                    //typecast long adr to int
+			else {
+				std::cout << "Failed to cast adr to int. Address too long."; 
+				return EXIT_FAILURE; 
+			}
+
 			rd_data = (unsigned short) TMB::ReadRegister(reg);  //read VME register using emuLib 
 			return EXIT_SUCCESS;
 		}
