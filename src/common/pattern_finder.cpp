@@ -14,13 +14,15 @@
 //------------------------------------------------------------------------------
 #include <stdio.h>
 #include <iostream>
+#include <cstdio>
+
 //------------------------------------------------------------------------------
 // Local Headers
 //------------------------------------------------------------------------------
-#include "emu/pc/pause.h"
 #include "emu/pc/common.h"
 #include "emu/pc/pattern_finder.h"
 #include "emu/pc/pattern_unit.h"
+#include "emu/pc/service.h"
 using namespace std;
 
 //------------------------------------------------------------------------------
@@ -118,12 +120,14 @@ void pattern_finder
     int	me1a_ly4hs[MXHS*1];
     int	me1a_ly5hs[MXHS*1];
 
-    printf(stdout,"dbg: ly0="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly0hs[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly1="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly1hs[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly2="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly2hs[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly3="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly3hs[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly4="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly4hs[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly5="); for (i=0; i<MXHS; ++i) printf(stdout,"%1i",cfeb0_ly5hs[i]); printf(stdout,"\n");
+#ifdef debug
+    fprintf(stdout,"dbg: ly0="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly0hs[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly1="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly1hs[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly2="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly2hs[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly3="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly3hs[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly4="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly4hs[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly5="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly5hs[i]); fprintf(stdout,"\n");
+#endif
 
     //-------------------------------------------------------------------------------------------------------------------
     // Generate mask for marking adjacent cfeb as hit if nearby keys are over thresh
@@ -305,12 +309,14 @@ void pattern_finder
             ly5hs_pad[i-0+j+k] = (i>=128) ? me1a_ly5hs[i%32] : me1b_ly5hs[i%128];
         }}
 
-    printf(stdout,"dbg: ly0hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly0hs_pad[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly1hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly1hs_pad[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly2hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly2hs_pad[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly3hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly3hs_pad[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly4hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly4hs_pad[i]); printf(stdout,"\n");
-    printf(stdout,"dbg: ly5hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) printf(stdout,"%1i",ly5hs_pad[i]); printf(stdout,"\n");
+#ifdef debug
+    fprintf(stdout,"dbg: ly0hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly0hs_pad[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly1hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly1hs_pad[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly2hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly2hs_pad[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly3hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly3hs_pad[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly4hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly4hs_pad[i]); fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: ly5hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly5hs_pad[i]); fprintf(stdout,"\n");
+#endif
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4C:  Layer-trigger mode
@@ -337,8 +343,10 @@ void pattern_finder
 
     layer_trig = (nlayers_hit >= lyr_thresh_pretrig);
 
-    printf(stdout,"dbg: layer_trig =%1i\n",layer_trig );
-    printf(stdout,"dbg: nlayers_hit=%1i\n",nlayers_hit);
+#ifdef debug
+    fprintf(stdout,"dbg: layer_trig =%1i\n",layer_trig );
+    fprintf(stdout,"dbg: nlayers_hit=%1i\n",nlayers_hit);
+#endif
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4D: 1/2-Strip Pattern Finder
@@ -377,7 +385,9 @@ void pattern_finder
                 &ly5hs_pad[ihs],
                 hs_hit[ihs],
                 hs_pid[ihs]);
-        printf(stdout,"dbg: hs_hit[%3i]=%1i hs_pid[%3i]=%1X\n",ihs,hs_hit[ihs],ihs,hs_pid[ihs]);
+#ifdef debug
+        fprintf(stdout,"dbg: hs_hit[%3i]=%1i hs_pid[%3i]=%1X\n",ihs,hs_hit[ihs],ihs,hs_pid[ihs]);
+#endif
     }
 
     // Convert s0 pattern IDs and hits into sortable pattern numbers, [6:4]=nhits, [3:0]=pattern id
@@ -536,9 +546,11 @@ void pattern_finder
     hs_pid_1st = (hs_pat_1st >> 0     ) & 0xF;
     hs_hit_1st = (hs_pat_1st >> MXPIDB) & 0x7;
 
-    printf(stdout,"dbg: hs_key_1st=%3i\n",hs_key_1st);
-    printf(stdout,"dbg: hs_pid_1st=%3X\n",hs_pid_1st);
-    printf(stdout,"dbg: hs_hit_1st=%3i\n",hs_hit_1st);
+#ifdef debug
+    fprintf(stdout,"dbg: hs_key_1st=%3i\n",hs_key_1st);
+    fprintf(stdout,"dbg: hs_pid_1st=%3X\n",hs_pid_1st);
+    fprintf(stdout,"dbg: hs_hit_1st=%3i\n",hs_hit_1st);
+#endif
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 6B: Mark key 1/2-strips near the 1st CLCT key as busy to exclude them from 2nd CLCT priority encoding
@@ -587,10 +599,12 @@ void pattern_finder
         busy_key[ikey] = (ikey>=busy_min && ikey<=busy_max);
     }
 
-    printf(stdout,"\n");
-    printf(stdout,"dbg: busy_min=%3i\n",busy_min);
-    printf(stdout,"dbg: busy_max=%3i\n",busy_max);
-    printf(stdout,"dbg: busy_key="); for (i=0; i<MXHSX; ++i) printf(stdout,"%1i",busy_key[i]); printf(stdout,"\n");
+#ifdef debug
+    fprintf(stdout,"\n");
+    fprintf(stdout,"dbg: busy_min=%3i\n",busy_min);
+    fprintf(stdout,"dbg: busy_max=%3i\n",busy_max);
+    fprintf(stdout,"dbg: busy_key="); for (i=0; i<MXHSX; ++i) fprintf(stdout,"%1i",busy_key[i]); fprintf(stdout,"\n");
+#endif
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 7A: 1/2-Strip Priority Encoder
@@ -635,9 +649,11 @@ void pattern_finder
     }
     if (hs_bsy_2nd!=0) pause("pattern_finder hs_busy_2nd!=0 wtf?!");
 
-    printf(stdout,"dbg: hs_key_2nd=%3i\n",hs_key_2nd);
-    printf(stdout,"dbg: hs_pid_2nd=%3X\n",hs_pid_2nd);
-    printf(stdout,"dbg: hs_hit_2nd=%3i\n",hs_hit_2nd);
+#ifdef debug
+    fprintf(stdout,"dbg: hs_key_2nd=%3i\n",hs_key_2nd);
+    fprintf(stdout,"dbg: hs_pid_2nd=%3X\n",hs_pid_2nd);
+    fprintf(stdout,"dbg: hs_hit_2nd=%3i\n",hs_hit_2nd);
+#endif
 
     return;
 }
