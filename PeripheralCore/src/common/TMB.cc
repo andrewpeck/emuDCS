@@ -1947,23 +1947,23 @@ void    TMB::scope160c (
     scp_waiting		= (rd_data >>12) & 0x1;
     scp_trig_done	= (rd_data >>13) & 0x1;
 
-    fprintf(stdout,"\nScope Call\n");
-    fprintf(stdout,"----------\n");
-    fprintf(stdout,"scp_arm        =%c\n",logical(scp_arm));
-    fprintf(stdout,"scp_readout    =%c\n",logical(scp_readout));
-    fprintf(stdout,"scp_raw_decode =%c\n",logical(scp_raw_decode));
-    fprintf(stdout,"scp_silent     =%c\n",logical(scp_silent));
-    fprintf(stdout,"scp_playback   =%c\n",logical(scp_playback));
-    fprintf(stdout,"\n");
-    fprintf(stdout,"scp_ch_trig_en =%i\n",scp_ch_trig_en);
-    fprintf(stdout,"scp_runstop    =%i\n",scp_runstop);
-    fprintf(stdout,"scp_forcetrig  =%i\n",scp_forcetrig);
-    fprintf(stdout,"scp_auto       =%i\n",scp_auto);
-    fprintf(stdout,"scp_nowrite    =%i\n",scp_nowrite);
-    fprintf(stdout,"scp_tbins      =%i\n",scp_tbins);
-    fprintf(stdout,"scp_ramsel     =%i\n",scp_ramsel);
-    fprintf(stdout,"scp_waiting    =%i\n",scp_waiting);
-    fprintf(stdout,"scp_trig_done  =%i\n",scp_trig_done);
+    (*MyOutput_) << "\nScope Call\n";
+    (*MyOutput_) << "----------\n";
+    (*MyOutput_) << "scp_arm        = " << logical(scp_arm);
+    (*MyOutput_) << "scp_readout    = " << logical(scp_readout);
+    (*MyOutput_) << "scp_raw_decode = " << logical(scp_raw_decode);
+    (*MyOutput_) << "scp_silent     = " << logical(scp_silent);
+    (*MyOutput_) << "scp_playback   = " << logical(scp_playback);
+    (*MyOutput_) << "\n";
+    (*MyOutput_) << "scp_ch_trig_en = " << scp_ch_trig_en;
+    (*MyOutput_) << "scp_runstop    = " << scp_runstop;
+    (*MyOutput_) << "scp_forcetrig  = " << scp_forcetrig;
+    (*MyOutput_) << "scp_auto       = " << scp_auto;
+    (*MyOutput_) << "scp_nowrite    = " << scp_nowrite;
+    (*MyOutput_) << "scp_tbins      = " << scp_tbins;
+    (*MyOutput_) << "scp_ramsel     = " << scp_ramsel;
+    (*MyOutput_) << "scp_waiting    = " << scp_waiting;
+    (*MyOutput_) << "scp_trig_done  = " << scp_trig_done;
     //------------------------------------------------------------------------------
     //	scp_arm
     //------------------------------------------------------------------------------
@@ -2015,18 +2015,17 @@ void    TMB::scope160c (
             //	printf("\tScope status %4.4X\n",rd_data);
             scp_trig_done = (rd_data >>13) & 0x1;
             if(scp_trig_done != 0) goto triggered;		// Triggered and done
-            if(!scp_silent)printf("Waiting for scope trigger %4i\n",i);
+            if(!scp_silent)
+                (*MyOutput_) << "Waiting for scope trigger " << i;
         }
 
-        //	if(!scp_silent) {
-        fprintf(stdout, "\tScope never triggered\n");// Bummer, dude
-        fprintf(stdout, "Scope never triggered\n");// Bummer, dude
+        (*MyOutput_) << "Scope never triggered\n";// Bummer, dude
         goto exit;
-        //	}
 
         // Read back embedded scope data
 triggered:
-        if(!scp_silent)fprintf(stdout,"\tScope triggered\n");
+        if(!scp_silent)
+            (*MyOutput_) << "\tScope triggered\n";
 
         adr = scp_ctrl_adr;
         status = vme_read(adr,rd_data);				// Read scope status
@@ -2085,7 +2084,7 @@ triggered:
     //------------------------------------------------------------------------------
     // Construct waveform
 display:
-    fprintf(stdout,"\n");
+    (*MyOutput_) << "\n";
 
     for (ich=0; ich<=NCHANNELS-1; ++ich)    {	//Loop over scope channels
         iram=ich/16;								//RAM chip has 16 channels
@@ -2107,9 +2106,10 @@ display:
         int chblank=(ch[ich].nbits!=1) && !DISP_ALL;	// dont display channels that are hex digits
 
         if(!chblank) {
-            fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-            for(i=0;i<NDSP;++i) fprintf(stdout,"%c",scope_ch[i]);
-            fprintf(stdout,"\n");
+            (*MyOutput_) << "ch " << ich << " " << ch[ich].tag.c_str();
+            for(i=0;i<NDSP;++i) 
+                (*MyOutput_) << scope_ch[i];
+            (*MyOutput_) << std::endl;
         }
 
         // Display hex integers for special channel groups
@@ -2118,13 +2118,16 @@ display:
             if (last_bit) {
                 ndigits=(ch[ich].nbits+3)/4;
                 for (idigit=ndigits-1; idigit>=0; --idigit) {
-                    fprintf(stdout,"ch%3.2i  %s",ich,ch[ich].tag.c_str());
-                    for(i=0;i<NDSP;++i) fprintf(stdout,"%1.1X",(ihex[i] >> (4*idigit)) & 0xF);
-                    fprintf(stdout,"\n");
-                }}}
-    }	//close ich
+                    (*MyOutput_) << "ch" << ich << " " << ch[ich].tag.c_str();
+                    for(i=0;i<NDSP;++i) 
+                        (*MyOutput_) << ((ihex[i] >> (4*idigit)) & 0xF);
+                    (*MyOutput_) << std::endl;
+                } // close for idigit
+            } // close if last_bit
+        } //close if ch[ich]
+    } //close for (ich=0..
 
-    fprintf(stdout,"\n");
+    (*MyOutput_) << endl;
 
     //------------------------------------------------------------------------------
     // We be done
@@ -4754,9 +4757,9 @@ END:
 
 			if (ifunc>0) {
 				if (blue_flash==0) 
-                    (*MyOutput_) << ("\tNO BLUE FLASH. Rats =:-(\n");
+                    (*MyOutput_) << ("NO BLUE FLASH. Rats =:-(\n");
 				if (blue_flash==1) 
-                    (*MyOutput_) << ("\tBlue flash. Cool\n");
+                    (*MyOutput_) << ("Blue flash. Cool\n");
 			}
 
 			// Check scintillator veto is set
@@ -4811,23 +4814,23 @@ END:
 
 			// Display ALCTs found
 			if (ifunc>0) {
-				printf("\tExpect:ALCT0:Key7 Q3 Bxn1 ALCT1:Key61 Q2 Bxn1\n");
+				(*MyOutput_) << ("Expect:ALCT0:Key7 Q3 Bxn1 ALCT1:Key61 Q2 Bxn1\n");
 
-				printf("\tALCT0: ");
-				printf("vpf =%1i ", alct0_vpf );
-				printf("qual=%1i ", alct0_qual);
-				printf("amu =%1i ", alct0_amu );
-				printf("key =%3i ", alct0_key );
-				printf("bxn =%1i ", alct0_bxn );
-				printf("\n");
+				(*MyOutput_) << "ALCT0: ";
+				(*MyOutput_) << "vpf = " << alct0_vpf ;
+				(*MyOutput_) << "qual= " << alct0_qual;
+				(*MyOutput_) << "amu = " << alct0_amu ;
+				(*MyOutput_) << "key = " << alct0_key ;
+				(*MyOutput_) << "bxn = " << alct0_bxn ;
+				(*MyOutput_) << "\n";
 
-				printf("\tALCT1: ");
-				printf("vpf =%1i ", alct1_vpf );
-				printf("qual=%1i ", alct1_qual);
-				printf("amu =%1i ", alct1_amu );
-				printf("key =%3i ", alct1_key );
-				printf("bxn =%1i ", alct1_bxn );
-				printf("\n");
+				(*MyOutput_) << "ALCT1: "; 
+				(*MyOutput_) << "vpf = " << alct1_vpf ;
+				(*MyOutput_) << "qual= " << alct1_qual;
+				(*MyOutput_) << "amu = " << alct1_amu ;
+				(*MyOutput_) << "key = " << alct1_key ;
+				(*MyOutput_) << "bxn = " << alct1_bxn ;
+				(*MyOutput_) << "\n";
 			}
 
 			// Read back embedded scope data
@@ -5231,8 +5234,8 @@ END:
 			dmb_wdcnt = rd_data & 0x0FFF;
 			dmb_busy  = (rd_data >> 14) & 0x0001;
 
-			printf("\tdmb word count = %4i\n",dmb_wdcnt);
-			printf("\tdmb busy       = %4i\n",dmb_busy);
+			(*MyOutput_) << "dmb word count = " << dmb_wdcnt;
+			(*MyOutput_) << "dmb busy       = " << dmb_busy;
 
 			if (dmb_busy!=0) {
 				pause ("Can not read RAM: dmb reports busy");
@@ -5263,7 +5266,7 @@ END:
 
 				dmb_rdata = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
-				fprintf(stdout,  "\tAdr=%4i Data=%5.5X\n",iadr,dmb_rdata);
+				(*MyOutput_) << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
 
 			}   // close iadr
 
@@ -5281,7 +5284,7 @@ END:
 		//------------------------------------------------------------------------------
 		int TMB::TriggerTestFire_L1A_to_ALCT () {
 			//L16500:
-			fprintf(stdout, "ALCT test started\n");
+			(*MyOutput_) << "ALCT test started" << std::endl;
 
 			// Turn off CCB inputs to zero alct_adb_sync and ext_trig
 			adr     = ccb_cfg_adr;
@@ -5332,10 +5335,12 @@ END:
 
 			if (ifunc>0)
 			{
-				fprintf(stdout,"\tALCT0=%4.4X\n",alct0_rd);
-				fprintf(stdout,"\tALCT1=%4.4X\n",alct1_rd);
-				if (alct0_rd==alct0_prev) printf("\tALCT LCT0 unchanged\n");
-				if (alct1_rd==alct1_prev) printf("\tALCT LCT1 unchanged\n");
+				(*MyOutput_) << "\tALCT0=" << alct0_rd << std::endl;
+				(*MyOutput_) << "\tALCT1=" << alct1_rd << std::endl;
+				if (alct0_rd==alct0_prev) 
+                    (*MyOutput_) << "\tALCT LCT0 unchanged\n";
+				if (alct1_rd==alct1_prev) 
+                    (*MyOutput_) << "\tALCT LCT1 unchanged\n";
 			}
 			alct0_prev = alct0_rd;
 			alct1_prev = alct1_rd;
@@ -5363,14 +5368,14 @@ END:
 			pause("alct fifo stuck busy");
 
 			//L16520:
-			printf("\tALCT L1A alct_raw_done waits=%5i\n",i);
+			(*MyOutput_) << "\tALCT L1A alct_raw_done waits=" << i << std::endl;
 			if (alct_raw_done!=1) pause("alct fifo not done");
 
 			// Get alct word count
 			adr    = alct_fifo_adr;    // alct word count
 			status = vme_read(adr,rd_data);
 			alct_raw_nwords = (rd_data >> 2) & 0x07FF;
-			fprintf(stdout,"\talct_raw_nwords=%5i\n",alct_raw_nwords);
+			(*MyOutput_) << "alct_raw_nwords=" << alct_raw_nwords << std::endl;
 
 			// Read alct fifo data
 			for (i=0; i<=max(alct_raw_nwords-1,0); ++i) {
@@ -5382,23 +5387,23 @@ END:
 				adr     = alctfifo2_adr;   // alct raw data lsbs
 				status  = vme_read(adr,rd_data);
 				alct_raw_data = rd_data;
-				fprintf(stdout,"adr=4i alct raw lsbs=%4.4X\n",rd_data);
+				(*MyOutput_) << "adr=4i alct raw lsbs=" << rd_data << std::endl;
 
 				adr     = alct_fifo_adr;   // alct raw data msbs
 				status  = vme_read(adr,rd_data);
-				fprintf(stdout,"adr=4i alct raw msbs=%4.4X\n",rd_data);
+				(*MyOutput_) << "adr=4i alct raw msbs=" << rd_data << std::endl;
 				rd_data = (rd_data>>13) & 0x0003;
 				alct_raw_data = alct_raw_data | (rd_data<<16);
 
 				if (i<mxframe) vf_data[i] = alct_raw_data;
 				if (i<=3 || i>=alct_raw_nwords-4)
-					fprintf(stdout,  "\t%5i %5.5X\n",i,alct_raw_data);
+					(*MyOutput_) << "\t" << i << " " << alct_raw_data << std::endl;
 			}
 
 			// calculate CRC for data stream
 			dmb_wdcnt = alct_raw_nwords;
 			if (dmb_wdcnt<5) {
-				printf("Raw hits dump too short for crc calc dmb_wdcnt=%i\n",dmb_wdcnt);
+				(*MyOutput_) << "Raw hits dump too short for crc calc dmb_wdcnt=" << dmb_wdcnt << std::endl;
 				pause("<cr> to resume");
 				return EXIT_FAILURE; 
 			}
@@ -5416,8 +5421,7 @@ END:
 			tmb_crc     = tmb_crc_lsb | (tmb_crc_msb<<11);  // full 22 bit crc
 			crc_match   = crc==tmb_crc;
 
-			//fprintf(stdout,"\tcalc_crc=%6.6X alct_crc=%6.6X match=%c\n",crc,tmb_crc,crc_match,logical(crc_match));
-			fprintf(stdout,"\tcalc_crc=%6.6ld alct_crc=%6.6ld match=%i\n",crc,tmb_crc,crc_match);
+			(*MyOutput_) <<  "calc_crc=" << crc << " alct_crc=" << tmb_crc << "match=" << logical(crc_match) << endl; ;
 
 			if (!crc_match) pause("ALCT crc error, WTF!");
 			return EXIT_FAILURE; 
@@ -5935,7 +5939,7 @@ END:
 					else {
 						wr_data = wr_data & 0xFFFE;                 // Turn off bit[0], masks RPC signals from RAT
 						wr_data = wr_data | 0x0004;                 // 1=enable TMBs RPC RAM internal injector
-						printf("\tUsing TMBs RPC Injector RAM, RAT disconnected.\n");
+						(*MyOutput_) << "\tUsing TMBs RPC Injector RAM, RAT disconnected.\n";
 					}}
 
 				//  rat_injector_delay=7;
@@ -5967,7 +5971,7 @@ END:
 
 					for (irpc=0; irpc<=1;   ++ irpc) {
 						for (ibxn=0; ibxn<=255; ++ ibxn) {
-							fprintf(stdout,"rpc_inj_image writing%2i%2i%6.5X\n",ibxn,irpc,rpc_inj_image[ibxn][irpc]);
+							(*MyOutput_) << "rpc_inj_image writing" << ibxn << irpc << rpc_inj_image[ibxn][irpc] << std::endl;
 							adr     = rpc_inj_wdata_adr;       // pad data to write to ram
 							wr_data = rpc_inj_image[ibxn][irpc] & 0x0000FFFF;
 							status  = vme_write(adr,wr_data);
@@ -6019,10 +6023,10 @@ END:
 							wr_data = rpc_inj_wen | (rpc_inj_ren << 4) | (rpc_inj_rwadr << 8) | (rpc_tbins_test << 15);     // set ren=0
 							status  = vme_write(adr,wr_data);
 
-							fprintf(stdout ,"rpc_inj_data reading%2i%2i%6.5X\n",ibxn,irpc,rpc_inj_data);
+							(*MyOutput_) << "rpc_inj_data reading" << ibxn << irpc << rpc_inj_data << std::endl;
 
-							if (rpc_inj_data != rpc_inj_image[ibxn][irpc])
-								fprintf(stdout,  "RPC injector RAM error at adr=%2.2i expect=%5.5X read=%5.5X\n",rpc_inj_rwadr,rpc_inj_image[ibxn][irpc],rpc_inj_data);
+                            if (rpc_inj_data != rpc_inj_image[ibxn][irpc])
+                                (*MyOutput_) << "RPC injector RAM error at adr=" << rpc_inj_rwadr << " expect= " << rpc_inj_image[ibxn][irpc] << " read=" << rpc_inj_data << std::endl;
 
 						}   // close for ibxn
 					}   // close for irpc
@@ -6082,8 +6086,10 @@ END:
 					bx0_match_err_ff     = (rd_data >> 13) & 0x1; 
 					sync_err_force       = (rd_data >> 15) & 0x1;
 
-					if (sync_err==0 && sync_err_force==1) printf("ERR: TMB failed to force sync_err, sync_err=%1i sync_err_force=%1i\n",sync_err,sync_err_force);
-					if (sync_err==1 && vme_bx0_emu_en==1) printf("ERR: TMB failed to clear sync_err, sync_err=%1i vme_bx0_emu_en=%1i\n",sync_err,vme_bx0_emu_en);
+					if (sync_err==0 && sync_err_force==1) 
+                        (*MyOutput_) << "ERR: TMB failed to force sync_err, sync_err=" << sync_err << " sync_err_force=" << sync_err_force << std::endl; 
+					if (sync_err==1 && vme_bx0_emu_en==1) 
+                        (*MyOutput_) << "ERR: TMB failed to clear sync_err, sync_err=" << sync_err << " vme_bx0_emu_en=" << vme_bx0_emu_en << std::endl;
 				}
 
 				// Loop key and pid modes
@@ -6123,8 +6129,10 @@ END:
 				}
 
 				if (loop_pids[iclct]) {             // do all pattern IDs
-					if (hit_thresh_pretrig   > 3) printf("hit_thresh_pretrig   too high to trigger edge keys\n");
-					if (hit_thresh_postdrift > 3) printf("hit_thresh_postdrift too high to trigger edge keys\n");
+					if (hit_thresh_pretrig   > 3) 
+                        (*MyOutput_) << "hit_thresh_pretrig   too high to trigger edge keys\n";
+					if (hit_thresh_postdrift > 3) 
+                        (*MyOutput_) << "hit_thresh_postdrift too high to trigger edge keys\n";
 				}
 
 				// Loop over trigger events: clct0 keys and clct0 pids
@@ -6164,15 +6172,15 @@ END:
 							clct_key_inject[iclct] = ikey;
 							clct_pid_inject[iclct] = ipid;
 
-							fprintf(stdout ,"dbg: clct_key_inject[%1i]=%3i\n",iclct,clct_key_inject[iclct]);
-							fprintf(stdout ,"dbg: clct_pid_inject[%1i]=%3X\n",iclct,clct_pid_inject[iclct]);
+							(*MyOutput_) << "dbg: clct_key_inject" << iclct << "=" << clct_key_inject[iclct] << std::endl;
+							(*MyOutput_) << "dbg: clct_pid_inject" << iclct << "=" << clct_pid_inject[iclct] << std::endl;
 
 							if (iclct==1 && loop_keys[1]) {
 								ikey_sep = abs(clct_key_inject[0]-clct_key_inject[1]);
 								if (ikey_sep<=1) {
 									clct_blanked[1]    = true;
 								}
-								fprintf(stdout ,"dbg: key=%3.3i clct1 key separation ikey_sep=%3i clct_blanked[1]=%c\n",ikeylp,ikey_sep,logical(clct_blanked[1]));
+								(*MyOutput_) << "dbg: key=" << ikeylp << " clct1 key separation ikey_sep=" << ikey_sep << " clct_blanked[1]=" << logical(clct_blanked[1]) << std::endl;
 							}
 							if (clct_blanked[iclct]) continue;  // skip this clct if its blanked 
 
@@ -6202,7 +6210,8 @@ END:
 									ihit  = pattern_image[ipid][layer][icell];      // Extract pattern hits
 
 									if (ihit==1   ) ihitp++;                        // Count primary pattern hits
-									if (ihit==1 && ihs_hit>=1) printf("ERRx: Hs collision at ikey=%3i ly=%1i icell=%2i\n",ikey,layer,icell);    
+									if (ihit==1 && ihs_hit>=1) 
+                                        (*MyOutput_) << "ERRx: Hs collision at ikey=" << ikey << " ly=" << layer << " icell=" << icell << std::endl;
 									if (ihs_hit>=1) ihit = 0;                       // Do not hit same distrip twice, comparators can only encode 1 of 4 hs
 									if (ihitp>clct_hit_inject[iclct]) ihit = 0;     // Limit clct[n] hs hits to user-set
 
@@ -6214,12 +6223,10 @@ END:
 								}   // close icell
 							}   // close layer
 
-							fprintf(stdout ,"CLCT%1i: Key=%3i Pattern=%2X primary hits=%2i expected hits=%2i\n",iclct,ikey,ipid,ihitp,clct_hit_expect[iclct]);
+							(*MyOutput_) << "CLCT" << iclct << ": " << "Key=" << ikey << " " << "Pattern=" << ipid << " " << "primary hits=" << ihitp << " " << "expected hits=" << clct_hit_expect[iclct] << std::endl;
 
-							if (ihitp!=6) {
-								printf("CLCT%1i: Key=%3i Pattern=%2X primary hits=%2i expected hits=%2i\n",iclct,ikey,ipid,ihitp,clct_hit_expect[iclct]);
+							if (ihitp!=6)
 								pause("clct error in primary hit count, expected 6 hits.");
-							}
 
 							// Close loops for this event
 						}   // close for iclct
@@ -6228,16 +6235,18 @@ END:
 						//img_file=log_file;
 						//  img_file=sum_file;
 
-						fprintf(stdout ,"1/2-Strip Image:\n");
+						(*MyOutput_) << "1/2-Strip Image:\n";
 						for (layer=0; layer<=5; ++layer) {
 							nstag=((layer+1)%2)*stagger_hs_csc;             // stagger even layers
-							fprintf(stdout ,"%1i: ",layer);             // layer number
-							for (i=1; i<=nstag; ++i) fprintf(stdout ," ");  // insert 1 or 2 spaces for staggering
-							fprintf(stdout ,"|");
+							(*MyOutput_) << layer << ": ";             // layer number
+							for (i=1; i<=nstag; ++i) 
+                                (*MyOutput_) << " ";  // insert 1 or 2 spaces for staggering
+							(*MyOutput_) << "|";
 							for (icfebg=0; icfebg<=4; ++icfebg) {           // cfeb groups horizontally
-								for (i=0; i<=31; ++i) fprintf(stdout ,"%1i",ihs[layer][i+32*icfebg]);
-								fprintf(stdout ,"|");}
-								fprintf(stdout ,"\n");
+								for (i=0; i<=31; ++i) 
+                                    (*MyOutput_) << ihs[layer][i+32*icfebg];
+								(*MyOutput_) << "|";}
+								(*MyOutput_) << "\n";
 						}
 
 						// Clear triad image
@@ -6269,7 +6278,7 @@ END:
 						if (load_clct_injector_image)
 						{
 							inquirs("WalkingCLCT","ram_file",ram_file_name);
-							fprintf(stdout,"\n\tOpening CLCT injector RAM image file %s\n",ram_file_name.c_str());
+							(*MyOutput_) << "\n\tOpening CLCT injector RAM image file " << ram_file_name.c_str();
 
 							ram_file      = fopen(ram_file_name.c_str(),"r");
 							if (ram_file==NULL) {pause("Unable to open CLCT injector RAM image file"); return;}
@@ -6283,7 +6292,7 @@ END:
 								if  (feof(ram_file)) break;                             // Hit end of file
 								fgets(line,81,ram_file);                                // Get a new line
 								sscanf(line,     "%1i%3i |%8X|%8X|%8X|%8X|%8X|",            &layer,&itbin,&dscfeb[0],&dscfeb[1],&dscfeb[2],&dscfeb[3],&dscfeb[4]);
-								fprintf(stdout ,"%1i%3i |%8.8X|%8.8X|%8.8X|%8.8X|%8.8X|\n", layer, itbin, dscfeb[0], dscfeb[1], dscfeb[2], dscfeb[3], dscfeb[4]);
+                                (*MyOutput_) << &layer << &itbin << " |" << layer << "|" << itbin << "|" << dscfeb[0] << "|" << dscfeb[1] << "|" << dscfeb[2] << "|" << dscfeb[3] << "|" << dscfeb[4] << "|\n";
 
 								if (layer<0 || layer>5       ) stop("layer out of range in clct injector image file");
 								if (itbin<0 || itbin>=mxtbins) stop("itbin out of range in clct injector image file");
@@ -6308,27 +6317,29 @@ END:
 									nhits=nhits+ihs[layer][key+i];
 								}
 								if (nhits>1) {
-									printf("Multi triad hits=%1i at ly=%1i key=%1i unable to encode all hs hits\n",nhits,layer,key);
+									(*MyOutput_) << "Unable to Encode all hs hits" << std::endl;
+									(*MyOutput_) << "Multi triad hits=" << nhits << " at ly=" << layer << " key=" << key << std::endl;
 									pause (" "); }
 							}
 						}
 
 						// Display Triads
-						fprintf(stdout ,"\nbegin triad for key%3.3i",ikeylp); 
-						for(i=0;i<nclcts_inject;++i) fprintf(stdout ,"  clct%1i: key%3.3i hit%1i pid%1X",i,clct_key_expect[i],clct_hit_expect[i],clct_pid_expect[i]); 
-						fprintf(stdout ,"\n");
+						(*MyOutput_) << "\nbegin triad for key" << ikeylp; 
+						for(i=0;i<nclcts_inject;++i) 
+                            (*MyOutput_) << "  clct"<<i<<": key" << clct_key_expect[i] << " hit" <<clct_hit_expect[i] << " pid" << clct_pid_expect[i];
+						(*MyOutput_) << "\n";
 
 						for (layer=0; layer<=5; ++layer) {
 							for (itbin=0; itbin<=2; ++itbin) {
 								for (icfebg  =0; icfebg  <=4; ++icfebg  ) {
 									for (idistrip=0; idistrip<=7; ++idistrip) {
-										fprintf(stdout,"%1i",itriad[itbin][idistrip+8*icfebg][layer]); 
+										(*MyOutput_) << itriad[itbin][idistrip+8*icfebg][layer]; 
 									} //close idistrip
-									fprintf(stdout ," ");
+									(*MyOutput_) << " ";
 								} //close icfebg
-								fprintf(stdout ,"\n");
+								(*MyOutput_) << "\n";
 							} //close itbin
-							fprintf(stdout ,"\n");
+							(*MyOutput_) << "\n";
 						} //close layer
 
 						// Pack triads into pattern RAM
@@ -6349,7 +6360,7 @@ END:
 									wr_data=wr_data | (ibit << (idslocal+8));
 
 									pat_ram[itbin][iram][icfeblp]=wr_data;
-									fprintf(stdout,"pat_ram tbin=%2i ram=%1i wr_data=%4.4X\n",itbin,iram,wr_data);
+									(*MyOutput_) << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << wr_data << std::endl;
 								}
 							}
 						}
@@ -6413,7 +6424,14 @@ END:
 									rd_data_mem = rd_data_lsb | (rd_data_msb << 16); 
 
 									if (cprr && !cprr_ignore && (rd_data_mem != wr_data_mem)){
-										printf("\tInjector Verify Err: cfeb%1i key%3i RAM%2i Tbin%2i wr=%5.5X rd=%5.5X\n",icfeblp,ikey,iram,itbin,wr_data_mem,rd_data_mem);
+                                        (*MyOutput_) << "\tInjector Verify Err: "
+                                                    << " cfeb " << icfeblp
+                                                    << " key" << ikey
+                                                    << " RAM" << iram
+                                                    << " Tbin" << itbin
+                                                    << " wr=" << wr_data_mem
+                                                    << " rd=" << rd_data_mem << std::endl;
+
 										//printf("\tSkip, Continue <cr> ");
 										//fgets(line, 80, stdin);
 										//n=strlen(line);
@@ -6451,7 +6469,7 @@ END:
 						adr     = alct0_inj_adr;
 						status  = vme_write(adr,wr_data);
 
-						fprintf(stdout ,"alct0_inj_wr=%4.4X\n",alct0_inj_wr);
+						(*MyOutput_) << "alct0_inj_wr=" << alct0_inj_wr << std::endl;
 
 						// Set ALCT second muon to inject:
 						if (nalcts_inject == 2) {
@@ -6479,7 +6497,7 @@ END:
 						adr     = alct1_inj_adr;
 						status  = vme_write(adr,wr_data);
 
-						fprintf(stdout ,"alct1_inj_wr=%4.4X\n",alct1_inj_wr);
+						(*MyOutput_) << "alct1_inj_wr=" << alct1_inj_wr << std::endl;
 
 						// Lower pattern threshold temporarily so edge key 1/2-strips will trigger, set it back later
 						if (loop_keys[0] && (ikey<=4 || ikey>=154))
@@ -6604,14 +6622,14 @@ END:
 							cfeb_active_emu[4]=0;
 						}
 
-						fprintf(stdout ,"\n");
-						fprintf(stdout ,"CLCTemu hs_key_1st_emu=%3i hs_pid_1st_emu =%1X hs_hit_1st_emu=%1i\n",hs_key_1st_emu, hs_pid_1st_emu, hs_hit_1st_emu);
-						fprintf(stdout ,"CLCTemu hs_key_2nd_emu=%3i hs_pid_2nd_emu =%1X hs_hit_2nd_emu=%1i\n",hs_key_2nd_emu, hs_pid_2nd_emu, hs_hit_2nd_emu);
-						fprintf(stdout ,"CLCTemu layer_trig_emu=%3i nlayers_hit_emu=%1i\n",layer_trig_emu, nlayers_hit_emu);
-						fprintf(stdout ,"CLCTemu cfeb_active_emu[4:0]=");
+						(*MyOutput_) << "\n";
+                        (*MyOutput_) << "CLCTemu hs_key_1st_emu=" << hs_key_1st_emu << " hs_pid_1st_emu=" << hs_pid_1st_emu << " hs_hit_1st_emu=" << hs_hit_1st_emu << std::endl;
+                        (*MyOutput_) << "CLCTemu hs_key_2nd_emu=" << hs_key_2nd_emu << " hs_pid_2nd_emu=" << hs_pid_2nd_emu << " hs_hit_2nd_emu=" << hs_hit_2nd_emu << std::endl;
+						(*MyOutput_) << "CLCTemu layer_trig_emu=" << layer_trig_emu << " nlayers_hit_emu=" << nlayers_hit_emu << std::endl;
+						(*MyOutput_) << "CLCTemu cfeb_active_emu[4:0]=";
 						for(i=4;i>=0;--i)
-							fprintf(stdout ,"%1i",cfeb_active_emu[i]); 
-						fprintf(stdout ,"\n");
+							(*MyOutput_) << cfeb_active_emu[i]; 
+						(*MyOutput_) << "\n";
 
 						// CLCTemu: Latch pattern finder emulator results
 						emulator_pretrig     = (hs_hit_1st_emu>=hit_thresh_pretrig_temp   && hs_pid_1st_emu>=pid_thresh_pretrig  );
@@ -6659,22 +6677,22 @@ END:
 								status = vme_read(adr,rd_data);
 								clctc_vme = (rd_data >> 0) & 0x0007;
 
-								fprintf(stdout,"clct0_vme=%6.6X\n",clct0_vme);
-								fprintf(stdout,"clct1_vme=%6.6X\n",clct1_vme);
-								fprintf(stdout,"clctm_vme=%6.6X\n",rd_data);
+								(*MyOutput_) << "clct0_vme=" << clct0_vme << std::endl; 
+								(*MyOutput_) << "clct1_vme=" << clct1_vme << std::endl; 
+								(*MyOutput_) << "clctm_vme=" << rd_data << std::endl; 
 
 								// CLCTvme: Get VME clct bxn stored at pretrigger
 								adr    = bxn_clct_adr;
 								status = vme_read(adr,rd_data);
 								clct_bxn_expect = rd_data & 0x3;
-								fprintf(stdout,"CLCT pretrigger bxn=%4.4Xh truncated=%4.4Xh\n",rd_data,clct_bxn_expect);
+								(*MyOutput_) << " CLCT pretrigger bxn=" << rd_data << " truncated=" << clct_bxn_expect << std::endl;
 
 								// CLCTvme: Get VME  number of layers hit
 								adr    = layer_trig_adr;
 								status = vme_read(adr,rd_data);
 								nlayers_hit = (rd_data >> 4) & 0x7;
 
-								fprintf(stdout,"nlayers_hit=%1i\n",nlayers_hit);
+								(*MyOutput_) << "nlayers_hit=" << nlayers_hit << std::endl;
 
 								// CLCTvme: Get VME active CFEB list
 								adr    = seq_clctm_adr;
@@ -6726,9 +6744,18 @@ END:
 										if (clct_hit_inject[i]==3) clct_hit_inject_clip[i]=clct_hit_inject[i]-1;    // hit ly0,1,2       clipped ly1    
 										if (clct_hit_inject[i]==2) clct_hit_inject_clip[i]=clct_hit_inject[i]-1;    // hit ly0,1         clipped ly1    
 										if (clct_hit_inject[i]==1) clct_hit_inject_clip[i]=clct_hit_inject[i]-0;    // hit ly0           clipped none   
-										fprintf(stdout ,"clct_hit_inject[%1i] clipped from %1i hits to %1i hits at csc edge due to staggering\n",i,clct_hit_inject[i],clct_hit_inject_clip[i]);
+
+										(*MyOutput_) 
+                                            << "clct_hit_inject[" << i
+                                            << "] clipped from " << clct_hit_inject[i]
+                                            << " hits to " << clct_hit_inject_clip[i]
+                                            << "hits at csc edge due to staggering\n";
+                                            
 									}
-									fprintf(stdout ,"clct_hit_inject[%1i]=%1i clct_hit_inject_clip[%1i]=%1i\n",i,clct_hit_inject[i],i,clct_hit_inject_clip[i]);
+									(*MyOutput_) 
+                                        << "clct_hit_inject[" << i << "]=" << clct_hit_inject[i] << " "
+                                        << "clct_hit_inject_clip[" << i << "]=" << clct_hit_inject_clip[i] << std::endl;
+
 								}   // close for i
 
 								// CLCTinj: Find expected clct0 from the injector
@@ -6751,10 +6778,10 @@ END:
 									}
 								}
 
-								fprintf(stdout ,"clct_hit_inj_expect[0]=%3i\n",clct_hit_inj_expect[0]);
-								fprintf(stdout ,"clct_key_inj_expect[0]=%3i\n",clct_key_inj_expect[0]);
-								fprintf(stdout ,"clct_pid_inj_expect[0]=%3X\n",clct_pid_inj_expect[0]);
-								fprintf(stdout ,"clct_pat_inj_expect[0]=%3X\n",clct_pat_inj_expect[0]);
+								(*MyOutput_) << "clct_hit_inj_expect[0]=" << clct_hit_inj_expect[0] << std::endl;
+								(*MyOutput_) << "clct_key_inj_expect[0]=" << clct_key_inj_expect[0] << std::endl;
+								(*MyOutput_) << "clct_pid_inj_expect[0]=" << clct_pid_inj_expect[0] << std::endl;
+								(*MyOutput_) << "clct_pat_inj_expect[0]=" << clct_pat_inj_expect[0] << std::endl;
 
 								// CLCTinj: Create key 1/2-strip blanking region around clct0 from injector
 								nspan = clct_sep;
@@ -6785,10 +6812,10 @@ END:
 									busy_key_inj[i] = (i>=busy_min && i<=busy_max);
 								}
 
-								fprintf(stdout ,"busy_key_inj="); 
+								(*MyOutput_) << "busy_key_inj="; 
 								for (i=0; i<160; ++i) 
-									fprintf(stdout,"%1i",busy_key_inj[i]); 
-								fprintf(stdout,"\n");
+									(*MyOutput_) << busy_key_inj[i]; 
+								(*MyOutput_) << "\n";
 
 								// CLCTinj: Find expected clct1 from the injector
 								clct_hit_inj_expect[1] = 0;
@@ -6805,8 +6832,8 @@ END:
 											 (clct_key_inject[i] <  clct_key_inj_expect[1])))       // take the equal pattern at the lower key hs
 									{
 										key_inj = clct_key_inject[i];
-										fprintf(stdout,"dbg: key_inj=%3i\n",key_inj);
-										fprintf(stdout,"dbg: busy_key[key_inj]=%3i\n",busy_key_inj[key_inj]);
+										(*MyOutput_) << "dbg: key_inj=" << key_inj << std::endl;
+										(*MyOutput_) << "dbg: busy_key[key_inj]=" << busy_key_inj[key_inj] << std::endl; 
 
 										if (busy_key_inj[key_inj]==0)                           // accept only non-busy keys far enough away from clct0
 										{
@@ -6818,10 +6845,10 @@ END:
 									}
 								}
 
-								fprintf(stdout,"clct_hit_inj_expect[1]=%3i\n",clct_hit_inj_expect[1]);
-								fprintf(stdout,"clct_key_inj_expect[1]=%3i\n",clct_key_inj_expect[1]);
-								fprintf(stdout,"clct_pid_inj_expect[1]=%3X\n",clct_pid_inj_expect[1]);
-								fprintf(stdout,"clct_pat_inj_expect[1]=%3X\n",clct_pat_inj_expect[1]);
+								(*MyOutput_) << "clct_hit_inj_expect[1]=" << clct_hit_inj_expect[1] << std::endl;
+								(*MyOutput_) << "clct_key_inj_expect[1]=" << clct_key_inj_expect[1] << std::endl;
+								(*MyOutput_) << "clct_pid_inj_expect[1]=" << clct_pid_inj_expect[1] << std::endl;
+								(*MyOutput_) << "clct_pat_inj_expect[1]=" << clct_pat_inj_expect[1] << std::endl;
 
 								// CLCTinj: Predict pre-trigger and post-drift behavior for injected CLCTs
 								injector_clct0_over  = false;   // clct0 over thresholds
@@ -6839,11 +6866,11 @@ END:
 									injector_latch_clct1 = injector_pretrig && injector_clct1_over;
 								}
 
-								fprintf(stdout,"injector_clct0_over =%c\n",logical(injector_clct0_over ));
-								fprintf(stdout,"injector_clct1_over =%c\n",logical(injector_clct1_over ));
-								fprintf(stdout,"injector_pretrig    =%c\n",logical(injector_pretrig    ));
-								fprintf(stdout,"injector_latch_clct0=%c\n",logical(injector_latch_clct0));
-								fprintf(stdout,"injector_latch_clct1=%c\n",logical(injector_latch_clct1));
+								(*MyOutput_) << "injector_clct0_over =" << logical(injector_clct0_over) << std::endl;
+								(*MyOutput_) << "injector_clct1_over =" << logical(injector_clct1_over) << std::endl;
+								(*MyOutput_) << "injector_pretrig    =" << logical(injector_pretrig) << std::endl;
+								(*MyOutput_) << "injector_latch_clct0=" << logical(injector_latch_clct0) << std::endl;
+								(*MyOutput_) << "injector_latch_clct1=" << logical(injector_latch_clct1) << std::endl;
 
 								// CLCTinj: Latch pattern finder emulator results
 								clct0_vpf_vme_expect = 0;
@@ -6928,7 +6955,7 @@ END:
 
 								// TMBemu: Take either the CLCT injector or emulator result for the TMB stage
 								if (send_emulator_to_tmb) {
-									fprintf(stdout,"CLCT: Sending emulator CLCTs to TMB checking\n");
+									(*MyOutput_) << "CLCT: Sending emulator CLCTs to TMB checking\n";
 									clct0_vpf_tmb  = clct0_vpf_emu;
 									clct0_hit_tmb  = clct0_hit_emu;
 									clct0_pid_tmb  = clct0_pid_emu;
@@ -6945,7 +6972,7 @@ END:
 									clctc_sync_err_tmb = ~vme_bx0_emu_en & 0x1;
 								}
 								else {
-									fprintf(stdout,"CLCT: Sending injector CLCTs to TMB checking\n");
+									(*MyOutput_) << "CLCT: Sending injector CLCTs to TMB checking\n";
 									clct0_vpf_tmb  = clct0_vpf_vme_expect;
 									clct0_hit_tmb  = clct0_hit_vme_expect;
 									clct0_pid_tmb  = clct0_pid_vme_expect;
@@ -7001,15 +7028,15 @@ END:
 								if (expect_one_clct==1 && nalcts_inject==2) expect_dupe_clct = 1;
 								if (expect_two_clct==1 && nalcts_inject==1) expect_dupe_alct = 1;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"Setting expect_zero_alct = %c\n",logical(expect_zero_alct));
-								fprintf(stdout,"Setting expect_zero_clct = %c\n",logical(expect_zero_clct));
-								fprintf(stdout,"Setting expect_one_alct  = %c\n",logical(expect_one_alct));
-								fprintf(stdout,"Setting expect_one_clct  = %c\n",logical(expect_one_clct));
-								fprintf(stdout,"Setting expect_two_alct  = %c\n",logical(expect_two_alct));
-								fprintf(stdout,"Setting expect_two_clct  = %c\n",logical(expect_two_clct));
-								fprintf(stdout,"Setting expect_dupe_alct = %c\n",logical(expect_dupe_alct));
-								fprintf(stdout,"Setting expect_dupe_clct = %c\n",logical(expect_dupe_clct));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "Setting expect_zero_alct = " << logical(expect_zero_alct) << std::endl; 
+								(*MyOutput_) << "Setting expect_zero_clct = " << logical(expect_zero_clct) << std::endl; 
+								(*MyOutput_) << "Setting expect_one_alct  = " << logical(expect_one_alct) << std::endl; 
+								(*MyOutput_) << "Setting expect_one_clct  = " << logical(expect_one_clct) << std::endl; 
+								(*MyOutput_) << "Setting expect_two_alct  = " << logical(expect_two_alct) << std::endl; 
+								(*MyOutput_) << "Setting expect_two_clct  = " << logical(expect_two_clct) << std::endl; 
+								(*MyOutput_) << "Setting expect_dupe_alct = " << logical(expect_dupe_alct) << std::endl; 
+								(*MyOutput_) << "Setting expect_dupe_clct = " << logical(expect_dupe_clct) << std::endl; 
 
 								// TMBemu: Event trigger disposition
 								clct_noalct_lost= false;
@@ -7046,28 +7073,28 @@ END:
 
 								alct_only_trig  = (alct_noclct && tmb_allow_alct) || (alct_noclct_ro && tmb_allow_alct_ro);// ALCT-only triggers are allowed
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: clct_match     = %c\n",logical(clct_match    ));
-								fprintf(stdout,"TMBemu: clct_noalct    = %c\n",logical(clct_noalct   ));
-								fprintf(stdout,"TMBemu: alct_noclct    = %c\n",logical(alct_noclct   ));
-								fprintf(stdout,"TMBemu: alct_pulse     = %c\n",logical(alct_pulse    ));
-								fprintf(stdout,"TMBemu: clct_keep      = %c\n",logical(clct_keep     ));
-								fprintf(stdout,"TMBemu: alct_keep      = %c\n",logical(alct_keep     ));
-								fprintf(stdout,"TMBemu: clct_keep_ro   = %c\n",logical(clct_keep_ro  ));
-								fprintf(stdout,"TMBemu: alct_keep_ro   = %c\n",logical(alct_keep_ro  ));
-								fprintf(stdout,"TMBemu: clct_discard   = %c\n",logical(clct_discard  ));
-								fprintf(stdout,"TMBemu: alct_discard   = %c\n",logical(alct_discard  ));
-								fprintf(stdout,"TMBemu: trig_pulse     = %c\n",logical(trig_pulse    ));
-								fprintf(stdout,"TMBemu: trig_keep      = %c\n",logical(trig_keep     ));
-								fprintf(stdout,"TMBemu: non_trig_keep  = %c\n",logical(non_trig_keep ));
-								fprintf(stdout,"TMBemu: alct_only      = %c\n",logical(alct_only     ));
-								fprintf(stdout,"TMBemu: clct_match_tr  = %c\n",logical(clct_match_tr ));
-								fprintf(stdout,"TMBemu: alct_noclct_tr = %c\n",logical(alct_noclct_tr));
-								fprintf(stdout,"TMBemu: clct_noalct_tr = %c\n",logical(clct_noalct_tr));
-								fprintf(stdout,"TMBemu: clct_match_ro  = %c\n",logical(clct_match_ro ));
-								fprintf(stdout,"TMBemu: alct_noclct_ro = %c\n",logical(alct_noclct_ro));
-								fprintf(stdout,"TMBemu: clct_noalct_ro = %c\n",logical(clct_noalct_ro));
-								fprintf(stdout,"TMBemu: alct_only_trig = %c\n",logical(alct_only_trig));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: clct_match     = " << logical(clct_match    ) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_noalct    = " << logical(clct_noalct   ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_noclct    = " << logical(alct_noclct   ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_pulse     = " << logical(alct_pulse    ) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_keep      = " << logical(clct_keep     ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_keep      = " << logical(alct_keep     ) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_keep_ro   = " << logical(clct_keep_ro  ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_keep_ro   = " << logical(alct_keep_ro  ) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_discard   = " << logical(clct_discard  ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_discard   = " << logical(alct_discard  ) << std::endl;
+								(*MyOutput_) << "TMBemu: trig_pulse     = " << logical(trig_pulse    ) << std::endl;
+								(*MyOutput_) << "TMBemu: trig_keep      = " << logical(trig_keep     ) << std::endl;
+								(*MyOutput_) << "TMBemu: non_trig_keep  = " << logical(non_trig_keep ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_only      = " << logical(alct_only     ) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_match_tr  = " << logical(clct_match_tr ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_noclct_tr = " << logical(alct_noclct_tr) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_noalct_tr = " << logical(clct_noalct_tr) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_match_ro  = " << logical(clct_match_ro ) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_noclct_ro = " << logical(alct_noclct_ro) << std::endl;
+								(*MyOutput_) << "TMBemu: clct_noalct_ro = " << logical(clct_noalct_ro) << std::endl;
+								(*MyOutput_) << "TMBemu: alct_only_trig = " << logical(alct_only_trig) << std::endl;
 
 								// TMBemu: Latch clct match results for TMB and MPC pathways
 								tmb_trig_pulse      = trig_pulse;                           // ALCT or CLCT or both triggered
@@ -7088,20 +7115,20 @@ END:
 								tmb_alct0           = alct0_pipe;                           // Copy of ALCT for header
 								tmb_alct1           = alct1_pipe;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: tmb_trig_pulse       = %c\n",logical(tmb_trig_pulse      ));
-								fprintf(stdout,"TMBemu: tmb_trig_keep_ff     = %c\n",logical(tmb_trig_keep_ff    ));
-								fprintf(stdout,"TMBemu: tmb_non_trig_keep_ff = %c\n",logical(tmb_non_trig_keep_ff));
-								fprintf(stdout,"TMBemu: tmb_match            = %c\n",logical(tmb_match           ));
-								fprintf(stdout,"TMBemu: tmb_alct_only        = %c\n",logical(tmb_alct_only       ));
-								fprintf(stdout,"TMBemu: tmb_clct_only        = %c\n",logical(tmb_clct_only       ));
-								fprintf(stdout,"TMBemu: tmb_match_ro_ff      = %c\n",logical(tmb_match_ro_ff     ));
-								fprintf(stdout,"TMBemu: tmb_alct_only_ro_ff  = %c\n",logical(tmb_alct_only_ro_ff ));
-								fprintf(stdout,"TMBemu: tmb_clct_only_ro_ff  = %c\n",logical(tmb_clct_only_ro_ff ));
-								fprintf(stdout,"TMBemu: tmb_alct_discard     = %c\n",logical(tmb_alct_discard    ));
-								fprintf(stdout,"TMBemu: tmb_clct_discard     = %c\n",logical(tmb_clct_discard    ));
-								fprintf(stdout,"TMBemu: tmb_alct0            = %4.4X\n",tmb_alct0);
-								fprintf(stdout,"TMBemu: tmb_alct1            = %4.4X\n",tmb_alct1);
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: tmb_trig_pulse       = " << logical(tmb_trig_pulse      ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_trig_keep_ff     = " << logical(tmb_trig_keep_ff    ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_non_trig_keep_ff = " << logical(tmb_non_trig_keep_ff) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_match            = " << logical(tmb_match           ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_alct_only        = " << logical(tmb_alct_only       ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_clct_only        = " << logical(tmb_clct_only       ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_match_ro_ff      = " << logical(tmb_match_ro_ff     ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_alct_only_ro_ff  = " << logical(tmb_alct_only_ro_ff ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_clct_only_ro_ff  = " << logical(tmb_clct_only_ro_ff ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_alct_discard     = " << logical(tmb_alct_discard    ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_clct_discard     = " << logical(tmb_clct_discard    ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_alct0            = " << tmb_alct0 << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_alct1            = " << tmb_alct1 << std::endl;
 
 								// TMBemu: Kill CLCTs from ME1A, TMB firmware handles this incorrectly as of 4/6/2010
 								kill_me1a_clcts = (mpc_me1a_block==1 && csc_me1ab==1);
@@ -7119,32 +7146,32 @@ END:
 									||             ((kill_clct0 && clct0_exists) && !clct1_exists)
 									||             ((kill_clct1 && clct1_exists) && !clct0_exists);
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: clct0_exists         = %c\n",logical(clct0_exists));
-								fprintf(stdout,"TMBemu: clct1_exists         = %c\n",logical(clct1_exists));
-								fprintf(stdout,"TMBemu: clct0_cfeb4          = %c\n",logical(clct0_cfeb4 ));
-								fprintf(stdout,"TMBemu: clct1_cfeb4          = %c\n",logical(clct1_cfeb4 ));
-								fprintf(stdout,"TMBemu: kill_clct0           = %c\n",logical(kill_clct0  ));
-								fprintf(stdout,"TMBemu: kill_clct1           = %c\n",logical(kill_clct1  ));
-								fprintf(stdout,"TMBemu: kill_trig            = %c\n",logical(kill_trig   ));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: clct0_exists         = " << logical(clct0_exists) << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_exists         = " << logical(clct1_exists) << std::endl;
+								(*MyOutput_) << "TMBemu: clct0_cfeb4          = " << logical(clct0_cfeb4 ) << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_cfeb4          = " << logical(clct1_cfeb4 ) << std::endl;
+								(*MyOutput_) << "TMBemu: kill_clct0           = " << logical(kill_clct0  ) << std::endl;
+								(*MyOutput_) << "TMBemu: kill_clct1           = " << logical(kill_clct1  ) << std::endl;
+								(*MyOutput_) << "TMBemu: kill_trig            = " << logical(kill_trig   ) << std::endl;
 
 								// TMBemu: Had to wait for kill signal to go valid
 								tmb_match_ro     = tmb_match_ro_ff     & kill_trig; // ALCT and CLCT matched in time, nontriggering event
 								tmb_alct_only_ro = tmb_alct_only_ro_ff & kill_trig; // Only ALCT triggered, nontriggering event
 								tmb_clct_only_ro = tmb_clct_only_ro_ff & kill_trig; // Only CLCT triggered, nontriggering event
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: tmb_match_ro         = %c\n",logical(tmb_match_ro    ));
-								fprintf(stdout,"TMBemu: tmb_alct_only_ro     = %c\n",logical(tmb_alct_only_ro));
-								fprintf(stdout,"TMBemu: tmb_clct_only_ro     = %c\n",logical(tmb_clct_only_ro));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: tmb_match_ro         = " << logical(tmb_match_ro    ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_alct_only_ro     = " << logical(tmb_alct_only_ro) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_clct_only_ro     = " << logical(tmb_clct_only_ro) << std::endl;
 
 								// TMBemu: Post FF mod trig_keep for me1a
 								tmb_trig_keep     = tmb_trig_keep_ff && (!kill_trig || tmb_alct_only);
 								tmb_non_trig_keep = tmb_non_trig_keep_ff && !tmb_trig_keep;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: tmb_trig_keep        = %c\n",logical(tmb_trig_keep    ));
-								fprintf(stdout,"TMBemu: tmb_non_trig_keep    = %c\n",logical(tmb_non_trig_keep));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: tmb_trig_keep        = " << logical(tmb_trig_keep    ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_non_trig_keep    = " << logical(tmb_non_trig_keep) << std::endl;
 
 								// TMBemu: Pipelined CLCTs, aligned in time with trig_pulse
 								keep_clct  = trig_pulse && (trig_keep || non_trig_keep);
@@ -7153,11 +7180,11 @@ END:
 								clct1_real = clct1_pipe * keep_clct;
 								clctc_real = clctc_pipe * keep_clct;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: keep_clct            = %c\n",logical(keep_clct));
-								fprintf(stdout,"TMBemu: clct0_real           = %c\n",logical(clct0_real   ));
-								fprintf(stdout,"TMBemu: clct1_real           = %c\n",logical(clct1_real   ));
-								fprintf(stdout,"TMBemu: clctc_real           = %c\n",logical(clctc_real   ));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: keep_clct            = " << logical(keep_clct)  << std::endl;
+								(*MyOutput_) << "TMBemu: clct0_real           = " << logical(clct0_real) << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_real           = " << logical(clct1_real) << std::endl;
+								(*MyOutput_) << "TMBemu: clctc_real           = " << logical(clctc_real) << std::endl;
 
 								// TMBemu: Latch pipelined ALCTs, aligned in time with CLCTs because CLCTs are delayed 1bx in the SRLs
 								alct0_real = alct0_pipe;
@@ -7183,15 +7210,15 @@ END:
 								tmb_dupe_alct_emu = tmb_one_alct_emu && tmb_two_clct_emu;   // Duplicate alct if there are 2 clcts
 								tmb_dupe_clct_emu = tmb_one_clct_emu && tmb_two_alct_emu;   // Duplicate clct if there are 2 alcts
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: tmb_no_alct_emu      = %c\n",logical(tmb_no_alct_emu  ));
-								fprintf(stdout,"TMBemu: tmb_no_clct_emu      = %c\n",logical(tmb_no_clct_emu  ));
-								fprintf(stdout,"TMBemu: tmb_one_alct_emu     = %c\n",logical(tmb_one_alct_emu ));
-								fprintf(stdout,"TMBemu: tmb_one_clct_emu     = %c\n",logical(tmb_one_clct_emu ));
-								fprintf(stdout,"TMBemu: tmb_two_alct_emu     = %c\n",logical(tmb_two_alct_emu ));
-								fprintf(stdout,"TMBemu: tmb_two_clct_emu     = %c\n",logical(tmb_two_clct_emu ));
-								fprintf(stdout,"TMBemu: tmb_dupe_alct_emu    = %c\n",logical(tmb_dupe_alct_emu));
-								fprintf(stdout,"TMBemu: tmb_dupe_clct_emu    = %c\n",logical(tmb_dupe_clct_emu));
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: tmb_no_alct_emu      = " << logical(tmb_no_alct_emu  ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_no_clct_emu      = " << logical(tmb_no_clct_emu  ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_one_alct_emu     = " << logical(tmb_one_alct_emu ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_one_clct_emu     = " << logical(tmb_one_clct_emu ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_two_alct_emu     = " << logical(tmb_two_alct_emu ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_two_clct_emu     = " << logical(tmb_two_clct_emu ) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_dupe_alct_emu    = " << logical(tmb_dupe_alct_emu) << std::endl;
+								(*MyOutput_) << "TMBemu: tmb_dupe_clct_emu    = " << logical(tmb_dupe_clct_emu) << std::endl;
 
 								// TMBemu: Duplicate alct and clct
 								alct_dummy  = (clct_bxn_insert_emu << 11);                  // Insert clct bxn for clct-only events
@@ -7206,19 +7233,19 @@ END:
 								else if (tmb_dupe_alct_emu) {alct0_emu = alct0_real;  alct1_emu = alct0_real;} // alct0 exists, but alct1 does not exist, copy alct0 into alct1
 								else                        {alct0_emu = alct0_real;  alct1_emu = alct1_real;} // alct0 and alct1 exist, so use them
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: clct0_emu            = %2.2X\n",clct0_emu);
-								fprintf(stdout,"TMBemu: clct1_emu            = %2.2X\n",clct1_emu);
-								fprintf(stdout,"TMBemu: alct0_emu            = %2.2X\n",alct0_emu);
-								fprintf(stdout,"TMBemu: alct1_emu            = %2.2X\n",alct1_emu);
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: clct0_emu            = " << clct0_emu << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_emu            = " << clct1_emu << std::endl;
+								(*MyOutput_) << "TMBemu: alct0_emu            = " << alct0_emu << std::endl;
+								(*MyOutput_) << "TMBemu: alct1_emu            = " << alct1_emu << std::endl;
 
 								// TMBemu: LCT valid pattern flags
 								lct0_vpf_emu    = alct0_vpf_emu || clct0_vpf_emu;   // First muon exists
 								lct1_vpf_emu    = alct1_vpf_emu || clct1_vpf_emu;   // Second muon exists
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: lct0_vpf_emu         = %1.1X\n",lct0_vpf_emu);
-								fprintf(stdout,"TMBemu: lct1_vpf_emu         = %1.1X\n",lct1_vpf_emu);
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: lct0_vpf_emu         = " << lct0_vpf_emu << std::endl;
+								(*MyOutput_) << "TMBemu: lct1_vpf_emu         = " << lct1_vpf_emu << std::endl;
 
 								// TMBemu: Decompose ALCT muons
 								alct0_valid_emu     = (alct0_emu >>  0) & 0x1;      // Valid pattern flag
@@ -7235,19 +7262,19 @@ END:
 
 								alct_bx0_emu        = alct0_bxn_emu==0;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: alct0_valid_emu      = %1.1X\n",alct0_valid_emu);
-								fprintf(stdout,"TMBemu: alct0_quality_emu    = %1.1X\n",alct0_quality_emu);
-								fprintf(stdout,"TMBemu: alct0_amu_emu        = %1.1X\n",alct0_amu_emu);
-								fprintf(stdout,"TMBemu: alct0_key_emu        = %2.2X\n",alct0_key_emu);
-								fprintf(stdout,"TMBemu: alct0_bxn_emu        = %2.2X\n",alct0_bxn_emu);
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: alct1_valid_emu      = %1.1X\n",alct1_valid_emu);
-								fprintf(stdout,"TMBemu: alct1_quality_emu    = %1.1X\n",alct1_quality_emu);
-								fprintf(stdout,"TMBemu: alct1_amu_emu        = %1.1X\n",alct1_amu_emu);
-								fprintf(stdout,"TMBemu: alct1_key_emu        = %2.2X\n",alct1_key_emu);
-								fprintf(stdout,"TMBemu: alct1_bxn_emu        = %2.2X\n",alct1_bxn_emu);
-								fprintf(stdout,"TMBemu: alct_bx0_emu         = %1.1X\n",alct_bx0_emu);
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: alct0_valid_emu      = " << alct0_valid_emu    << std::endl;
+								(*MyOutput_) << "TMBemu: alct0_quality_emu    = " << alct0_quality_emu  << std::endl;
+								(*MyOutput_) << "TMBemu: alct0_amu_emu        = " << alct0_amu_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: alct0_key_emu        = " << alct0_key_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: alct0_bxn_emu        = " << alct0_bxn_emu      << std::endl;
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: alct1_valid_emu      = " << alct1_valid_emu    << std::endl;
+								(*MyOutput_) << "TMBemu: alct1_quality_emu    = " << alct1_quality_emu  << std::endl;
+								(*MyOutput_) << "TMBemu: alct1_amu_emu        = " << alct1_amu_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: alct1_key_emu        = " << alct1_key_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: alct1_bxn_emu        = " << alct1_bxn_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: alct_bx0_emu         = " << alct_bx0_emu       << std::endl;
 
 								// TMBemu: Decompose CLCT muons
 								clct0_valid_emu     = (clct0_emu >>  0) & 0x1;      // Valid pattern flag
@@ -7271,26 +7298,26 @@ END:
 								csc_id_emu     = csc_id;
 								clct_bx0_emu   = clct_bxn_emu==0;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: clct0_valid_emu     = %1.1X\n",clct0_valid_emu);
-								fprintf(stdout,"TMBemu: clct0_hit_emu       = %1.1X\n",clct0_hit_emu);
-								fprintf(stdout,"TMBemu: clct0_pid_emu       = %1.1X\n",clct0_pid_emu);
-								fprintf(stdout,"TMBemu: clct0_key_emu       = %2.2X\n",clct0_key_emu);
-								fprintf(stdout,"TMBemu: clct0_cfeb_emu      = %1.1X\n",clct0_cfeb_emu);
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: clct1_valid_emu     = %1.1X\n",clct1_valid_emu);
-								fprintf(stdout,"TMBemu: clct1_hit_emu       = %1.1X\n",clct1_hit_emu);
-								fprintf(stdout,"TMBemu: clct1_pid_emu       = %1.1X\n",clct1_pid_emu);
-								fprintf(stdout,"TMBemu: clct1_key_emu       = %2.2X\n",clct1_key_emu);
-								fprintf(stdout,"TMBemu: clct1_cfeb_emu      = %1.1X\n",clct1_cfeb_emu);
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: clct0_bend_emu      = %1.1X\n",clct0_bend_emu);
-								fprintf(stdout,"TMBemu: clct1_bend_emu      = %1.1X\n",clct1_bend_emu);
-								fprintf(stdout,"TMBemu: clct_bxn_emu        = %1.1X\n",clct_bxn_emu);
-								fprintf(stdout,"TMBemu: clct_bx0_emu        = %1.1X\n",clct_bx0_emu);
-								fprintf(stdout,"TMBemu: csc_id_emu          = %1.1X\n",csc_id_emu);
-								fprintf(stdout,"TMBemu: clct_sync_err_emu   = %1.1X\n",clct_sync_err_emu);
-								fprintf(stdout,"\n");
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: clct0_valid_emu     = " << clct0_valid_emu     << std::endl;
+								(*MyOutput_) << "TMBemu: clct0_hit_emu       = " << clct0_hit_emu       << std::endl;
+								(*MyOutput_) << "TMBemu: clct0_pid_emu       = " << clct0_pid_emu       << std::endl;
+								(*MyOutput_) << "TMBemu: clct0_key_emu       = " << clct0_key_emu       << std::endl;
+								(*MyOutput_) << "TMBemu: clct0_cfeb_emu      = " << clct0_cfeb_emu      << std::endl;
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: clct1_valid_emu     = " << clct1_valid_emu     << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_hit_emu       = " << clct1_hit_emu       << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_pid_emu       = " << clct1_pid_emu       << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_key_emu       = " << clct1_key_emu       << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_cfeb_emu      = " << clct1_cfeb_emu      << std::endl;
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: clct0_bend_emu      = " << clct0_bend_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: clct1_bend_emu      = " << clct1_bend_emu      << std::endl;
+								(*MyOutput_) << "TMBemu: clct_bxn_emu        = " << clct_bxn_emu        << std::endl;
+								(*MyOutput_) << "TMBemu: clct_bx0_emu        = " << clct_bx0_emu        << std::endl;
+								(*MyOutput_) << "TMBemu: csc_id_emu          = " << csc_id_emu          << std::endl;
+								(*MyOutput_) << "TMBemu: clct_sync_err_emu   = " << clct_sync_err_emu   << std::endl;
+								(*MyOutput_) << "\n";
 
 								// LCT Quality
 								alct0_hit_emu  = alct0_quality_emu + 3;             // Convert alct quality to number of hits
@@ -7326,8 +7353,8 @@ END:
 								// TMB is supposed to rank LCTs, but doesn't yet, this is a bug, should be after the mpc0_frame0_pulse section below
 								tmb_rank_err_emu = (lct0_quality_emu*lct0_vpf_emu) < (lct1_quality_emu * lct1_vpf_emu);
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: tmb_rank_err_emu  = %4.1X\n",tmb_rank_err_emu);
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: tmb_rank_err_emu  = " << tmb_rank_err_emu << std::endl;
 
 								// TMBemu: Format MPC output words
 								mpc0_frame0_emu =
@@ -7368,17 +7395,17 @@ END:
 								mpc1_frame0_pulse = (trig_mpc1_emu) ? mpc1_frame0_emu : 0;
 								mpc1_frame1_pulse = (trig_mpc1_emu) ? mpc1_frame1_emu : 0;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: trig_mpc_emu         = %1.1X\n",trig_mpc_emu );
-								fprintf(stdout,"TMBemu: trig_mpc0_emu        = %1.1X\n",trig_mpc0_emu);
-								fprintf(stdout,"TMBemu: trig_mpc1_emu        = %1.1X\n",trig_mpc1_emu);
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: trig_mpc_emu         = " << trig_mpc_emu  << std::endl;
+								(*MyOutput_) << "TMBemu: trig_mpc0_emu        = " << trig_mpc0_emu << std::endl;
+								(*MyOutput_) << "TMBemu: trig_mpc1_emu        = " << trig_mpc1_emu << std::endl;
 
-								fprintf(stdout,"\n");
-								fprintf(stdout,"TMBemu: mpc0_frame0_pulse    = %4.4X\n",mpc0_frame0_pulse);
-								fprintf(stdout,"TMBemu: mpc0_frame1_pulse    = %4.4X\n",mpc0_frame1_pulse);
-								fprintf(stdout,"TMBemu: mpc1_frame0_pulse    = %4.4X\n",mpc1_frame0_pulse);
-								fprintf(stdout,"TMBemu: mpc1_frame1_pulse    = %4.4X\n",mpc1_frame1_pulse);
-								fprintf(stdout,"\n");
+								(*MyOutput_) << "\n";
+								(*MyOutput_) << "TMBemu: mpc0_frame0_pulse    = " << mpc0_frame0_pulse << std::endl;
+								(*MyOutput_) << "TMBemu: mpc0_frame1_pulse    = " << mpc0_frame1_pulse << std::endl;
+								(*MyOutput_) << "TMBemu: mpc1_frame0_pulse    = " << mpc1_frame0_pulse << std::endl;
+								(*MyOutput_) << "TMBemu: mpc1_frame1_pulse    = " << mpc1_frame1_pulse << std::endl;
+								(*MyOutput_) << "\n";
 
 								// Read latched MPC data
 								adr    = mpc0_frame0_adr;
@@ -7397,10 +7424,10 @@ END:
 								status = vme_read(adr,rd_data);
 								mpc1_frame1_vme = rd_data;
 
-								fprintf(stdout,"VME:    mpc0_frame0_vme      = %4.4X\n",mpc0_frame0_vme);
-								fprintf(stdout,"VME:    mpc0_frame1_vme      = %4.4X\n",mpc0_frame1_vme);
-								fprintf(stdout,"VME:    mpc1_frame0_vme      = %4.4X\n",mpc1_frame0_vme);
-								fprintf(stdout,"VME:    mpc1_frame1_vme      = %4.4X\n",mpc1_frame1_vme);
+								(*MyOutput_) << "VME:    mpc0_frame0_vme      = " << mpc0_frame0_vme << std::endl;
+								(*MyOutput_) << "VME:    mpc0_frame1_vme      = " << mpc0_frame1_vme << std::endl;
+								(*MyOutput_) << "VME:    mpc1_frame0_vme      = " << mpc1_frame0_vme << std::endl;
+								(*MyOutput_) << "VME:    mpc1_frame1_vme      = " << mpc1_frame1_vme << std::endl;
 
 								// TMBemu: Decompose expected MPC frames
 								mpc_alct0_key_expect    =   (mpc0_frame0_pulse >>  0) & 0x007F;
@@ -7495,38 +7522,68 @@ END:
 									marker = "OK";
 
 								// Display CLCTs
-								fprintf(stdout,"Key=%3i %s ",ikeylp,marker.c_str());
-								fprintf(stdout,"clct0: vpf=%1i nhit=%1i pid=%1X key=%3i  ",clct0_vpf_tmb, clct0_hit_tmb, clct0_pid_tmb, clct0_key_tmb);
-								fprintf(stdout,"clct1: vpf=%1i nhit=%1i pid=%1X key=%3i  ",clct1_vpf_tmb, clct1_hit_tmb, clct1_pid_tmb, clct1_key_tmb);
-								fprintf(stdout,"lct0=%8.8X ", lct0_vme);
-								fprintf(stdout,"lct1=%8.8X\n",lct1_vme);
+								(*MyOutput_) << "CFEB" << icfeb << " Key=" << ikeylp << " " << marker.c_str() << " " ; 
 
-								// write CLCT0 and CLCT1
-								fprintf(stdout,"CFEB%1i Key=%3i %s ",icfeb,ikeylp,marker.c_str());
-								fprintf(stdout,"clct0: vpf=%1i nhit=%1i pid=%1X key=%3i cfeb=%1i bxn=%1i  ",clct0_vpf_tmb, clct0_hit_tmb,  clct0_pid_tmb, clct0_key_tmb, clct0_cfeb_tmb, clctc_bxn_tmb);
-								fprintf(stdout,"clct1: vpf=%1i nhit=%1i pid=%1X key=%3i cfeb=%1i bxn=%1i  ",clct1_vpf_tmb, clct1_hit_tmb,  clct1_pid_tmb, clct1_key_tmb, clct1_cfeb_tmb, clctc_bxn_tmb);
-								fprintf(stdout,"alct0: vpf=%1i qual=%1X amu=%1i key=%3i bxn=%1i   ",        alct0_vpf_inj, alct0_qual_inj, alct0_amu_inj, alct0_key_inj, alct0_bxn_inj);
-								fprintf(stdout,"alct1: vpf=%1i qual=%1X amu=%1i key=%3i bxn=%1i   ",        alct1_vpf_inj, alct1_qual_inj, alct1_amu_inj, alct1_key_inj, alct1_bxn_inj);
-								fprintf(stdout,"lct0=%8.8X ", lct0_vme);
-								fprintf(stdout,"lct1=%8.8X\n",lct1_vme);
+                                //CLCT0
+								(*MyOutput_) 
+                                    << "clct0: " 
+                                    << " vpf=" << clct0_vpf_tmb 
+                                    << " nhit=" << clct0_hit_tmb 
+                                    << " pid=" << clct0_pid_tmb 
+                                    << " key=" << clct0_key_tmb 
+                                    << " cfeb=" << clct0_cfeb_tmb 
+                                    << " bxn=" << clctc_bxn_tmb 
+                                    << std::endl; 
+
+                                //CLCT1
+								(*MyOutput_) 
+                                    << "clct1: " 
+                                    << " vpf=" << clct1_vpf_tmb 
+                                    << " nhit=" << clct1_hit_tmb 
+                                    << " pid=" << clct1_pid_tmb 
+                                    << " key=" << clct1_key_tmb 
+                                    << " cfeb=" << clct1_cfeb_tmb 
+                                    << " bxn=" << clctc_bxn_tmb
+                                    << std::endl; 
+
+                                // Display ALCTs
+								(*MyOutput_)
+                                    << "alct0: vpf= "   << alct0_vpf_inj 
+                                    << " qual="         << alct0_qual_inj 
+                                    << " amu="          << alct0_amu_inj 
+                                    << " key="          << alct0_key_inj 
+                                    << " bxn="          << alct0_bxn_inj
+                                    << std::endl; 
+
+								(*MyOutput_)
+                                    << "alct1: vpf= "   << alct1_vpf_inj 
+                                    << " qual="         << alct1_qual_inj 
+                                    << " amu="          << alct1_amu_inj 
+                                    << " key="          << alct1_key_inj 
+                                    << " bxn="          << alct1_bxn_inj
+                                    << std::endl; 
+                                
+                                // Display LCTs
+								(*MyOutput_) << "lct0=" << lct0_vme << " ";
+								(*MyOutput_) << "lct1=" << lct1_vme << std::endl;
 
 								// Display CLCT keys generated vs found
 								if (first_scn) {    // Display column heading, show 1/2 strip numbers 0-159
-									fprintf(stdout,"CLCT_sep=%3i",clct_sep);
-									fprintf(stdout,"                         ");
-									fprintf(stdout,"<------------------------------ CLCT key 1/2strips found by TMB ------------------------------->\n");
+									(*MyOutput_) << "CLCT_sep=" << clct_sep;
+									(*MyOutput_) << "                         ";
+									(*MyOutput_) << "<------------------------------ CLCT key 1/2strips found by TMB ------------------------------->\n";
 
-									fprintf(stdout,"     "); for (i=0; i<=159; ++i) {symbol=' '; if (i%32<14||i%32>18) fprintf(stdout,"%c",symbol); if (i%32==14) fprintf(stdout,"CFEB%1i",i/32);}  fprintf(stdout,"\n");
-									fprintf(stdout,"     "); for (i=0; i<=159; ++i) {symbol='-'; if (i%32==0||i%32==31) symbol='|'; fprintf(stdout,"%c",symbol);}  fprintf(stdout,"\n");
-									fprintf(stdout,"     "); for (i=0; i<=159; ++i) {symbol=' '; if (i>=100) symbol='0'+(i/100)%10; fprintf(stdout,"%c",symbol);}  fprintf(stdout,"\n");
-									fprintf(stdout,"     "); for (i=0; i<=159; ++i) {symbol=' '; if (i>= 10) symbol='0'+(i/10 )%10; fprintf(stdout,"%c",symbol);}  fprintf(stdout,"\n");
-									fprintf(stdout,"     "); for (i=0; i<=159; ++i) {symbol=' '; if (i>=  0) symbol='0'+(i/1  )%10; fprintf(stdout,"%c",symbol);}  fprintf(stdout,"\n");
+									(*MyOutput_) << "     "; for (i=0; i<=159; ++i) {symbol=' '; if (i%32<14||i%32>18) (*MyOutput_) << symbol; if (i%32==14) (*MyOutput_) << "CFEB" << i/32;}  (*MyOutput_) << "\n"; 
+									(*MyOutput_) << "     "; for (i=0; i<=159; ++i) {symbol='-'; if (i%32==0||i%32==31) symbol='|'; (*MyOutput_) << symbol;}                                   (*MyOutput_) << "\n";
+									(*MyOutput_) << "     "; for (i=0; i<=159; ++i) {symbol=' '; if (i>=100) symbol='0'+(i/100)%10; (*MyOutput_) << symbol;}                                   (*MyOutput_) << "\n";
+									(*MyOutput_) << "     "; for (i=0; i<=159; ++i) {symbol=' '; if (i>= 10) symbol='0'+(i/10 )%10; (*MyOutput_) << symbol;}                                   (*MyOutput_) << "\n";
+									(*MyOutput_) << "     "; for (i=0; i<=159; ++i) {symbol=' '; if (i>=  0) symbol='0'+(i/1  )%10; (*MyOutput_) << symbol;}                                   (*MyOutput_) << "\n";
 									first_scn=false;
 								}
 
 								symbol=' ';                                                         // display row heading
 								if (ikey%32==0||ikey%32==31) symbol='-';
-								fprintf(stdout,"%c%c%3i",symbol,symbol,ikey);
+                                    (*MyOutput_) << symbol << symbol << ikey; 
 
 								for (i=0; i<=159; ++i) {
 									symbol=' '; 
@@ -7540,19 +7597,19 @@ END:
 									if (clct0_vpf_tmb==1 && clct0_key_tmb==i  && clct1_vpf_tmb==1 && clct1_key_tmb==i) 
 										symbol='X';                 // clct0 and clct1 on the same key, should not happen
 
-									fprintf(stdout,"%c",symbol);
+									(*MyOutput_) << symbol << std::endl;
 								} 
 
-								fprintf(stdout,"\n");                                       // cr on current ikey line
+								(*MyOutput_) << "\n";                                       // cr on current ikey line
 
 								if (ikey==159) {                                            // partial column headings again after last row
-									fprintf(stdout,"     "); 
+									(*MyOutput_) << "     "; 
 									for (i=0; i<=159; ++i) {
 										symbol=' '; 
 										if (i>=  0) symbol='0'+(i/1  )%10; 
-										fprintf(stdout,"%c",symbol);
+										(*MyOutput_) << symbol;
 									}  
-									fprintf(stdout,"\n");
+									(*MyOutput_) << "\n";
 								}
 
 								do {  //replaced goto statement with do {...} while (false) 
@@ -7564,17 +7621,17 @@ END:
 									dmb_wdcnt = rd_data & 0x0FFF;
 									dmb_busy  = (rd_data >> 14) & 0x0001;
 
-									fprintf(stdout,"Raw Hits Dump: ikey=%3i\n",ikey);
-									fprintf(stdout,"word count = %4i\n",dmb_wdcnt);
-									fprintf(stdout,"busy       = %4i\n",dmb_busy);
+									(*MyOutput_) << "Raw Hits Dump: ikey=" << ikey << std::endl;
+									(*MyOutput_) << "word count = " << dmb_wdcnt << std::endl;
+									(*MyOutput_) << "busy       = " << dmb_busy << std::endl;
 
 									if (dmb_busy) {
-										fprintf(stdout,"Can not read RAM: dmb reports busy\n");
+										(*MyOutput_) << "Can not read RAM: dmb reports busy\n";
 										break; 
 									}
 
 									if (dmb_wdcnt <= 0) {
-										fprintf(stdout,"Can not read RAM: dmb reports word count <=0\n");
+										(*MyOutput_) << "Can not read RAM: dmb reports word count <=0\n";
 										break; 
 									}
 
@@ -7595,7 +7652,7 @@ END:
 										dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
 										vf_data[i]=dmb_rdata;
-										fprintf(stdout,"Adr=%5i Data=%6.5X\n",i,dmb_rdata);
+										(*MyOutput_) << "Adr=" << i << " Data=" << dmb_rdata << std::endl;
 									} // close i
 
 									// Clear RAM address for next event
@@ -7608,7 +7665,7 @@ END:
 									// Decode raw hits dump, variables passed by common block struct
 									decode_readout(vf_data,dmb_wdcnt,err_check=true);
 
-									fprintf(stdout,"Non-zero triad bits=%i\n",nonzero_triads);
+									(*MyOutput_) << "Non-zero triad bits=" << nonzero_triads << std::endl;
 								} while (false); //close do loop
 
 
@@ -7639,9 +7696,9 @@ END:
 										}
 									}}  //close j,i
 
-								// Dislay counters
+								// Display counters
 								for (i=0; i<mxcounter; ++i) {
-									fprintf(stdout,"\t%2.2i %10i %s\n",i,cnt[i],scnt[i].c_str());
+									(*MyOutput_) << i << " " << cnt[i] << " " << scnt[i].c_str() << std::endl;
 								}
 
 								// Read back embedded scope data
@@ -7745,7 +7802,8 @@ END:
 				adr     = seq_trig_src_adr;
 				status  = vme_read(adr,rd_data);
 
-				if (rd_data!=0x0020) printf("\tTrigger source error rd_data=%4.4X\n",rd_data);
+				if (rd_data!=0x0020) 
+                    (*MyOutput_) << "Trigger source error rd_data=" << rd_data << std::endl;
 
 				// Read back embedded scope data
 				scp_arm        = false;
@@ -7827,7 +7885,8 @@ END:
 				adr    = seq_trig_src_adr;
 				status = vme_read(adr,rd_data);
 
-				if (rd_data!=0x0040) printf("\tTrigger source error rd_data=%4.4X\n",rd_data);
+				if (rd_data!=0x0040) 
+                    (*MyOutput_) << "\tTrigger source error rd_data=" << rd_data << std::endl;
 
 				// Read back embedded scope data
 				scp_arm        = false;
@@ -7908,7 +7967,8 @@ END:
 				adr    = seq_trig_src_adr;
 				status = vme_read(adr,rd_data);
 
-				if (rd_data!=0x0020) printf("\tTrigger source error rd_data=%4.4X\n",rd_data);
+				if (rd_data!=0x0020) 
+                    (*MyOutput_) << "\tTrigger source error rd_data=" << rd_data << std::endl;
 
 				// Read back embedded scope data
 				scp_arm        = false;
@@ -8128,15 +8188,15 @@ END:
 				dmb_wdcnt = rd_data & 0x0FFF;
 				dmb_busy  = (rd_data>>14) & 0x0001;
 
-				fprintf(stdout,"\tword count = %4i\n",dmb_wdcnt);
-				fprintf(stdout,"\tbusy       = %4i\n",dmb_busy );
+				(*MyOutput_) << "\tword count = " << dmb_wdcnt << std::endl;
+				(*MyOutput_) << "\tbusy       = " << dmb_busy  << std::endl;
 
 				if (dmb_busy==1) {
-					fprintf(stdout,"\tCan not read RAM: dmb reports busy\n");
+					(*MyOutput_) << "\tCan not read RAM: dmb reports busy\n";
 					break; 
 				}
 				if (dmb_wdcnt<=0) {
-					fprintf(stdout,"\tCan not read RAM: dmb reports word count <=0");
+					(*MyOutput_) << "\tCan not read RAM: dmb reports word count <=0";
 					break; 
 				}
 
@@ -8159,7 +8219,7 @@ END:
 					dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb<<16);
 
 					vf_data[i]=dmb_rdata;
-					fprintf(stdout,"\tAdr=%4i Data=%5.5X\n",i,dmb_rdata);
+                    (*MyOutput_) << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
 				}   // close for i
 
 				// Clear RAM address for next event
@@ -8336,11 +8396,11 @@ END:
 
 						// Print output
 						if (clctc_bxn_vme==0) nbxn0++;
-						fprintf(stdout,"\tPass %5i bxn=%5i\n",ipass,clctc_bxn_vme);
+						(*MyOutput_) << "\tPass " << ipass << " bxn=" << clctc_bxn_vme << std::endl;
 					} // close for ntrig
 
 					// Print output
-					fprintf(stdout,"\tBXN was 0 %4i/%4i times\n",nbxn0,ntrig);
+					(*MyOutput_) << "\tBXN was 0 " << nbxn0 << "/" << ntrig << " times" << std::endl;
 
 					// Set FMM bxn after l1reset to resume bxn counting
 					ttc_cmd = 1;        // bx0
@@ -8387,13 +8447,13 @@ END:
 			scp_tbins  =(rd_data >> 5) & 0x7;           // 3 bits
 
 			// Display CLCT fifo mode reminder
-			printf("\n");
-			printf("\tfifo_mode=0:  Dump=No    Header=Full \n");
-			printf("\tfifo_mode=1:  Dump=Full  Header=Full \n");
-			printf("\tfifo_mode=2:  Dump=Local Header=Full \n");
-			printf("\tfifo_mode=3:  Dump=No    Header=Short\n");
-			printf("\tfifo_mode=4:  Dump=No    Header=No   \n");
-			printf("\n");
+			(*MyOutput_) << "\n";
+			(*MyOutput_) << "\tfifo_mode=0:  Dump=No    Header=Full \n";
+			(*MyOutput_) << "\tfifo_mode=1:  Dump=Full  Header=Full \n";
+			(*MyOutput_) << "\tfifo_mode=2:  Dump=Local Header=Full \n";
+			(*MyOutput_) << "\tfifo_mode=3:  Dump=No    Header=Short\n";
+			(*MyOutput_) << "\tfifo_mode=4:  Dump=No    Header=No   \n";
+			(*MyOutput_) << "\n";
 
 			// Inquire
 
@@ -8626,7 +8686,7 @@ END:
 				wr_fire_l1a = (rd_data | 0x0040);       // ready to fire bit 6 l1a oneshot;
 
 				// Fire CLCT+ALCT Injectors
-				fprintf(stdout,"\nFiring injectors for L1A-only event\n");
+				(*MyOutput_) << "\nFiring injectors for L1A-only event\n";
 
 				adr     = cfeb_inj_adr;
 				status  = vme_read(adr,rd_data);
@@ -8653,20 +8713,18 @@ END:
 				dmb_wdcnt = rd_data & 0x0FFF;
 				dmb_busy  = (rd_data >> 14) & 0x0001;
 
-				fprintf(stdout,"Raw Hits Dump: L1A-only event\n");
-				fprintf(stdout,"word count = %4i\n",dmb_wdcnt);
-				fprintf(stdout,"busy       = %4i\n",dmb_busy);
+				(*MyOutput_) << "Raw Hits Dump: L1A-only event\n";
+				(*MyOutput_) << "word count = " << dmb_wdcnt << std::endl;
+				(*MyOutput_) << "busy       = " << dmb_busy << std::endl;
 
 				do {  //do{...} while(false) to replace gotos
 					if (dmb_busy) {
-						fprintf(stdout,"Can not read RAM: dmb reports busy\n");
-						fprintf(stdout,  "Can not read RAM: dmb reports busy\n");
+						(*MyOutput_) << "Can not read RAM: dmb reports busy\n";
 						break; 
 					}
 
 					if (dmb_wdcnt <= 0) {
-						fprintf(stdout,"Can not read RAM: dmb reports word count <=0\n");
-						fprintf(stdout,  "Can not read RAM: dmb reports word count <=0\n");
+						(*MyOutput_) << "Can not read RAM: dmb reports word count <=0\n";
 						break;
 					}
 
@@ -8687,7 +8745,7 @@ END:
 						dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
 						vf_data[i]=dmb_rdata;
-						fprintf(stdout,"Adr=%5i Data=%6.5X\n",i,dmb_rdata);
+                        (*MyOutput_) << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
 					} // close i
 
 					// Clear RAM address for next event
@@ -8701,8 +8759,8 @@ END:
 					decode_readout(vf_data,dmb_wdcnt,err_check=false);
 
 					// Scanning for non-zero triads
-					fprintf(stdout,"\tl1a_lookback=%4i  ",l1a_lookback);
-					fprintf(stdout,"Non-zero triad bits=%4i ",nonzero_triads);
+					(*MyOutput_) << "\tl1a_lookback=  " << l1a_lookback << std::endl;
+					(*MyOutput_) << "Non-zero triad bits= " << nonzero_triads << std::endl;
 					lookback_triad_hits[l1a_lookback%2048]=nonzero_triads;
 					if (ifunc<0) l1a_lookback++;
 
@@ -8720,7 +8778,7 @@ END:
 						}}
 						deb_adr_diff = abs(long(deb_buf_push_adr-deb_wr_buf_adr));
 
-						printf("push_adr-pretrig_adr=%8.4ld\n",deb_adr_diff);
+						(*MyOutput_) << "push_adr-pretrig_adr=" << deb_adr_diff << std::endl;
 
 						// Take snapshot of current counter state
 				} while(false); //close do{...} while(false) 
@@ -8752,9 +8810,9 @@ END:
 					}   //close j 
 				}       //close i
 
-				// Dislay counters
+				// Display counters
 				for (i=0; i<mxcounter; ++i) {
-					fprintf(stdout,"\t%2.2i %10i %s\n",i,cnt[i],scnt[i].c_str());
+                    (*MyOutput_) << i << " " << cnt[i] << " " << scnt[i].c_str() << std::endl;
 				}
 
 				// Read back embedded scope data
@@ -8790,15 +8848,15 @@ END:
 				} //close i
 
 				if (first_nonzero_bx!=0) {
-					printf("\n");
-					printf("\tfirst nonzero triad at l1a_lookback = %i\n",first_nonzero_bx);
-					printf("\tlast  nonzero triad at l1a_lookback = %i\n",last_nonzero_bx);
-					printf("\tpeak triad bits                     = %i\n",max_triads);
-					printf("\n");
+					(*MyOutput_) << "\n";
+					(*MyOutput_) << "\tfirst nonzero triad at l1a_lookback = " << first_nonzero_bx << std::endl;
+					(*MyOutput_) << "\tlast  nonzero triad at l1a_lookback = " << last_nonzero_bx << std::endl;
+					(*MyOutput_) << "\tpeak triad bits                     = " << max_triads << std::endl;
+					(*MyOutput_) << "\n";
 					pause ("<cr> to finish display");
 				}
 				else {
-					printf("\tOh noes! I can has no triads =:-(.\n");
+					(*MyOutput_) << "\tOh noes! I can has no triads =:-(.\n";
 					return EXIT_FAILURE; 
 				}
 
@@ -8808,9 +8866,10 @@ END:
 				scale    = 50./float(max_triads);
 
 				for (i=first_bx; i<= last_bx; ++i) {
-					printf("lookback%4ibx %3i triads|",i,lookback_triad_hits[i]);
-					if (lookback_triad_hits[i]>0) for (j=0; j<=lookback_triad_hits[i]*scale; ++j) printf("x");
-					printf("\n");
+					(*MyOutput_) << "lookback" << i << "bx " << lookback_triad_hits[i] << "triads |";
+					if (lookback_triad_hits[i]>0) for (j=0; j<=lookback_triad_hits[i]*scale; ++j) 
+                        (*MyOutput_) << "x";
+					(*MyOutput_) << "\n";
 				}
 				// Bang mode
 				if (ifunc < 0)      usleep(1500000);
@@ -8936,8 +8995,8 @@ END:
 			dmb_wdcnt = rd_data & 0x0FFF;
 			dmb_busy  = (rd_data >> 14) & 0x0001;
 
-			printf("\tdmb word count = %4i\n",dmb_wdcnt);
-			printf("\tdmb busy       = %4i\n",dmb_busy);
+			(*MyOutput_) << "\tdmb word count = " << dmb_wdcnt << std::endl;
+			(*MyOutput_) << "\tdmb busy       = " << dmb_busy << std::endl;
 
 			if (dmb_busy  != 0) pause ("Can not read RAM: dmb reports busy");
 			if (dmb_wdcnt <= 0) pause ("Can not read RAM: dmb reports word count <=0");
@@ -8962,7 +9021,7 @@ END:
 				dmb_rdata = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 				vf_data[iadr]=dmb_rdata;
 
-				fprintf(stdout,"Adr=%4i Data=%5.5X\n",iadr,dmb_rdata);
+				(*MyOutput_) << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
 			}   // close iadr
 
 			// Clear RAM address for next event
@@ -8977,7 +9036,7 @@ END:
 			r_nheaders = vf_data[iframe] & 0x3F;                    // Number of header words
 			adr_e0b    = r_nheaders;
 
-			fprintf(stdout,"r_nheaders=%i\n",r_nheaders);
+			(*MyOutput_) << "r_nheaders=" << r_nheaders << std::endl;
 			if (adr_e0b <=0) pause ("Unreasonable nheaders");
 
 			iframe=19;
@@ -8985,7 +9044,7 @@ END:
 			r_fifo_tbins =  (vf_data[iframe] >>  3) & 0x1F;     // Number of time bins per CFEB in dump
 
 
-			fprintf(stdout,"r_fifo_tbins=%i\n",r_fifo_tbins);
+			(*MyOutput_) << "r_fifo_tbins=" << r_fifo_tbins << std::endl;
 			if (r_fifo_tbins<=0) pause ("Unreasonable ntbins");
 
 			// Copy triad bits to a holding array
@@ -9005,7 +9064,15 @@ END:
 							ids_abs=ids+jcfeb*8;                                    // Absolute distrip id
 							read_pat[itbin][ilayer][ids_abs]=hits1;                 // hit this distrip
 							if (hits1 != 0) nonzero_triads++;                       // Count nonzero triads
-							fprintf(stdout,"iframe=%4i vf_data=%5.5X hits8=%i jcfeb=%i itbin=%i ids_abs=%i hits1=%i\n",iframe,vf_data[iframe],hits8,jcfeb,itbin,ids_abs,hits1);
+							(*MyOutput_)
+                                << "iframe=" << iframe
+                                << " vf_data=" << vf_data[iframe]
+                                << " hits8=" << hits8
+                                << " jcfeb=" << jcfeb
+                                << " itbin=" << itbin
+                                << " ids_abs=" << ids_abs
+                                << " hits1=" << hits1
+                                << std::endl;
 						}                                                       // Close ids
 						iframe++;                                               // Next frame
 					}                                                       // Close for ilayer
@@ -9014,37 +9081,37 @@ END:
 
 			// Display cfeb and ids column markers
 			if (display_cfeb) {
-				fprintf(stdout,"\n");
-				fprintf(stdout,"     Raw Hits Triads\n");
-				fprintf(stdout,"Cfeb-");
+				(*MyOutput_) << "\n";
+				(*MyOutput_) << "     Raw Hits Triads\n";
+				(*MyOutput_) << "Cfeb-";
 				for (jcfeb=0; jcfeb<mxcfeb; ++jcfeb) { 
-					fprintf(stdout,"|"); // display cfeb columms
+					(*MyOutput_) << "|"; // display cfeb columms
 					for (ids=0; ids<mxds; ++ids)   
-						fprintf(stdout,"%1.1i",jcfeb);
+						(*MyOutput_) << jcfeb ;
 				} //close jcfeb
-				fprintf(stdout,"|\n");
-				fprintf(stdout,"Ds---");
+				(*MyOutput_) << "|\n";
+				(*MyOutput_) << "Ds---";
 				for (jcfeb=0; jcfeb < mxcfeb; ++jcfeb) { 
-					fprintf(stdout,"|");    // display ids columns
+					(*MyOutput_) << "|";    // display ids columns
 					for (ids=0; ids<mxds; ++ids)
-						fprintf(stdout,"%1.1i",ids%10);
+						(*MyOutput_) << ids%10;
 				}//close jcfeb
-				fprintf(stdout,"|\n");
-				fprintf(stdout,"Ly Tb\n");
+				(*MyOutput_) << "|\n";
+				(*MyOutput_) << "Ly Tb\n";
 
 				// Display CFEB raw hits
 				for (ilayer=0; ilayer <= mxly-1; ++ilayer){
 					for (itbin=0;  itbin  <= r_fifo_tbins-1; ++itbin ) {
-						fprintf(stdout,"%1i %2i ",ilayer,itbin);
+						(*MyOutput_) << ilayer << " " << itbin;
 						for (ids_abs=0;ids_abs<=39;++ids_abs) {
 							if (ids_abs%8==0) {
-								fprintf(stdout,"|");
+								(*MyOutput_) << "|";
 							} //close if
-							fprintf(stdout,"%1.1i",read_pat[itbin][ilayer][ids_abs]);
+							(*MyOutput_) << read_pat[itbin][ilayer][ids_abs];
 						}   // close for ids_abs
-						fprintf(stdout,"|\n");
+						(*MyOutput_) << "|\n";
 					}   // close for itbin
-					fprintf(stdout,"\n");
+					(*MyOutput_) << "\n";
 				}   // close ilayer
 			}   // close display cfeb
 			return 0; 
