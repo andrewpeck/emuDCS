@@ -23,7 +23,7 @@
 
 using namespace std; 
 
-minIni ini("config.ini");
+minIni ini("/home/cscme42/config.ini");
 
 
 //------------------------------------------------------------------------------
@@ -82,74 +82,75 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
 //   Inquire prompt for integer
 //------------------------------------------------------------------------------
 int inquire(string test, string var, const int &minv, const int &maxv, const int &radix, int &now) {
-	int i; 
-	i=ini.getl(test,var,-1); 
-	if ( (i<minv) || (i>maxv) ) {
-		std::cout << "ERROR: Config value " << test << " :: " << var << " out of range." << std::endl; 
-		return EXIT_FAILURE;
-	}
-	else {
-		now = i; 
-		return EXIT_SUCCESS; 
-	}
+    int i; 
+    i=ini.getl(test,var,-999); 
+    if ( (i<minv) || (i>maxv) ) {
+        std::cout << "ERROR: Config value " << var << " = " << i << " :: out of range." << std::endl; 
+        return EXIT_FAILURE;
+    }
+    else {
+        now = i; 
+        return EXIT_SUCCESS; 
+    }
 }
 //------------------------------------------------------------------------------
 //   Inquire prompt for two integers
 //------------------------------------------------------------------------------
 int inquir2(string test, string var1, string var2, const int &minv, const int &maxv, const int &radix, int &num, int &now)
 {
-	int i; 
-	int j; 
+    int i; 
+    int j; 
 
 
-	i=ini.getl(test,var1,-1); 
-	j=ini.getl(test,var2,-1); 
-	if ( (i<minv) || (i>maxv) ) {
-		std::cout << "ERROR: Config value " << test << " :: " << var1 << " out of range." << std::endl; 
-		return EXIT_FAILURE;
-	}
-	if ( (j<minv) || (j>maxv) ) {
-		std::cout << "ERROR: Config value " << test << " :: " << var2 << " out of range." << std::endl; 
-		return EXIT_FAILURE;
-	}
+    i=ini.getl(test,var1,-999); 
+    j=ini.getl(test,var2,-999); 
+    if ( (i<minv) || (i>maxv) ) {
+        std::cout << "ERROR: Config value " << var1 << " = " << i << " :: out of range." << std::endl; 
+        return EXIT_FAILURE;
+    }
+    if ( (j<minv) || (j>maxv) ) {
+        std::cout << "ERROR: Config value " << var2 << " = " << j << " :: out of range." << std::endl; 
+        return EXIT_FAILURE;
+    }
 
-	num=i; 
-	now=j; 
-	return EXIT_SUCCESS; 
+    num=i; 
+    now=j; 
+    return EXIT_SUCCESS; 
 }
+
 //------------------------------------------------------------------------------
 //   Inquire prompt for long integer
 //------------------------------------------------------------------------------
 int inquirl(string test, string var, const long int &minv, const long int &maxv, const int &radix, long int &now)
 {
-	long int i; 
-	i=ini.getl(test,var,-1); 
-	if ( (i<minv) || (i>maxv) ) {
-		std::cout << "ERROR: Config value " << test << " :: " << var << " out of range." << std::endl; 
-		return EXIT_FAILURE;
-	}
-	else {
-		now = i; 
-		return EXIT_SUCCESS; 
-	}
+    long int i; 
+    i=ini.getl(test,var,-1); 
+    if ( (i<minv) || (i>maxv) ) {
+        std::cout << "ERROR: Config value " << test << " :: " << var << " out of range." << std::endl; 
+        return EXIT_FAILURE;
+    }
+    else {
+        now = i; 
+        return EXIT_SUCCESS; 
+    }
 }
 
 //------------------------------------------------------------------------------
 //   Inquire prompt for bool
 //------------------------------------------------------------------------------
 void inquirb(string test, string var, bool &now) {
-	bool b; 
-	b = ini.getbool(test,var,0); 
-	now = b; 
+    bool b; 
+    b = ini.getbool(test,var,0); 
+    now = b; 
 }
 
 //------------------------------------------------------------------------------
 //   Inquire prompt for string
 //------------------------------------------------------------------------------
 void inquirs(string test, string var, string &now) {
-	string s; 
-	s = ini.gets(test,var,0); 
-	now = s; 
+    string s; 
+    s = ini.gets(test,var,0); 
+    now = s; 
 }
 
 //------------------------------------------------------------------------------
