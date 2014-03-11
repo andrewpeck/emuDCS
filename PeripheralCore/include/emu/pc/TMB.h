@@ -453,6 +453,8 @@ public:
   //! Write data which has been set by Set... methods
   void WriteRegister(int address);
   //
+  int vme_write(unsigned long &adr, unsigned short &wr_data);
+  int vme_read(unsigned long &adr, unsigned short &rd_data);
   void DumpAddress(int);
   //
   void DecodeCLCT();
@@ -469,6 +471,19 @@ public:
   void FireDDDStateMachine();
   //
   void scope(int scp_arm,int scp_readout, int scp_channel=0x1d);
+
+  //	TMB Internal Scope Readout
+  void scope160c (
+          unsigned long	 scp_ctrl_adr,
+          unsigned long	 scp_rdata_adr,
+          int				 scp_arm,
+          int				 scp_readout,
+          int				 scp_raw_decode,
+          int				 scp_silent,
+          int				 scp_playback,
+          int				 scp_raw_data[512*160/16]
+          ); 
+
   void decode();
   //! Set the Phaser delays by firing the Phaser state machine at the given vme_address
   void FirePhaser(long unsigned int vme_address);

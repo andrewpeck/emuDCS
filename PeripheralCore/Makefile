@@ -44,7 +44,6 @@ Sources=\
 		miniscope16.cpp \
 		pattern_finder.cpp \
 		pattern_unit.cpp \
-		scope160c.cpp \
 		service.cpp \
 		minIni.cpp
 
