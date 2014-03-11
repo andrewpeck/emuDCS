@@ -399,6 +399,19 @@ namespace emu {
 			xgi::bind(this,&EmuPeripheralCrateConfig::CalibrationRuns, "CalibrationRuns");
 			xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestInjectALCT, "TriggerTestInjectALCT");
 			xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestInjectCLCT, "TriggerTestInjectCLCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestInjectALCTCLCT, "TriggerTestInjectALCTCLCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestInjectALCTCLCT_Readout, "TriggerTestInjectALCTCLCT_Readout");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestFire_L1A_to_ALCT, "TriggerTestFire_L1A_to_ALCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestFire_CLCT_ext_trig_with_ALCT, "TriggerTestFire_CLCT_ext_trig_with_ALCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestInject_walking_CLCT, "TriggerTestInject_walking_CLCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestExternalTriggerALCTCLCT, "TriggerTestExternalTriggerALCTCLCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestExternalTriggerALCT, "TriggerTestExternalTriggerALCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestExternalTriggerCLCT, "TriggerTestExternalTriggerCLCT");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestExternalTriggerALCTCLCTwithGTLpulser, "TriggerTestExternalTriggerALCTCLCTwithGTLpulser");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC, "TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestTestBXNCounter, "TriggerTestTestBXNCounter");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestFireL1A, "TriggerTestFireL1A");
+            xgi::bind(this,&EmuPeripheralCrateConfig::TriggerTestForceCLCTtriggerandReadout, "TriggerTestForceCLCTtriggerandReadout");
 			xgi::bind(this,&EmuPeripheralCrateConfig::armScope, "armScope");
 			xgi::bind(this,&EmuPeripheralCrateConfig::forceScope, "forceScope");
 			xgi::bind(this,&EmuPeripheralCrateConfig::readoutScope, "readoutScope");
@@ -8950,10 +8963,12 @@ namespace emu {
 							*out << "Inject fake data";
 							*out << cgicc::td();
 							//
+							*out << cgicc::tr();
+							//
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestInjectALCT = toolbox::toString("/%s/TriggerTestInjectALCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestInjectALCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : InjectALCT") ;
+							*out << cgicc::input().set("type","submit").set("value","InjectALCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -8962,7 +8977,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestInjectCLCT = toolbox::toString("/%s/TriggerTestInjectCLCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestInjectCLCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : InjectCLCT") ;
+							*out << cgicc::input().set("type","submit").set("value","InjectCLCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -8971,7 +8986,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestInjectALCTCLCT = toolbox::toString("/%s/TriggerTestInjectALCTCLCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestInjectALCTCLCT);
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Inject ALCT + CLCT") ;
+							*out << cgicc::input().set("type","submit").set("value","Inject ALCT + CLCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -8980,7 +8995,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestInjectALCTCLCT_Readout = toolbox::toString("/%s/TriggerTestInjectALCTCLCT_Readout",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestInjectALCTCLCT_Readout) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Inject ALCT+CLCT + Readout") ;
+							*out << cgicc::input().set("type","submit").set("value","Inject ALCT+CLCT + Readout") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -8991,7 +9006,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestFire_L1A_to_ALCT= toolbox::toString("/%s/TriggerTestFire_L1A_to_ALCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestFire_L1A_to_ALCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Fire L1A to ALCT") ;
+							*out << cgicc::input().set("type","submit").set("value","Fire L1A to ALCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9000,7 +9015,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestFire_CLCT_ext_trig_with_ALCT= toolbox::toString("/%s/TriggerTestFire_CLCT_ext_trig_with_ALCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestFire_CLCT_ext_trig_with_ALCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Fire CLCT External Trigger with ALCT") ;
+							*out << cgicc::input().set("type","submit").set("value","Fire CLCT External Trigger with ALCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9009,7 +9024,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestInject_walking_CLCT= toolbox::toString("/%s/TriggerTestInject_walking_CLCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestInject_walking_CLCT);
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Inject Walking CLCT") ;
+							*out << cgicc::input().set("type","submit").set("value","Inject Walking CLCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9018,7 +9033,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestExternalTriggerALCTCLCT= toolbox::toString("/%s/TriggerTestExternalTriggerALCTCLCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestExternalTriggerALCTCLCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : External Trigger ALCT + CLCT") ;
+							*out << cgicc::input().set("type","submit").set("value","External Trigger ALCT + CLCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9029,7 +9044,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestExternalTriggerALCT= toolbox::toString("/%s/TriggerTestExternalTriggerALCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestExternalTriggerALCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : External Trigger ALCT") ;
+							*out << cgicc::input().set("type","submit").set("value","External Trigger ALCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9038,7 +9053,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestExternalTriggerCLCT = toolbox::toString("/%s/TriggerTestExternalTriggerCLCT",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestExternalTriggerCLCT) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : External Trigger CLCT") ;
+							*out << cgicc::input().set("type","submit").set("value","External Trigger CLCT") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9047,7 +9062,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestExternalTriggerALCTCLCTwithGTLpulser= toolbox::toString("/%s/TriggerTestExternalTriggerALCTCLCTwithGTLpulser",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestExternalTriggerALCTCLCTwithGTLpulser) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : External Trigger ALCT + CLCT with GTL Pulser") ;
+							*out << cgicc::input().set("type","submit").set("value","External Trigger ALCT + CLCT with GTL Pulser") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9056,7 +9071,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC = toolbox::toString("/%s/TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : External Trigger ALCT + CLCT with GTL Pulser + Check CRC") ;
+							*out << cgicc::input().set("type","submit").set("value","External Trigger ALCT + CLCT with GTL Pulser + Check CRC") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9067,7 +9082,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestTestBXNCounter= toolbox::toString("/%s/TriggerTestTestBXNCounter",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestTestBXNCounter) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Test BXN Counter") ;
+							*out << cgicc::input().set("type","submit").set("value","Test BXN Counter") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9076,7 +9091,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestFireL1A= toolbox::toString("/%s/TriggerTestFireL1A",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestFireL1A) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Fire L1A") ;
+							*out << cgicc::input().set("type","submit").set("value","Fire L1A") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
@@ -9085,7 +9100,7 @@ namespace emu {
 							*out << cgicc::td().set("ALIGN","left");
 							std::string TriggerTestForceCLCTtriggerandReadout= toolbox::toString("/%s/TriggerTestForceCLCTtriggerandReadout",getApplicationDescriptor()->getURN().c_str());
 							*out << cgicc::form().set("method","GET").set("action",TriggerTestForceCLCTtriggerandReadout) ;
-							*out << cgicc::input().set("type","submit").set("value","TriggerTest : Force CLCT trigger + Readout") ;
+							*out << cgicc::input().set("type","submit").set("value","Force CLCT trigger + Readout") ;
 							sprintf(buf,"%d",tmb);
 							*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
 							*out << cgicc::form() << std::endl ;
