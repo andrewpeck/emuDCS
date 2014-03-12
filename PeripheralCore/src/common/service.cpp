@@ -181,31 +181,22 @@ void bit_to_array(const int &idata, int iarray[], const int &n) {
 //------------------------------------------------------------------------------
 // Pause emulator cuz C sux
 //------------------------------------------------------------------------------
-#include <stdio.h>
-#include <iostream>
-#include <cstdlib>
-using namespace std;
-
 string s; 
 void stop (string s)
 {
-    fprintf(stdout,"%s %s","\tSTOP:",s.c_str());
-    //char dummy=getchar();
+    cout << "\n STOP: " << s.c_str() << std::endl;
     exit(EXIT_FAILURE);
 }
+
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Pause emulator cuz C sux
 //------------------------------------------------------------------------------
 
-using namespace std;
-
 void pause (string s)
 {
-    fprintf(stdout,"%s %s","\tPause:",s.c_str());
-    char key=getchar();
-    if (key=='e' || key=='E') 
-        exit(EXIT_FAILURE);
+    cout << "\n PAUSE: " << s.c_str() << std::endl;
+    exit(EXIT_FAILURE);
 }
 //------------------------------------------------------------------------------
