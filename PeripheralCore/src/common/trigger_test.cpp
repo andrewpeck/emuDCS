@@ -30,14 +30,6 @@
 #include "emu/pc/trigger_test.h"
 #include "emu/pc/common.h"
 
-
-#ifdef INTERACTIVE
-#include INTERACTIVE_CONFIG_H
-bool interactive=true; 
-#endif 
-
-bool interactive=true; 
-
 //------------------------------------------------------------------------------
 //  Namespace
 //------------------------------------------------------------------------------
@@ -46,6 +38,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 //  Trigger Test Menu
 //------------------------------------------------------------------------------
+/*
 int main() {
     //assign defaults 
     rat_injector_sync=false;
@@ -4566,3 +4559,4 @@ int ForceCLCTtriggerandReadout() {
     return 0; 
 } //close ForceCLCTtriggerandReadout
 
+*/

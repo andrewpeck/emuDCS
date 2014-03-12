@@ -39,10 +39,8 @@ Sources=\
         DDU.cc \
 		common.cpp \
 		crc22.cpp \
-		decode_readout.cpp \
 		lct_quality.cpp \
 		miniscope16.cpp \
-		pattern_finder.cpp \
 		pattern_unit.cpp \
 		service.cpp \
 		minIni.cpp

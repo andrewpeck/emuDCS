@@ -11,13 +11,13 @@ using namespace std;
 //  Common
 //------------------------------------------------------------------------------
 
-const int   mxframe =   8192;   // Max raw hits frame number, scope adds 512*160/16=5120 frames
-const int   mxtbins =   32;     // Highest time bin, 0 implies 32
-const int   mxly    =   6;      // # CSC Layers
-const int   mxds    =   8;      // # DiStrips per CFEB
-const int   mxdsabs =   40;     // # DiStrips per CSC
-const int   mxcfeb  =   5;      // # CFEBs
-const int   mxbitstream=200;    // Max # bits in a jtag cycle
+const int   mxframe     =   8192;   // Max raw hits frame number, scope adds 512*160/16=5120 frames
+const int   mxtbins     =   32;     // Highest time bin, 0 implies 32
+const int   mxly        =   6;      // # CSC Layers
+const int   mxds        =   8;      // # DiStrips per CFEB
+const int   mxdsabs     =   40;     // # DiStrips per CSC
+const int   mxcfeb      =   5;      // # CFEBs
+const int   mxbitstream =   200;    // Max # bits in a jtag cycle
 
 // Common/decode_readout_common/
 extern int             scp_tbins;

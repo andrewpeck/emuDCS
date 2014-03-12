@@ -11,17 +11,15 @@
 //------------------------------------------------------------------------------
 	#include <stdio.h>
 	#include <iostream>
+    #include "emu/pc/pattern_unit.h"
+    #include "emu/pc/trigger_test.h"
+    #include "emu/pc/common.h"
 	using namespace std;
 
-//------------------------------------------------------------------------------
-//	Debug print mode
-//------------------------------------------------------------------------------
-//#define debug 1	// comment this line to turn off debug print
 
 //------------------------------------------------------------------------------
 //	Prototypes
 //------------------------------------------------------------------------------
-	const int	A=10;
 	void		pause		(string s);
 	int			count1s		(int pat[]);
 
@@ -40,19 +38,21 @@
 	int	&pat_id
 	)
 {
+    A=10;
         
 //------------------------------------------------------------------------------
 // Local
 //------------------------------------------------------------------------------
-	const int	MXLY	= 6;			// Number of CSC layers
-	const int	MXPID	= 0xA+1;		// Number of patterns
 
-	int			pat[MXPID][MXLY];
-	int			nhits[MXPID];
+    const int	MXLY	= 6;			// Number of CSC layers
+    const int	MXPID	= 0xA+1;		// Number of patterns
+    int			pat[MXPID][MXLY];
+    int			nhits_array[MXPID];
 
-	int			nhits_s3;
-	int			pid_s3;
-	int			pid;
+    int			nhits_s3;
+    int			pid_s3;
+    int			pid;
+
 
 	#ifdef debug
 	int i;
@@ -164,9 +164,9 @@
 
 // Count number of layers hit for each pattern
 	for (pid=0x2; pid<=0xA; ++pid) {
-	nhits[pid] = count1s(pat[pid]);
+	nhits_array[pid] = count1s(pat[pid]);
 #ifdef debug
-	printf(stdout,"dbg: pid=%1X nhits=%1i\n",pid,nhits[pid]);
+	printf(stdout,"dbg: pid=%1X nhits=%1i\n",pid,nhits_array[pid]);
 #endif
 	}
 
@@ -175,8 +175,8 @@
 	pid_s3   = 0;
 
 	for (pid=0x2; pid<=0xA; ++ pid) {
-	if (nhits[pid]>=nhits_s3)
-	nhits_s3 = nhits[pid];
+	if (nhits_array[pid]>=nhits_s3)
+	nhits_s3 = nhits_array[pid];
 	pid_s3   = pid;
 	}
 
@@ -190,7 +190,7 @@
 // Function to sum number of layers hit
 // Returns 	count1s = (inp[5]+inp[4]+inp[3])+(inp[2]+inp[1]+inp[0]);
 //------------------------------------------------------------------------------------------------------------------------
-	int count1s(int pat[6])
+int count1s(int pat[6])
 {
 	int	ly;
 	int	ones;

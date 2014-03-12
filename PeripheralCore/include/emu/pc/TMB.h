@@ -411,6 +411,7 @@
 
 #include "emu/pc/EMUjtag.h"
 #include "emu/pc/EmuLogger.h"
+#include "emu/pc/common.h"
 
 namespace emu {
   namespace pc {
@@ -706,6 +707,38 @@ public:
   void TriggerTestTestBXNCounter();
   int  TriggerTestFireL1A();
   int  TriggerTestForceCLCTtriggerandReadout();
+  void decode_readout(int vf_data[mxframe],int &dmb_wdcnt, bool &err_check);
+                void pattern_finder 
+                    (
+                        // Inputs
+                        int hs[6][160], 
+
+                        int &csc_type, 
+                        int &clct_sep, 
+                        int &adjcfeb_dist,
+                        int	&layer_trig_en,
+                        int	cfeb_en[5],
+
+                        int &hit_thresh_pretrig,
+                        int &pid_thresh_pretrig,
+                        int &dmb_thresh_pretrig,
+                        int &lyr_thresh_pretrig,
+
+                        // Outputs
+                        int cfeb_active[5],
+                        int &nlayers_hit,
+                        int	&layer_trig,
+
+                        int &hs_key_1st,
+                        int &hs_pid_1st,
+                        int &hs_hit_1st,
+
+                        int &hs_key_2nd,
+                        int &hs_pid_2nd,
+                        int &hs_hit_2nd
+                            ); 
+                void pause(std::string s);
+                void stop(std::string s); 
   //------------------------------------------------------------------------------
   bool SelfTest() ;
   void init() ;
