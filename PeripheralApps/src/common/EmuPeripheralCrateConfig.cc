@@ -9439,95 +9439,83 @@ namespace emu {
 							this->TMBUtils(in,out);
 						}
 					//
-					void EmuPeripheralCrateConfig::LoadALCTSlowFirmware(xgi::Input * in, xgi::Output * out )
-						throw (xgi::exception::Exception) {
-							//
-							cgicc::Cgicc cgi(in);
-							//
-							cgicc::form_iterator name2 = cgi.getElement("tmb");
-							int tmb;
-							if(name2 != cgi.getElements().end()) {
-								tmb = cgi["tmb"]->getIntegerValue();
-								std::cout << "Select TMB " << tmb << std::endl;
-							} else {
-								std::cout << "No TMB" << std::endl ;
-								tmb=-1;
-							}
-							//
-							TMB * thisTMB=NULL;
-							if(tmb>=0 && (unsigned)tmb<tmbVector.size())  thisTMB = tmbVector[tmb];
-							if(thisTMB)
-							{
-								std::string chambername = thisCrate->GetChamber(thisTMB)->GetLabel();
-								std::string svffile = FirmwareDir_ + ALCT_SLOW_FIRMWARE_FILENAME;
-								thisCCB->setCCBMode(CCB::VMEFPGA);
+                    void EmuPeripheralCrateConfig::LoadALCTSlowFirmware(xgi::Input * in, xgi::Output * out )
+                        throw (xgi::exception::Exception) {
+                            //
+                            cgicc::Cgicc cgi(in);
+                            //
+                            cgicc::form_iterator name2 = cgi.getElement("tmb");
+                            int tmb;
+                            if(name2 != cgi.getElements().end()) {
+                                tmb = cgi["tmb"]->getIntegerValue();
+                                std::cout << "Select TMB " << tmb << std::endl;
+                            } else {
+                                std::cout << "No TMB" << std::endl ;
+                                tmb=-1;
+                            }
+                            //
+                            TMB * thisTMB=NULL;
+                            if(tmb>=0 && (unsigned)tmb<tmbVector.size())  thisTMB = tmbVector[tmb];
+                            if(thisTMB)
+                            {
+                                std::string chambername = thisCrate->GetChamber(thisTMB)->GetLabel();
+                                std::string svffile = FirmwareDir_ + ALCT_SLOW_FIRMWARE_FILENAME;
+                                thisCCB->setCCBMode(CCB::VMEFPGA);
 
-								std::cout  << getLocalDateTime() << " Download ALCT Slow Control firmware to " << chambername << std::endl;
+                                std::cout  << getLocalDateTime() << " Download ALCT Slow Control firmware to " << chambername << std::endl;
 
-								//disable TMB clocks
-								std::cout << "Disable All TMB Clocks" << std::endl; 
-								thisTMB->disableAllClocks(); //anp
-								::sleep(10);
+                                //disable TMB clocks
+                                std::cout << "Disable All TMB Clocks" << std::endl; 
+                                thisTMB->disableAllClocks(); 
+                                ::sleep(10);
 
-								//power cycle ALCT
-								cgicc::form_iterator name = cgi.getElement("dmb");
-								name = cgi.getElement("dmb");
-								int dmb=tmb;
+                                //power cycle ALCT
+                                DAQMB * thisDMB = dmbVector[tmb];  // TMB and DMB in a pair should have the the same number
 
-								//if(name != cgi.getElements().end()) {
-								//    dmb = cgi["dmb"]->getIntegerValue();
-								//    std::cout << "Automatic:  DMB " << dmb << std::endl;
-								//    DMB_ = dmb;
-								//} 
+                                std::cout << "DMB Turn Off and then On ALCT: DMB " << tmb << std::endl;
+                                if (thisDMB) 
+                                {
+                                    int D_hversion=thisDMB->GetHardwareVersion();
+                                    int alct_on=((D_hversion<=1)?0x20:0x80);
+                                    int alct_off=((D_hversion<=1)?0x1F:0x7F);
+                                    int old_powermask=thisDMB->lowv_rdpwrreg();
+                                    // turn off
+                                    thisDMB->lowv_onoff(old_powermask & alct_off);
+                                    ::sleep(2);
+                                    //turn on
+                                    thisDMB->lowv_onoff(old_powermask | alct_on);
+                                }
 
-								DAQMB * thisDMB = dmbVector[dmb];
+                                thisTMB->setup_jtag(ChainAlctSlowMezz);
+                                thisTMB->svfLoad(0,svffile.c_str(), 0, 1);
 
-								//turn off
-								std::cout << "DMBTurnOff:  DMB " << dmb << std::endl;
-								if (thisDMB) {
-									::sleep(1);
-									thisDMB->lowv_onoff(0x0);
-								}
+                                //reenable TMB clocks
+                                std::cout << "Enable All TMB Clocks" << std::endl; 
+                                ::sleep(1);
+                                thisTMB->enableAllClocks(); //anp
 
-								//turn on
-								std::cout << "DMBTurnOn:  DMB " << dmb << std::endl;
-								int D_hversion=thisDMB->GetHardwareVersion();
-								int AllOn = (D_hversion<=1)?0x3F:0xFF;
-								if (thisDMB) {
-									::sleep(1);
-									thisDMB->lowv_onoff(AllOn);
-								}
+                                //power cycle ALCT again
 
-								//------------------------------------------------------------------------------
+                                std::cout << "DMB Turn Off and then On ALCT: DMB " << tmb << std::endl;
+                                if (thisDMB) 
+                                {
+                                    int D_hversion=thisDMB->GetHardwareVersion();
+                                    int alct_on=((D_hversion<=1)?0x20:0x80);
+                                    int alct_off=((D_hversion<=1)?0x1F:0x7F);
+                                    int old_powermask=thisDMB->lowv_rdpwrreg();
+                                    // turn off
+                                    thisDMB->lowv_onoff(old_powermask & alct_off);
+                                    ::sleep(2);
+                                    //turn on
+                                    thisDMB->lowv_onoff(old_powermask | alct_on);
+                                }
 
-								thisTMB->setup_jtag(ChainAlctSlowMezz);
-								thisTMB->svfLoad(0,svffile.c_str(), 0, 1);
+                                // Put CCB back into DLOG mode to listen to TTC commands...
+                                thisCCB->setCCBMode(CCB::DLOG);
+                            }
 
-								//reenable TMB clocks
-								std::cout << "Enable All TMB Clocks" << std::endl; 
-								::sleep(1);
-								thisTMB->enableAllClocks(); //anp
-
-								//turn off
-								std::cout << "DMBTurnOff:  DMB " << dmb << std::endl;
-								if (thisDMB) {
-									::sleep(1);
-									thisDMB->lowv_onoff(0x0);
-								}
-
-								//turn on
-								std::cout << "DMBTurnOn:  DMB " << dmb << std::endl;
-								if (thisDMB) {
-									::sleep(1);
-									thisDMB->lowv_onoff(AllOn);
-								}
-
-								// Put CCB back into DLOG mode to listen to TTC commands...
-								thisCCB->setCCBMode(CCB::DLOG);
-							}
-
-							this->TMBUtils(in,out);
-						}
+                            this->TMBUtils(in,out);
+                        }
 					//
 					void EmuPeripheralCrateConfig::LoadVirtex6TMBFirmware(xgi::Input * in, xgi::Output * out )
 						throw (xgi::exception::Exception) {
