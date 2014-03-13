@@ -42,7 +42,6 @@ Sources=\
 		miniscope16.cpp \
 		pattern_unit.cpp \
 		service.cpp \
-		trigger_test.cpp \
 		minIni.cpp
 
 IncludeDirs = 
