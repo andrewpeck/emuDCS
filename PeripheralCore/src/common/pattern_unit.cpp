@@ -13,7 +13,6 @@
 	#include <iostream>
     #include "emu/pc/pattern_unit.h"
     #include "emu/pc/trigger_test.h"
-    #include "emu/pc/common.h"
 	using namespace std;
 
 

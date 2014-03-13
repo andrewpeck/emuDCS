@@ -559,7 +559,6 @@
 #include "emu/pc/pattern_unit.h"
 #include "emu/pc/lct_quality.h"
 #include "emu/pc/trigger_test.h"
-#include "emu/pc/common.h"
 #include "emu/pc/miniscope16.h"
 //------------------------------------------------------------------------------
 
@@ -9809,7 +9808,7 @@ END:
                 if(iframe==0) crc22a(din,crc,1);				// Reset crc
                 crc22a(din,crc,0);								// Calc  crc
                 if(iframe==dmb_wdcnt-1-4) crc_calc=crc;			// Latch result prior to de0f marker beco ddu fails to process de0f frame
-                (*MyOutput) << "iframe=" << iframe << " din=" << din << "crc= " << crc << std::endl; 
+                (*MyOutput_) << "iframe=" << iframe << " din=" << din << "crc= " << crc << std::endl; 
             }
 
             // Compare our computed CRC to what TMB computed
@@ -10440,7 +10439,6 @@ check_types:
             else {
                 header_ok=false;
                 error_flag[19]=1;	// Expected frame count does not match actual frame count
-                fprintf(stdout,"",frame_cnt,frame_cnt_expect_trun);
                 (*MyOutput_) << "\ERRs: Bad frame count: read=" << frame_cnt << " expect=" << frame_cnt_expect_trun << std::endl;
             }
 

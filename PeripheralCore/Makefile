@@ -37,7 +37,6 @@ Sources=\
         EmuLogger.cc \
         PROBLEM.cc \
         DDU.cc \
-		common.cpp \
 		crc22.cpp \
 		lct_quality.cpp \
 		miniscope16.cpp \

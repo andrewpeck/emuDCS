@@ -411,7 +411,7 @@
 
 #include "emu/pc/EMUjtag.h"
 #include "emu/pc/EmuLogger.h"
-#include "emu/pc/common.h"
+#include "emu/pc/trigger_test.h"
 
 namespace emu {
   namespace pc {

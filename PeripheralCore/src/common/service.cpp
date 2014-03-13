@@ -15,7 +15,7 @@
 //------------------------------------------------------------------------------
 // Local Headers
 //------------------------------------------------------------------------------
-#include "emu/pc/common.h"
+#include "emu/pc/trigger_test.h"
 #include "emu/pc/service.h"
 #include "emu/pc/minIni.h"
 
