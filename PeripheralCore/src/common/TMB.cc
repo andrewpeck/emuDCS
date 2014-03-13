@@ -6585,13 +6585,15 @@ END:
 
                         // CLCTemu: Predict expected clct pattern-finder results for these 1/2-strip hits
                         engage_pattern_finder=true;
+                        //inquire("Global", "csc_type", minv= 0, maxv=  16, radix=10, csc_type);
+                        csc_type=0xA;
+                        (*MyOutput_) << "\ncsc_type=" << csc_type << std::endl; 
 
                         if (engage_pattern_finder)
                         {
                             pattern_finder
                                 (
                                  ihs,               // inputs
-
                                  csc_type, 
                                  clct_sep, 
                                  adjcfeb_dist,
@@ -7764,9 +7766,8 @@ END:
                                 // Close big key-stepping loops
                                 if (pause_on_fail) 
                                     pause("<cr> to resume");
-                    }   // L16709 continue
-                }   // L16710 continue
-                // L16730 continue
+                    }   //close for ipidlp
+                }  //close for ikeylp
 
                 // Set pattern thresholds back to default
                 adr    = seq_clct_adr;
@@ -8276,7 +8277,7 @@ END:
                     dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb<<16);
 
                     vf_data[i]=dmb_rdata;
-                    (*MyOutput_) << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                    cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
                 }   // close for i
 
                 // Clear RAM address for next event
@@ -8805,7 +8806,7 @@ END:
                         dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
                         vf_data[i]=dmb_rdata;
-                        (*MyOutput_) << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                        cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
                     } // close i
 
                     // Clear RAM address for next event
@@ -9085,7 +9086,7 @@ END:
                 dmb_rdata = dmb_rdata_lsb | (dmb_rdata_msb << 16);
                 vf_data[iadr]=dmb_rdata;
 
-                (*MyOutput_) << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
+                cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
             }   // close iadr
 
             // Clear RAM address for next event
@@ -9676,7 +9677,7 @@ END:
             //---------------------------------------------------------------------------------
             //	Entry
             //---------------------------------------------------------------------------------
-            fprintf(stdout,"\n");
+            (*MyOutput_) << std::endl;
 
             // Init check bits
             first_entry       = false;
@@ -9713,30 +9714,30 @@ END:
             if(first_word==-1) {
                 header_ok=false;
                 error_flag[0]=1;	 // 0xDB0C first frame marker not found
-                fprintf(stdout,"ERRs: 0xDB0C first frame marker not found\n");
+                (*MyOutput_) << "ERRs: 0xDB0C first frame marker not found\n" << std::endl;
             }
             else
-                fprintf(stdout,"First frame marker found at Adr=%5i Data=%6.5X\n",first_word,vf_data[first_word]);
+                (*MyOutput_) << "First frame marker found at Adr=" << first_word << " Data= " << vf_data[first_word] << std::endl; 
 
             // Did not find DE0F/DEEF
             if(last_word ==-1) {
                 header_ok=false;
                 error_flag[1]=1;	 // 0xDE0C or 0xDEEF last frame marker not found
-                fprintf(stdout,"ERRs: 0xDE0C or 0xDEEF last frame marker not found\n");
+                (*MyOutput_) << "ERRs: 0xDE0C or 0xDEEF last frame marker not found\n" << std::endl;
             }
             else
-                fprintf(stdout,"Last  frame marker found at Adr=%5i Data=%6.5X\n",last_word,vf_data[last_word]);
+                (*MyOutput_) << "Last frame marker found at Adr=" << last_word << " Data= " << vf_data[first_word] << std::endl; 
 
             // Compare word count to callers value [caller may not have supplied a word count]
             wdcnt=1+last_word-first_word;
 
-            fprintf(stdout,"Calculated word count=%5i\n",wdcnt);
-            fprintf(stdout,"Callers    word count=%5i\n",dmb_wdcnt);
+            (*MyOutput_) << "Calculated word count=" << wdcnt;
+            (*MyOutput_) << "Callers    word count=" << dmb_wdcnt;
 
             if(wdcnt != dmb_wdcnt) {
                 header_ok=false;
                 error_flag[2]=1;	 // Calculated word count does not match caller
-                fprintf(stdout,"ERRs: Calculated word count does not match caller: wdcnt=%5i dmb_wdcnt=%5i\n",wdcnt,dmb_wdcnt);
+                (*MyOutput_) << "ERRs: Calculated word count does not match caller: wdcnt=" << wdcnt << " dmb_wdcnt=" << dmb_wdcnt << std::endl; 
             }
 
             //	dmb_wdcnt=wdcnt;	// Uncomment if caller did not supply a word count
@@ -9748,7 +9749,7 @@ END:
             if(dmb_wdcnt <= 0) {
                 header_ok=false;
                 error_flag[3]=1;	// Wordcount <=0
-                fprintf(stdout,"ERRs: No TMB readout to decode. wdcnt=%i\n",dmb_wdcnt);
+                (*MyOutput_) << "ERRs: No TMB readout to decode. wdcnt=" << dmb_wdcnt << std::endl; 
                 goto exit;
             }
 
@@ -9756,46 +9757,46 @@ END:
             if(dmb_wdcnt%4 != 0) {
                 header_ok=false;
                 error_flag[4]=1;	// Wordcount not multiple of 4
-                fprintf(stdout,"ERRs: TMB wdcnt is not a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
+                (*MyOutput_) << "ERRs: TMB wdcnt is not a multiple of 4. wdcnt=" << dmb_wdcnt << std::endl; 
             }
-            fprintf(stdout,"TMB wdcnt is a multiple of 4. wdcnt=%i\n",dmb_wdcnt);
+            (*MyOutput_) << "TMB wdcnt is a multiple of 4. wdcnt=" << dmb_wdcnt << std::endl; 
 
             // Short header-only mode
             if(dmb_wdcnt == wdcnt_short_hdr) {
                 header_only_short=true;
-                fprintf(stdout,"TMB readout short header-only mode. wdcnt=%i\n",dmb_wdcnt);
+                (*MyOutput_) << "TMB readout short header-only mode. wdcnt=" << dmb_wdcnt << std::endl; 
             }
 
             // Long header-only mode
             if(dmb_wdcnt == wdcnt_long_hdr) {
                 header_only_long=true;
-                fprintf(stdout,"TMB readout long header-only mode. wdcnt=%i\n",dmb_wdcnt);
+                (*MyOutput_) << "TMB readout long header-only mode. wdcnt=" << dmb_wdcnt << std::endl; 
             }
 
             // Long header with raw hits mode
             if(dmb_wdcnt > wdcnt_long_hdr) {
                 header_full=true;
-                fprintf(stdout,"TMB readout long header with raw hits mode. wdcnt=%i\n",dmb_wdcnt);
+                (*MyOutput_) << "TMB readout long header with raw hits mode. wdcnt=" << dmb_wdcnt << std::endl; 
             }
 
             // Check that header format is recognized
             if (!(header_only_short || header_only_long || header_full)) {
                 header_ok=false;
                 error_flag[5]=1;	// Wordcount does not match short or long header format
-                fprintf(stdout,"ERRs: TMB wdcnt does not match a defined header format. wdcnt=%i\n",dmb_wdcnt);
+                (*MyOutput_) << "ERRs: TMB wdcnt does not match a defined header format. wdcnt=" << dmb_wdcnt << std::endl; 
             }
 
-            fprintf(stdout,"header_only_short = %c\n",logical(header_only_short));
-            fprintf(stdout,"header_only_long  = %c\n",logical(header_only_long));
-            fprintf(stdout,"header_full       = %c\n",logical(header_full));
-            fprintf(stdout,"header_filler     = %c\n",logical(header_filler));
+            (*MyOutput_) << "header_only_short = " << logical(header_only_short) << std::endl;
+            (*MyOutput_) << "header_only_long  = " << logical(header_only_long) << std::endl;
+            (*MyOutput_) << "header_full       = " << logical(header_full) << std::endl;
+            (*MyOutput_) << "header_filler     = " << logical(header_filler) << std::endl;
 
             //------------------------------------------------------------------------------
             //	Check CRC
             //------------------------------------------------------------------------------
             // Calculate CRC for data stream
             if(dmb_wdcnt < 12) {	// should not ever get here
-                fprintf(stdout,"TMB raw hits dump too short for crc calculation, exiting.\n");
+                (*MyOutput_) << "TMB raw hits dump too short for crc calculation, exiting.\n";
                 pause("TMB raw hits dump too short for crc calculation");
                 header_ok=false;
                 goto exit;
@@ -9808,7 +9809,7 @@ END:
                 if(iframe==0) crc22a(din,crc,1);				// Reset crc
                 crc22a(din,crc,0);								// Calc  crc
                 if(iframe==dmb_wdcnt-1-4) crc_calc=crc;			// Latch result prior to de0f marker beco ddu fails to process de0f frame
-                fprintf(stdout,"%5i%6.5ld%9.8ld \n",iframe,din,crc);
+                (*MyOutput) << "iframe=" << iframe << " din=" << din << "crc= " << crc << std::endl; 
             }
 
             // Compare our computed CRC to what TMB computed
@@ -9818,9 +9819,9 @@ END:
             tmb_crc=tmb_crc_lsb | (tmb_crc_msb << 11);		// Full 22 bit crc
             crc_match=crc_calc==tmb_crc;
 
-            fprintf(stdout,"calc crc=%6.6ld ",crc_calc);
-            fprintf(stdout,"tmb crc=%6.6ld ",tmb_crc);
-            fprintf(stdout,"crc_match=%c\n",logical(crc_match));
+            (*MyOutput_) << "calc crc  =" << crc_calc << std::endl;
+            (*MyOutput_) << "tmb crc   =" << tmb_crc << std::endl;
+            (*MyOutput_) << "crc_match =" << logical(crc_match) << std::endl;
 
             // CRC mismatch
             if(!crc_match) {
@@ -10416,30 +10417,31 @@ check_types:
             if((frame_cnt_expect/4)*4 != frame_cnt_expect)		// Check we are still mod 4 happy
                 pause ("expected frame count not mod 4..wtf?");
 
-            fprintf(stdout,"Expected header             frames =%5i\n",frame_cntex_nheaders);
-            fprintf(stdout,"Expected cfeb  tbins        frames =%5i\n",frame_cntex_ntbins);
-            fprintf(stdout,"Expected cfeb  e0b/e0c      frames =%5i\n",frame_cntex_b0ce0c);
-            fprintf(stdout,"Expected rpc   tbins        frames =%5i\n",frame_cntex_rpc);
-            fprintf(stdout,"Expected rpc   b04e04       frames =%5i\n",frame_cntex_b04e04);
-            fprintf(stdout,"Expected scope data         frames =%5i\n",frame_cntex_scope);
-            fprintf(stdout,"Expected scope b05e05       frames =%5i\n",frame_cntex_b05e05);
-            fprintf(stdout,"Expected miniscope data     frames =%5i\n",frame_cntex_miniscope);
-            fprintf(stdout,"Expected miniscope b07e07   frames =%5i\n",frame_cntex_b07e07);
-            fprintf(stdout,"Expected blockedbits bcbecb frames =%5i\n",frame_cntex_bcbecb);
-            fprintf(stdout,"Expected blockedbits data   frames =%5i\n",frame_cntex_blockedbits);
-            fprintf(stdout,"Expected filler             frames =%5i\n",frame_cntex_fill);
-            fprintf(stdout,"Expected trailer            frames =%5i\n",frame_cntex_trailer);
+            (*MyOutput_) << "\nExpected header             frames =" << frame_cntex_nheaders;
+            (*MyOutput_) << "\nExpected cfeb  tbins        frames =" << frame_cntex_ntbins;
+            (*MyOutput_) << "\nExpected cfeb  e0b/e0c      frames =" << frame_cntex_b0ce0c;
+            (*MyOutput_) << "\nExpected rpc   tbins        frames =" << frame_cntex_rpc;
+            (*MyOutput_) << "\nExpected rpc   b04e04       frames =" << frame_cntex_b04e04;
+            (*MyOutput_) << "\nExpected scope data         frames =" << frame_cntex_scope;
+            (*MyOutput_) << "\nExpected scope b05e05       frames =" << frame_cntex_b05e05;
+            (*MyOutput_) << "\nExpected miniscope data     frames =" << frame_cntex_miniscope;
+            (*MyOutput_) << "\nExpected miniscope b07e07   frames =" << frame_cntex_b07e07;
+            (*MyOutput_) << "\nExpected blockedbits bcbecb frames =" << frame_cntex_bcbecb;
+            (*MyOutput_) << "\nExpected blockedbits data   frames =" << frame_cntex_blockedbits;
+            (*MyOutput_) << "\nExpected filler             frames =" << frame_cntex_fill;
+            (*MyOutput_) << "\nExpected trailer            frames =" << frame_cntex_trailer;
 
-            fprintf(stdout,"Expected frame count from header =%5i\n",frame_cnt_expect);
-            fprintf(stdout,"Frame count stored in trailer    =%5i\n",frame_cnt);
-            fprintf(stdout,"Frame count from DMB RAM         =%5i\n",dmb_wdcnt);
+            (*MyOutput_) << "\nExpected frame count from header   =" << frame_cnt_expect;
+            (*MyOutput_) << "\nFrame count stored in trailer      =" << frame_cnt;
+            (*MyOutput_) << "\nFrame count from DMB RAM           =" << dmb_wdcnt;
 
             if((dmb_wdcnt_trun==frame_cnt)&&(frame_cnt==frame_cnt_expect_trun))
-                fprintf(stdout,"Frame count OK %5i\n",frame_cnt);
+                (*MyOutput_) << "\nFrame count OK, frame_cnt=" << frame_cnt << std::endl;
             else {
                 header_ok=false;
                 error_flag[19]=1;	// Expected frame count does not match actual frame count
-                fprintf(stdout,"ERRs: Bad frame count: read=%5i expect=%5i\n",frame_cnt,frame_cnt_expect_trun);
+                fprintf(stdout,"",frame_cnt,frame_cnt_expect_trun);
+                (*MyOutput_) << "\ERRs: Bad frame count: read=" << frame_cnt << " expect=" << frame_cnt_expect_trun << std::endl;
             }
 
             //------------------------------------------------------------------------------
@@ -12129,7 +12131,6 @@ void TMB::pattern_finder
 (
  // Inputs
  int hs[6][160], 
-
  int &csc_type, 
  int &clct_sep, 
  int &adjcfeb_dist,
@@ -12361,7 +12362,10 @@ void TMB::pattern_finder
     // Stage 4A5: CSC_TYPE_X Undefined
     //-------------------------------------------------------------------------------------------------------------------
     else
-        pause("csc_type undefined in pattern_finder.cpp");
+    {
+        pause("csc_type undefined in pattern_finder");
+        (*MyOutput_) << "\ncsc_type=" << csc_type << std::endl; 
+    }
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4B: Correct for CSC layer stagger: 565656 is a straight track, becomes 555555 on key layer 2
@@ -12685,7 +12689,7 @@ void TMB::pattern_finder
 
     // CSC Type missing
     else
-        pause("CSC_TYPE undefined for 2nd clct delimiters in pattern_finder.v: Halting");
+        pause("CSC_TYPE undefined for 2nd clct delimiters in pattern_finder: Halting");
 
     // Latch busy key 1/2-strips for excluding 2nd clct
     int	busy_key[MXHSX];
