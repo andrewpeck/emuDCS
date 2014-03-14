@@ -69,4 +69,13 @@ PeripheralCore/src/linux/
 PeripheralXtop/
 drivers/
 Makefile
+PeripheralApps/include/emu/pc/EmuPeripheralCrateConfig.h.orig
+PeripheralApps/src/common/EmuPeripheralCrateConfig.cc.orig
+PeripheralApps20140311.tar.gz
+PeripheralCore/include/emu/pc/common.h.BACKUP.22086.h
+PeripheralCore/include/emu/pc/common.h.BASE.22086.h
+PeripheralCore/include/emu/pc/common.h.LOCAL.22086.h
+PeripheralCore/include/emu/pc/common.h.REMOTE.22086.h
+PeripheralCore20140311.tar.gz
+_pid_2st_emu=
 
