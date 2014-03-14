@@ -554,7 +554,6 @@
 //------------------------------------------------------------------------------
 //  Trigger Test Includes
 //------------------------------------------------------------------------------
-#include "emu/pc/crc22.h"
 #include "emu/pc/service.h"
 #include "emu/pc/pattern_unit.h"
 #include "emu/pc/lct_quality.h"
