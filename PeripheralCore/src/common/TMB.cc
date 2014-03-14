@@ -6184,15 +6184,18 @@ END:
                             clct_key_inject[iclct] = ikey;
                             clct_pid_inject[iclct] = ipid;
 
-                            cout << "dbg: clct_key_inject" << iclct << "=" << clct_key_inject[iclct] << std::endl;
-                            cout << "dbg: clct_pid_inject" << iclct << "=" << clct_pid_inject[iclct] << std::endl;
+                            if (debug_) {
+                                cout << "dbg: clct_key_inject" << iclct << "=" << clct_key_inject[iclct] << std::endl;
+                                cout << "dbg: clct_pid_inject" << iclct << "=" << clct_pid_inject[iclct] << std::endl;
+                            }
 
                             if (iclct==1 && loop_keys[1]) {
                                 ikey_sep = abs(clct_key_inject[0]-clct_key_inject[1]);
                                 if (ikey_sep<=1) {
                                     clct_blanked[1]    = true;
                                 }
-                                cout << "dbg: key=" << ikeylp << " clct1 key separation ikey_sep=" << ikey_sep << " clct_blanked[1]=" << logical(clct_blanked[1]) << std::endl;
+                                if (debug_)
+                                    cout << "dbg: key=" << ikeylp << " clct1 key separation ikey_sep=" << ikey_sep << " clct_blanked[1]=" << logical(clct_blanked[1]) << std::endl;
                             }
                             if (clct_blanked[iclct]) continue;  // skip this clct if its blanked 
 
@@ -6372,7 +6375,8 @@ END:
                                     wr_data=wr_data | (ibit << (idslocal+8));
 
                                     pat_ram[itbin][iram][icfeblp]=wr_data;
-                                    cout << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << wr_data << std::endl;
+                                    if (debug_)
+                                        cout << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << wr_data << std::endl;
                                 }
                             }
                         }
@@ -6846,8 +6850,10 @@ END:
                                              (clct_key_inject[i] <  clct_key_inj_expect[1])))       // take the equal pattern at the lower key hs
                                     {
                                         key_inj = clct_key_inject[i];
-                                        cout << "dbg: key_inj=" << key_inj << std::endl;
-                                        cout << "dbg: busy_key[key_inj]=" << busy_key_inj[key_inj] << std::endl; 
+                                        if (debug_) {
+                                            cout << "dbg: key_inj=" << key_inj << std::endl;
+                                            cout << "dbg: busy_key[key_inj]=" << busy_key_inj[key_inj] << std::endl; 
+                                        }
 
                                         if (busy_key_inj[key_inj]==0)                           // accept only non-busy keys far enough away from clct0
                                         {
@@ -7537,7 +7543,7 @@ END:
                                     marker = "OK";
 
                                 // Display CLCTs
-                                (*MyOutput_) << "CFEB" << icfeb << " Key=" << ikeylp << " " << marker.c_str() << " " ; 
+                                (*MyOutput_) << "\nCFEB" << icfeb << " Key=" << ikeylp << " " << marker.c_str() << "\n"; 
 
                                 //CLCT0
                                 (*MyOutput_) 
@@ -7657,7 +7663,8 @@ END:
                                     (*MyOutput_) << "     "; 
                                     for (i=0; i<=159; ++i) {
                                         symbol=' '; 
-                                        if (i>=  0) symbol='0'+(i/1  )%10; 
+                                        if (i>=0) 
+                                            symbol='0'+(i/1)%10; 
                                         (*MyOutput_) << symbol;
                                     }  
                                     (*MyOutput_) << "\n";
@@ -7703,7 +7710,8 @@ END:
                                         dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
                                         vf_data[i]=dmb_rdata;
-                                        cout << "Adr=" << i << " Data=" << dmb_rdata << std::endl;
+                                        if (debug_)
+                                            cout << "Adr=" << i << " Data=" << dmb_rdata << std::endl;
                                     } // close i
 
                                     // Clear RAM address for next event
@@ -7749,7 +7757,9 @@ END:
 
                                 // Display counters
                                 for (i=0; i<mxcounter; ++i) {
-                                    (*MyOutput_) << i << " " << cnt[i] << " " << scnt[i].c_str() << std::endl;
+                                    (*MyOutput_) << "\nDisplay Counters:\n";
+                                    (*MyOutput_) << "i" << "\t" << "cnt[i]" << "\t" << "scnt[i].c_str()" << std::endl;
+                                    (*MyOutput_) << i << "\t" << cnt[i] << "\t" << scnt[i].c_str() << std::endl;
                                 }
 
                                 // Read back embedded scope data
@@ -8275,7 +8285,8 @@ END:
                     dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb<<16);
 
                     vf_data[i]=dmb_rdata;
-                    cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                    if (debug_)
+                        cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
                 }   // close for i
 
                 // Clear RAM address for next event
@@ -8804,7 +8815,8 @@ END:
                         dmb_rdata     = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
                         vf_data[i]=dmb_rdata;
-                        cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                        if (debug_)
+                            cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
                     } // close i
 
                     // Clear RAM address for next event
@@ -8871,7 +8883,9 @@ END:
 
                 // Display counters
                 for (i=0; i<mxcounter; ++i) {
-                    (*MyOutput_) << i << " " << cnt[i] << " " << scnt[i].c_str() << std::endl;
+                    (*MyOutput_) << "\nDisplay Counters:\n";
+                    (*MyOutput_) << "i" << "\t" << "cnt[i]" << "\t" << "scnt[i].c_str()" << std::endl;
+                    (*MyOutput_) << i << "\t" << cnt[i] << "\t" << scnt[i].c_str() << std::endl;
                 }
 
                 // Read back embedded scope data
@@ -9084,7 +9098,8 @@ END:
                 dmb_rdata = dmb_rdata_lsb | (dmb_rdata_msb << 16);
                 vf_data[iadr]=dmb_rdata;
 
-                cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
+                if (debug_)
+                    cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
             }   // close iadr
 
             // Clear RAM address for next event
@@ -12214,14 +12229,14 @@ void TMB::pattern_finder
     int	me1a_ly4hs[MXHS*1];
     int	me1a_ly5hs[MXHS*1];
 
-#ifdef debug
-    fprintf(stdout,"dbg: ly0="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly0hs[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly1="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly1hs[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly2="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly2hs[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly3="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly3hs[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly4="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly4hs[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly5="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly5hs[i]); fprintf(stdout,"\n");
-#endif
+    if (debug_) {
+        fprintf(stdout,"dbg: ly0="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly0hs[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly1="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly1hs[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly2="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly2hs[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly3="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly3hs[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly4="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly4hs[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly5="); for (i=0; i<MXHS; ++i) fprintf(stdout,"%1i",cfeb0_ly5hs[i]); fprintf(stdout,"\n");
+    }
 
     //-------------------------------------------------------------------------------------------------------------------
     // Generate mask for marking adjacent cfeb as hit if nearby keys are over thresh
@@ -12406,14 +12421,14 @@ void TMB::pattern_finder
             ly5hs_pad[i-0+j+k] = (i>=128) ? me1a_ly5hs[i%32] : me1b_ly5hs[i%128];
         }}
 
-#ifdef debug
-    fprintf(stdout,"dbg: ly0hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly0hs_pad[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly1hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly1hs_pad[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly2hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly2hs_pad[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly3hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly3hs_pad[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly4hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly4hs_pad[i]); fprintf(stdout,"\n");
-    fprintf(stdout,"dbg: ly5hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly5hs_pad[i]); fprintf(stdout,"\n");
-#endif
+    if (debug_) {
+        fprintf(stdout,"dbg: ly0hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly0hs_pad[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly1hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly1hs_pad[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly2hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly2hs_pad[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly3hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly3hs_pad[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly4hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly4hs_pad[i]); fprintf(stdout,"\n");
+        fprintf(stdout,"dbg: ly5hs_pad="); for (i=0; i<(k+MXHSX+j+k); ++i) fprintf(stdout,"%1i",ly5hs_pad[i]); fprintf(stdout,"\n");
+    }
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4C:  Layer-trigger mode
@@ -12440,10 +12455,10 @@ void TMB::pattern_finder
 
     layer_trig = (nlayers_hit >= lyr_thresh_pretrig);
 
-#ifdef debug
+if (debug_) {
     fprintf(stdout,"dbg: layer_trig =%1i\n",layer_trig );
     fprintf(stdout,"dbg: nlayers_hit=%1i\n",nlayers_hit);
-#endif
+}
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 4D: 1/2-Strip Pattern Finder
@@ -12482,9 +12497,8 @@ void TMB::pattern_finder
                 &ly5hs_pad[ihs],
                 hs_hit[ihs],
                 hs_pid[ihs]);
-#ifdef debug
-        fprintf(stdout,"dbg: hs_hit[%3i]=%1i hs_pid[%3i]=%1X\n",ihs,hs_hit[ihs],ihs,hs_pid[ihs]);
-#endif
+        if (debug_) 
+            fprintf(stdout,"dbg: hs_hit[%3i]=%1i hs_pid[%3i]=%1X\n",ihs,hs_hit[ihs],ihs,hs_pid[ihs]);
     }
 
     // Convert s0 pattern IDs and hits into sortable pattern numbers, [6:4]=nhits, [3:0]=pattern id
@@ -12643,11 +12657,11 @@ void TMB::pattern_finder
     hs_pid_1st = (hs_pat_1st >> 0     ) & 0xF;
     hs_hit_1st = (hs_pat_1st >> MXPIDB) & 0x7;
 
-#ifdef debug
+if (debug_) {
     fprintf(stdout,"dbg: hs_key_1st=%3i\n",hs_key_1st);
     fprintf(stdout,"dbg: hs_pid_1st=%3X\n",hs_pid_1st);
     fprintf(stdout,"dbg: hs_hit_1st=%3i\n",hs_hit_1st);
-#endif
+}
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 6B: Mark key 1/2-strips near the 1st CLCT key as busy to exclude them from 2nd CLCT priority encoding
@@ -12696,12 +12710,12 @@ void TMB::pattern_finder
         busy_key[ikey] = (ikey>=busy_min && ikey<=busy_max);
     }
 
-#ifdef debug
+if (debug_) {
     fprintf(stdout,"\n");
     fprintf(stdout,"dbg: busy_min=%3i\n",busy_min);
     fprintf(stdout,"dbg: busy_max=%3i\n",busy_max);
     fprintf(stdout,"dbg: busy_key="); for (i=0; i<MXHSX; ++i) fprintf(stdout,"%1i",busy_key[i]); fprintf(stdout,"\n");
-#endif
+}
 
     //-------------------------------------------------------------------------------------------------------------------
     // Stage 7A: 1/2-Strip Priority Encoder
@@ -12746,11 +12760,11 @@ void TMB::pattern_finder
     }
     if (hs_bsy_2nd!=0) pause("pattern_finder hs_busy_2nd!=0 wtf?!");
 
-#ifdef debug
-    fprintf(stdout,"dbg: hs_key_2nd=%3i\n",hs_key_2nd);
-    fprintf(stdout,"dbg: hs_pid_2nd=%3X\n",hs_pid_2nd);
-    fprintf(stdout,"dbg: hs_hit_2nd=%3i\n",hs_hit_2nd);
-#endif
+    if (debug_) {
+        fprintf(stdout,"dbg: hs_key_2nd=%3i\n",hs_key_2nd);
+        fprintf(stdout,"dbg: hs_pid_2nd=%3X\n",hs_pid_2nd);
+        fprintf(stdout,"dbg: hs_hit_2nd=%3i\n",hs_hit_2nd);
+    }
 
     return;
 }
