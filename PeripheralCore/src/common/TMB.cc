@@ -1703,7 +1703,7 @@ namespace emu {
                 public:
                     int		nbits;
                     int		bit;
-                    string	tag;
+                    std::string	tag;
             };
             static label ch[NCHANNELS];
 
@@ -2126,7 +2126,7 @@ display:
                 } //close if ch[ich]
             } //close for (ich=0..
 
-            (*MyOutput_) << endl;
+            (*MyOutput_) << std::endl;
 
             //------------------------------------------------------------------------------
             // We be done
@@ -4523,8 +4523,8 @@ END:
         int l1a_delay=119;  // hits 0th l1a window bx
         int pat_ram[32][3][5]={0}; 
 
-        string marker="AOXOMOXOA";
-        string sfmm_state[5]={ "Startup", "Resync ", "Stop   ", "WaitBXO", "Run    "};
+        std::string marker="AOXOMOXOA";
+        std::string sfmm_state[5]={ "Startup", "Resync ", "Stop   ", "WaitBXO", "Run    "};
         bool fire_injector=false;
         bool err_check=true;
         int lookback_triad_hits[6]={0};
@@ -5271,7 +5271,7 @@ END:
 
                 dmb_rdata = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
-                cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
+                std::cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
 
             }   // close iadr
 
@@ -5387,7 +5387,7 @@ END:
             (*MyOutput_) << "alct_raw_nwords=" << alct_raw_nwords << std::endl;
 
             // Read alct fifo data
-            for (i=0; i<=max(alct_raw_nwords-1,0); ++i) {
+            for (i=0; i<=std::max(alct_raw_nwords-1,0); ++i) {
                 //  for (i=1; i<=alct_raw_nwords; ++i) 
                 adr     = alctfifo1_adr;
                 wr_data = (i<<1);                   // ram read address
@@ -5430,7 +5430,7 @@ END:
             tmb_crc     = tmb_crc_lsb | (tmb_crc_msb<<11);  // full 22 bit crc
             crc_match   = crc==tmb_crc;
 
-            (*MyOutput_) <<  "calc_crc=" << crc << " alct_crc=" << tmb_crc << "match=" << logical(crc_match) << endl; ;
+            (*MyOutput_) <<  "calc_crc=" << crc << " alct_crc=" << tmb_crc << "match=" << logical(crc_match) << std::endl;
 
             if (!crc_match) pause("ALCT crc error, WTF!");
             return EXIT_FAILURE; 
@@ -5983,7 +5983,7 @@ END:
 
                     for (irpc=0; irpc<=1;   ++ irpc) {
                         for (ibxn=0; ibxn<=255; ++ ibxn) {
-                            cout << "rpc_inj_image writing " << ibxn << " " << irpc << " " << rpc_inj_image[ibxn][irpc] << std::endl;
+                            std::cout << "rpc_inj_image writing " << ibxn << " " << irpc << " " << rpc_inj_image[ibxn][irpc] << std::endl;
                             adr     = rpc_inj_wdata_adr;       // pad data to write to ram
                             wr_data = rpc_inj_image[ibxn][irpc] & 0x0000FFFF;
                             status  = vme_write(adr,wr_data);
@@ -6035,7 +6035,7 @@ END:
                             wr_data = rpc_inj_wen | (rpc_inj_ren << 4) | (rpc_inj_rwadr << 8) | (rpc_tbins_test << 15);     // set ren=0
                             status  = vme_write(adr,wr_data);
 
-                            cout << "rpc_inj_data reading " << ibxn << " " << irpc << " " << rpc_inj_data << std::endl;
+                            std::cout << "rpc_inj_data reading " << ibxn << " " << irpc << " " << rpc_inj_data << std::endl;
 
                             if (rpc_inj_data != rpc_inj_image[ibxn][irpc])
                                 (*MyOutput_) << "RPC injector RAM error at adr=" << rpc_inj_rwadr << " expect= " << rpc_inj_image[ibxn][irpc] << " read=" << rpc_inj_data << std::endl;
@@ -6185,8 +6185,8 @@ END:
                             clct_pid_inject[iclct] = ipid;
 
                             if (debug_) {
-                                cout << "dbg: clct_key_inject" << iclct << "=" << clct_key_inject[iclct] << std::endl;
-                                cout << "dbg: clct_pid_inject" << iclct << "=" << clct_pid_inject[iclct] << std::endl;
+                                std::cout << "dbg: clct_key_inject" << iclct << "=" << clct_key_inject[iclct] << std::endl;
+                                std::cout << "dbg: clct_pid_inject" << iclct << "=" << clct_pid_inject[iclct] << std::endl;
                             }
 
                             if (iclct==1 && loop_keys[1]) {
@@ -6195,7 +6195,7 @@ END:
                                     clct_blanked[1]    = true;
                                 }
                                 if (debug_)
-                                    cout << "dbg: key=" << ikeylp << " clct1 key separation ikey_sep=" << ikey_sep << " clct_blanked[1]=" << logical(clct_blanked[1]) << std::endl;
+                                    std::cout << "dbg: key=" << ikeylp << " clct1 key separation ikey_sep=" << ikey_sep << " clct_blanked[1]=" << logical(clct_blanked[1]) << std::endl;
                             }
                             if (clct_blanked[iclct]) continue;  // skip this clct if its blanked 
 
@@ -6376,7 +6376,7 @@ END:
 
                                     pat_ram[itbin][iram][icfeblp]=wr_data;
                                     if (debug_)
-                                        cout << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << wr_data << std::endl;
+                                        std::cout << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << wr_data << std::endl;
                                 }
                             }
                         }
@@ -6522,8 +6522,8 @@ END:
                             hit_thresh_postdrift_temp = clct_hit_expect[0];
 
                             if (nclcts_inject==2) {
-                                hit_thresh_pretrig_temp   = min(clct_hit_expect[0],clct_hit_expect[1]);
-                                hit_thresh_postdrift_temp = min(clct_hit_expect[0],clct_hit_expect[1]);}
+                                hit_thresh_pretrig_temp   = std::min(clct_hit_expect[0],clct_hit_expect[1]);
+                                hit_thresh_postdrift_temp = std::min(clct_hit_expect[0],clct_hit_expect[1]);}
                         }
                         else
                         {
@@ -6851,8 +6851,8 @@ END:
                                     {
                                         key_inj = clct_key_inject[i];
                                         if (debug_) {
-                                            cout << "dbg: key_inj=" << key_inj << std::endl;
-                                            cout << "dbg: busy_key[key_inj]=" << busy_key_inj[key_inj] << std::endl; 
+                                            std::cout << "dbg: key_inj=" << key_inj << std::endl;
+                                            std::cout << "dbg: busy_key[key_inj]=" << busy_key_inj[key_inj] << std::endl; 
                                         }
 
                                         if (busy_key_inj[key_inj]==0)                           // accept only non-busy keys far enough away from clct0
@@ -7711,7 +7711,7 @@ END:
 
                                         vf_data[i]=dmb_rdata;
                                         if (debug_)
-                                            cout << "Adr=" << i << " Data=" << dmb_rdata << std::endl;
+                                            std::cout << "Adr=" << i << " Data=" << dmb_rdata << std::endl;
                                     } // close i
 
                                     // Clear RAM address for next event
@@ -8286,7 +8286,7 @@ END:
 
                     vf_data[i]=dmb_rdata;
                     if (debug_)
-                        cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                        std::cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
                 }   // close for i
 
                 // Clear RAM address for next event
@@ -8816,7 +8816,7 @@ END:
 
                         vf_data[i]=dmb_rdata;
                         if (debug_)
-                            cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                            std::cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
                     } // close i
 
                     // Clear RAM address for next event
@@ -8934,8 +8934,8 @@ END:
                 }
 
                 // Display lookback values that have nonzero triads
-                first_bx = max(first_nonzero_bx-10,0);
-                last_bx  = min(last_nonzero_bx+10,2047);
+                first_bx = std::max(first_nonzero_bx-10,0);
+                last_bx  = std::min(last_nonzero_bx+10,2047);
                 scale    = 50./float(max_triads);
 
                 for (i=first_bx; i<= last_bx; ++i) {
@@ -9099,7 +9099,7 @@ END:
                 vf_data[iadr]=dmb_rdata;
 
                 if (debug_)
-                    cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
+                    std::cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
             }   // close iadr
 
             // Clear RAM address for next event
@@ -9352,10 +9352,10 @@ END:
             int				bd_status_vec[15];
             int				lhc_cycle=3564;
 
-            string			sfifo_mode;
-            string			sreadout_type;
-            string			sl1a_type;
-            string			scsc_type_inferred;
+            std::string			sfifo_mode;
+            std::string			sreadout_type;
+            std::string			sl1a_type;
+            std::string			scsc_type_inferred;
             char			csc_type_code;
 
             int				id_rev;
@@ -9421,7 +9421,7 @@ END:
             //---------------------------------------------------------------------------------
             const	int		MXERF=39+1;
             char			error_flag[MXERF];
-            static	string	error_msg[MXERF];
+            static	std::string	error_msg[MXERF];
 
             if(first_entry) {
                 error_msg[ 0] = "0xDB0C first frame marker not found";
@@ -9470,7 +9470,7 @@ END:
             //	Board status
             //---------------------------------------------------------------------------------
             const	int		MXSTAT=14+1;
-            static	string	bd_status_msg[MXSTAT];
+            static	std::string	bd_status_msg[MXSTAT];
             int				bd_status_expect[MXSTAT];
 
             if(first_entry) {
@@ -12772,8 +12772,8 @@ if (debug_) {
         //------------------------------------------------------------------------------
         // Pause emulator cuz C sux
         //------------------------------------------------------------------------------
-        string s; 
-        void TMB::stop (string s) {
+        std::string s; 
+        void TMB::stop (std::string s) {
             (*MyOutput_) << "\n STOP: " << s.c_str() << std::endl;
             exit(EXIT_FAILURE);
         }
@@ -12781,7 +12781,7 @@ if (debug_) {
         //------------------------------------------------------------------------------
         // Pause emulator cuz C sux
         //------------------------------------------------------------------------------
-        void TMB::pause (string s) {
+        void TMB::pause (std::string s) {
             (*MyOutput_) << "\n PAUSE: " << s.c_str() << std::endl;
             return;
         }

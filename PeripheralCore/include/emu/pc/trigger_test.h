@@ -3,8 +3,8 @@
 
 //#include <cmath>
 //#include <cstdlib>
-//#include <cstring> 
-//#include <iostream>
+#include <cstring> 
+#include <iostream>
 //#include <stdio.h>
 //using namespace std; 
 
@@ -338,7 +338,7 @@ extern int              cnt_lsb;
 extern int              cnt_msb;
 extern int              cnt_full;
 extern int              cnt[mxcounter];
-extern string           scnt[mxcounter];
+extern std::string      scnt[mxcounter];
 //------------------------------------------------------------------------------
 // Local
 //------------------------------------------------------------------------------
@@ -498,7 +498,7 @@ extern int              ibit;
 extern int              wr_data_mem;
 extern int              rd_data_mem;
 
-extern string           marker;
+extern std::string      marker;
 
 //------------------------------------------------------------------------------
 //  CLCT Bend Pattern Images, key layer 2
@@ -665,7 +665,7 @@ extern int              hit_thresh_pretrig_temp;
 extern int              hit_thresh_postdrift_temp;
 
 extern int              fmm_state;
-extern string           sfmm_state[5];
+extern std::string      sfmm_state[5];
 
 extern bool             rdraw;
 extern int              nbxn0;
@@ -695,7 +695,7 @@ extern unsigned long    deb_buf_pop_data;
 
 extern int              radix;
 extern FILE*            ram_file;
-extern string           ram_file_name;
+extern std::string      ram_file_name;
 extern int              iadr;
 extern int              blue_flash;
 extern bool             fire_injector;

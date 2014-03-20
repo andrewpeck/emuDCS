@@ -25,14 +25,7 @@ using namespace std;
 // Check if Trigger Test Config file exists and create minIni class 
 //------------------------------------------------------------------------------
 
-ifstream config_file("~/config.ini");
-if (config_file.good()) {
-    minIni ini("~/config.ini");
-    cout << endl << "Config file opened." << endl; 
-}
-else {
-    cout << "\nERROR: trigger test config file not found ! \n";
-}
+minIni ini("~/config.ini");
 
 
 //------------------------------------------------------------------------------
