@@ -19,11 +19,20 @@
 #include "emu/pc/service.h"
 #include "emu/pc/minIni.h"
 
-//------------------------------------------------------------------------------
-
 using namespace std; 
 
-minIni ini("/home/cscme42/config.ini");
+//------------------------------------------------------------------------------
+// Check if Trigger Test Config file exists and create minIni class 
+//------------------------------------------------------------------------------
+
+ifstream config_file("~/config.ini");
+if (config_file.good()) {
+    minIni ini("~/config.ini");
+    cout << endl << "Config file opened." << endl; 
+}
+else {
+    cout << "\nERROR: trigger test config file not found ! \n";
+}
 
 
 //------------------------------------------------------------------------------
@@ -80,7 +89,7 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
     return;
 }
 //------------------------------------------------------------------------------
-//   Inquire prompt for integer
+//   Inquire for integer from Config File
 //------------------------------------------------------------------------------
 int inquire(string test, string var, const int &minv, const int &maxv, const int &radix, int &now) {
     int i; 
@@ -95,7 +104,7 @@ int inquire(string test, string var, const int &minv, const int &maxv, const int
     }
 }
 //------------------------------------------------------------------------------
-//   Inquire prompt for two integers
+//   Inquire for two integers from Config File
 //------------------------------------------------------------------------------
 int inquir2(string test, string var1, string var2, const int &minv, const int &maxv, const int &radix, int &num, int &now)
 {
@@ -120,7 +129,7 @@ int inquir2(string test, string var1, string var2, const int &minv, const int &m
 }
 
 //------------------------------------------------------------------------------
-//   Inquire prompt for long integer
+//   Inquire for long integer from Config file
 //------------------------------------------------------------------------------
 int inquirl(string test, string var, const long int &minv, const long int &maxv, const int &radix, long int &now)
 {
@@ -137,7 +146,7 @@ int inquirl(string test, string var, const long int &minv, const long int &maxv,
 }
 
 //------------------------------------------------------------------------------
-//   Inquire prompt for bool
+//   Inquire for bool from Config file
 //------------------------------------------------------------------------------
 void inquirb(string test, string var, bool &now) {
     bool b; 
@@ -146,7 +155,7 @@ void inquirb(string test, string var, bool &now) {
 }
 
 //------------------------------------------------------------------------------
-//   Inquire prompt for string
+//   Inquire for string from Config file
 //------------------------------------------------------------------------------
 void inquirs(string test, string var, string &now) {
     string s; 
@@ -219,44 +228,44 @@ int *arrayAnd(int array1[32], int array2[32])
 //------------------------------------------------------------------------------
 // Entry crc22a()	
 //------------------------------------------------------------------------------
-	void crc22a (
-	long int	&din,		// 16 bit integer
-	long int	&crc,		// 22 bit integer
-	int			reset)
-//------------------------------------------------------------------------------
+void crc22a (
+        long int	&din,		// 16 bit integer
+        long int	&crc,		// 22 bit integer
+        int			reset)
+    //------------------------------------------------------------------------------
 {
-	const  int	data_width = 16;
-	const  int	crc_width  = 22;
+    const  int	data_width = 16;
+    const  int	crc_width  = 22;
 
-	static int	bcrc[crc_width];
-	int			bnewcrc[crc_width];
-	int			bdin[data_width];
+    static int	bcrc[crc_width];
+    int			bnewcrc[crc_width];
+    int			bdin[data_width];
 
-// Decompose input data into an array of bits
-	int i;
-	for (i=0; i<=data_width-1;++i) {
-	bdin[i]=(din >> i) & 0x1;
-	}
+    // Decompose input data into an array of bits
+    int i;
+    for (i=0; i<=data_width-1;++i) {
+        bdin[i]=(din >> i) & 0x1;
+    }
 
-// Clear crc on reset
-	if(reset==1) {
-	for (i=0; i<=crc_width-1;++i) {
-	bcrc[i]=0;
-	}}
+    // Clear crc on reset
+    if(reset==1) {
+        for (i=0; i<=crc_width-1;++i) {
+            bcrc[i]=0;
+        }}
 
-// Calculate CRC
-	else {
-	nextCRC22_D16(bdin,bcrc,bnewcrc);
-	}
+    // Calculate CRC
+    else {
+        nextCRC22_D16(bdin,bcrc,bnewcrc);
+    }
 
-// Convert CRC array of bits back to integer
-	crc=0;
+    // Convert CRC array of bits back to integer
+    crc=0;
 
-	for (i=0; i<=crc_width-1;++i) {
-	crc=crc | ((bcrc[i] & 0x1) << i);
-	}
+    for (i=0; i<=crc_width-1;++i) {
+        crc=crc | ((bcrc[i] & 0x1) << i);
+    }
 
-	return;
+    return;
 }
 
 //------------------------------------------------------------------------------
@@ -275,36 +284,36 @@ int *arrayAnd(int array1[32], int array2[32])
 // 10/03/08 Move new crc array to caller
 // 10/05/08 Add explicit array dimensions to prototype
 //------------------------------------------------------------------------------
-	void nextCRC22_D16(int din[16], int crc[22], int newcrc[22])
+void nextCRC22_D16(int din[16], int crc[22], int newcrc[22])
 {
-	newcrc[ 0] = din[ 0] ^ crc[ 6];
-	newcrc[ 1] = din[ 1] ^ din[ 0] ^ crc[ 6] ^ crc[ 7];
-	newcrc[ 2] = din[ 2] ^ din[ 1] ^ crc[ 7] ^ crc[ 8];
-	newcrc[ 3] = din[ 3] ^ din[ 2] ^ crc[ 8] ^ crc[ 9];
-	newcrc[ 4] = din[ 4] ^ din[ 3] ^ crc[ 9] ^ crc[10];
-	newcrc[ 5] = din[ 5] ^ din[ 4] ^ crc[10] ^ crc[11];
-	newcrc[ 6] = din[ 6] ^ din[ 5] ^ crc[11] ^ crc[12];
-	newcrc[ 7] = din[ 7] ^ din[ 6] ^ crc[12] ^ crc[13];
-	newcrc[ 8] = din[ 8] ^ din[ 7] ^ crc[13] ^ crc[14];
-	newcrc[ 9] = din[ 9] ^ din[ 8] ^ crc[14] ^ crc[15];
-	newcrc[10] = din[10] ^ din[ 9] ^ crc[15] ^ crc[16];
-	newcrc[11] = din[11] ^ din[10] ^ crc[16] ^ crc[17];
-	newcrc[12] = din[12] ^ din[11] ^ crc[17] ^ crc[18];
-	newcrc[13] = din[13] ^ din[12] ^ crc[18] ^ crc[19];
-	newcrc[14] = din[14] ^ din[13] ^ crc[19] ^ crc[20];
-	newcrc[15] = din[15] ^ din[14] ^ crc[20] ^ crc[21];
-	newcrc[16] = din[15] ^ crc[ 0] ^ crc[21];
-	newcrc[17] = crc[ 1];
-	newcrc[18] = crc[ 2];
-	newcrc[19] = crc[ 3];
-	newcrc[20] = crc[ 4];
-	newcrc[21] = crc[ 5];
+    newcrc[ 0] = din[ 0] ^ crc[ 6];
+    newcrc[ 1] = din[ 1] ^ din[ 0] ^ crc[ 6] ^ crc[ 7];
+    newcrc[ 2] = din[ 2] ^ din[ 1] ^ crc[ 7] ^ crc[ 8];
+    newcrc[ 3] = din[ 3] ^ din[ 2] ^ crc[ 8] ^ crc[ 9];
+    newcrc[ 4] = din[ 4] ^ din[ 3] ^ crc[ 9] ^ crc[10];
+    newcrc[ 5] = din[ 5] ^ din[ 4] ^ crc[10] ^ crc[11];
+    newcrc[ 6] = din[ 6] ^ din[ 5] ^ crc[11] ^ crc[12];
+    newcrc[ 7] = din[ 7] ^ din[ 6] ^ crc[12] ^ crc[13];
+    newcrc[ 8] = din[ 8] ^ din[ 7] ^ crc[13] ^ crc[14];
+    newcrc[ 9] = din[ 9] ^ din[ 8] ^ crc[14] ^ crc[15];
+    newcrc[10] = din[10] ^ din[ 9] ^ crc[15] ^ crc[16];
+    newcrc[11] = din[11] ^ din[10] ^ crc[16] ^ crc[17];
+    newcrc[12] = din[12] ^ din[11] ^ crc[17] ^ crc[18];
+    newcrc[13] = din[13] ^ din[12] ^ crc[18] ^ crc[19];
+    newcrc[14] = din[14] ^ din[13] ^ crc[19] ^ crc[20];
+    newcrc[15] = din[15] ^ din[14] ^ crc[20] ^ crc[21];
+    newcrc[16] = din[15] ^ crc[ 0] ^ crc[21];
+    newcrc[17] = crc[ 1];
+    newcrc[18] = crc[ 2];
+    newcrc[19] = crc[ 3];
+    newcrc[20] = crc[ 4];
+    newcrc[21] = crc[ 5];
 
-	for (int i=0; i<=21;++i) {
-	crc[i]=newcrc[i];
-	}
+    for (int i=0; i<=21;++i) {
+        crc[i]=newcrc[i];
+    }
 
-	return;
+    return;
 }
 
 //------------------------------------------------------------------------------
