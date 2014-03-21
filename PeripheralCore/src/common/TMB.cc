@@ -5483,22 +5483,22 @@ END:
             hit_thresh_postdrift= (rd_data >> 10) & 0x7;    // 3 bits
             drift_delay         = (rd_data >> 13) & 0x3;    // 2 bits
 
-            adr    = temp0_adr;
+            adr    = pattern_find_pretrg_adr;
             status = vme_read(adr,rd_data);
             pid_thresh_pretrig  = (rd_data >> 2) & 0xF;     // 4 bits
             pid_thresh_postdrift= (rd_data >> 6) & 0xF;     // 4 bits
 
-            adr    = layer_trig_adr;
+            adr    = layer_trg_mode_adr;
             status = vme_read(adr,rd_data);
             lyr_thresh_pretrig = (rd_data >> 1) & 0xF;      // 4 bits
 
             // Get current adjacent cfeb separation
-            adr    = temp0_adr;
+            adr    = pattern_find_pretrg_adr;
             status = vme_read(adr,rd_data);
             adjcfeb_dist=(rd_data >> 10) & 0x3F;
 
             // Get current CLCT separation
-            adr    = temp1_adr;
+            adr    = clct_separation_adr;
             status = vme_read(adr,rd_data);
             clct_sep = (rd_data >> 8) & 0xFF;
 
@@ -5534,7 +5534,7 @@ END:
             tmb_allow_match = (rd_data >> 4) & 0x1;     // 1 bit
 
             // Get current tmb_match mode for ME1AB
-            adr    = non_trig_adr;
+            adr    = non_trig_readout_adr;
             status = vme_read(adr,rd_data);
 
             tmb_allow_alct_ro   = (rd_data >> 0) & 0x1; // 1=Allow ALCT-only non-triggering readout
@@ -5601,7 +5601,7 @@ END:
             l1a_lookback = (rd_data & 0x07FF);
 
             // Get sync error forced
-            adr    = sync_err_ctrl_adr;
+            adr    = sync_err_control_adr;
             status = vme_read(adr,rd_data);
             sync_err_force = (rd_data>>15) & 0x1;
 
@@ -5832,7 +5832,7 @@ END:
                 status  = vme_write(adr,wr_data);
 
                 // Set tmb_match mode for ME1AB
-                adr     = non_trig_adr;
+                adr     = non_trig_readout_adr;
                 status  = vme_read(adr,rd_data);
                 wr_data = rd_data & 0xFFF0;
                 wr_data = wr_data | (tmb_allow_alct_ro  << 0);  // 1=Allow ALCT-only non-triggering readout
@@ -5851,7 +5851,7 @@ END:
                 // Turn on layer trigger mode if its selected
                 layer_trig_en=0;
                 if (layer_mode) layer_trig_en=1;
-                adr     = layer_trig_adr;
+                adr     = layer_trg_mode_adr;
                 wr_data = layer_trig_en | (lyr_thresh_pretrig << 1);
                 status  = vme_write(adr,wr_data);
 
@@ -5876,7 +5876,7 @@ END:
                 status = vme_write(adr,wr_data);
 
                 // Set pid_thresh_pretrig, pid_thresh_postdrift
-                adr    = temp0_adr;
+                adr    = pattern_find_pretrg_adr;
                 status = vme_read(adr,rd_data);
 
                 wr_data=rd_data & 0xFC03;
@@ -5886,14 +5886,14 @@ END:
                 status = vme_write(adr,wr_data);
 
                 // Set adjcfeb_dist
-                adr     = temp0_adr;
+                adr     = pattern_find_pretrg_adr;
                 status  = vme_read(adr,rd_data);
                 wr_data = rd_data & 0x03FF;         // adjcfeb_dist[5:0] is in [15:10]
                 wr_data = wr_data | (adjcfeb_dist << 10);
                 status  = vme_write(adr,wr_data);
 
                 // Set CLCT separation
-                adr     = temp1_adr;
+                adr     = clct_separation_adr;
                 status  = vme_read(adr,rd_data);
                 wr_data = rd_data & 0x00FF;
                 wr_data = wr_data | (clct_sep << 8);
@@ -5996,7 +5996,7 @@ END:
                             wr_data = wr_data | (1           << 7);     // set inj_sel=1
                             status  = vme_write(adr,wr_data);
 
-                            adr     = rpc_inj_adr_adr;         // ram write strobes
+                            adr     = adr_rpc_inj_adr;         // ram write strobes
                             rpc_inj_wen   = (1 << irpc);                // select this ram
                             rpc_inj_ren   = 0;
                             rpc_inj_rwadr = ibxn;                       // at this address
@@ -6014,7 +6014,7 @@ END:
 
                     for (irpc=0; irpc<=1; ++irpc) {
                         for (ibxn=0; ibxn<=7; ++ibxn) {
-                            adr = rpc_inj_adr_adr;         // ram read strobes
+                            adr = adr_rpc_inj_adr;         // ram read strobes
                             rpc_inj_wen   = 0;                      // select this ram
                             rpc_inj_ren   = (1 << irpc);
                             rpc_inj_rwadr = ibxn;                   // at this address
@@ -6030,7 +6030,7 @@ END:
                             rpc_inj_bxn = (rd_data >> 11) & 0x7;
                             rpc_inj_data = rpc_inj_data | (rpc_inj_bxn << 16);
 
-                            adr = rpc_inj_adr_adr;         // ram read strobes
+                            adr = adr_rpc_inj_adr;         // ram read strobes
                             rpc_inj_ren=0;
                             wr_data = rpc_inj_wen | (rpc_inj_ren << 4) | (rpc_inj_rwadr << 8) | (rpc_tbins_test << 15);     // set ren=0
                             status  = vme_write(adr,wr_data);
@@ -6074,7 +6074,7 @@ END:
                 status  = vme_write(adr,wr_data);
 
                 // Force a sync error if requested
-                adr     = sync_err_ctrl_adr;
+                adr     = sync_err_control_adr;
                 status  = vme_read(adr,rd_data);
                 wr_data = rd_data & ~(1<<15);       // clear old
                 wr_data = rd_data |  (sync_err_force<<15);
@@ -6083,7 +6083,7 @@ END:
                 // Clear sync error if bx0 emulator is turned on
                 if (vme_bx0_emu_en==1)
                 {
-                    adr     = sync_err_ctrl_adr;
+                    adr     = sync_err_control_adr;
                     status  = vme_read(adr,rd_data);
                     wr_data = rd_data |  0x1;   // assert clear
                     status  = vme_write(adr,wr_data);
@@ -6706,7 +6706,7 @@ END:
                                 (*MyOutput_) << " CLCT pretrigger bxn=" << rd_data << " truncated=" << clct_bxn_expect << std::endl;
 
                                 // CLCTvme: Get VME  number of layers hit
-                                adr    = layer_trig_adr;
+                                adr    = layer_trg_mode_adr;
                                 status = vme_read(adr,rd_data);
                                 nlayers_hit = (rd_data >> 4) & 0x7;
 
@@ -8651,7 +8651,7 @@ END:
                 status = vme_write(adr,wr_data);
 
                 // Set pid_thresh_pretrig, pid_thresh_postdrift
-                adr    = temp0_adr;
+                adr    = pattern_find_pretrg_adr;
                 status = vme_read(adr,rd_data);
 
                 wr_data=rd_data & 0xFC03;
@@ -8661,14 +8661,14 @@ END:
                 status = vme_write(adr,wr_data);
 
                 // Set adjcfeb_dist
-                adr     = temp0_adr;
+                adr     = pattern_find_pretrg_adr;
                 status  = vme_read(adr,rd_data);
                 wr_data = rd_data & 0x03FF;         // adjcfeb_dist[5:0] is in [15:10]
                 wr_data = wr_data | (adjcfeb_dist << 10);
                 status  = vme_write(adr,wr_data);
 
                 // Set CLCT separation
-                adr     = temp1_adr;
+                adr     = clct_separation_adr;
                 status  = vme_read(adr,rd_data);
                 wr_data = rd_data & 0x00FF;
                 wr_data = wr_data | (clct_sep << 8);
