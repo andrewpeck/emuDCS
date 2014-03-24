@@ -40,6 +40,7 @@ Sources=\
 		lct_quality.cpp \
 		miniscope16.cpp \
 		pattern_unit.cpp \
+		trigger_test.cpp \
 		service.cpp \
 		minIni.cpp
 
