@@ -68,7 +68,7 @@ void tok(std::string msg_string, double fdata_read, double fdata_expect, double 
     double err;
     double errpct;
 
-    err    = (fdata_read-fdata_expect)/max(fdata_expect,.01);
+    err    = (fdata_read-fdata_expect)/std::max(fdata_expect,.01);
     errpct = err*100.;
 
     status=0;

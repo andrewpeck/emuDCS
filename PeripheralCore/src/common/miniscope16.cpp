@@ -93,7 +93,7 @@ void miniscope16 (int ntbins, int miniscope_data[16]) {
     //	Display
     //------------------------------------------------------------------------------
     fprintf(stdout,"\n");
-    ndisp = min(ntbins,MXTBINS);
+    ndisp = std::min(ntbins,MXTBINS);
     tb0   = (skip_1st_tbin) ? 1:0;
 
     // Display tbin numbers or x if 1st channel blanked
