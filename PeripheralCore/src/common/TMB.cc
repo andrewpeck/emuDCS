@@ -555,9 +555,6 @@
 //  Trigger Test Includes
 //------------------------------------------------------------------------------
 #include "emu/pc/service.h"
-#include "emu/pc/pattern_unit.h"
-#include "emu/pc/lct_quality.h"
-#include "emu/pc/miniscope16.h"
 #include "emu/pc/trigger_test.h"
 //------------------------------------------------------------------------------
 
@@ -1882,6 +1879,7 @@ namespace emu {
 
                 scp_first_pass=false;
             }
+
             //------------------------------------------------------------------------------
             //	scp_status for debugging
             //------------------------------------------------------------------------------
@@ -8548,7 +8546,7 @@ END:
             //(*MyOutput_) << "\n";
 
             // Inquire
-            inquire("FireL1AEvent", "fifo_mode", yy			minv=0, maxv=4,     radix=10, fifo_mode); 	  
+            inquire("FireL1AEvent", "fifo_mode", 			minv=0, maxv=4,     radix=10, fifo_mode); 	  
             inquire("FireL1AEvent", "fifo_tbins", 			minv=0, maxv=10,    radix=10, fifo_tbins); 	  
             inquire("FireL1AEvent", "fifo_pretrig", 		minv=0, maxv=31,    radix=10, fifo_pretrig); 		
             inquire("FireL1AEvent", "l1a_lookback", 		minv=0, maxv=256,   radix=10, l1a_lookback); 		
@@ -12058,7 +12056,8 @@ extract_scope:
                     iscp=0;
                     for (iframe=iscp_begin+1; iframe<=iscp_end-1; ++iframe) {	//excludes 6B05 and 6E05 markers
                         scp_raw_data[iscp]=vf_data[iframe];
-                        if(iscp > (512*160/16-1)) pause ("iscp ovf in decode_raw_hits.for wtf?");
+                        if(iscp > (512*160/16-1)) 
+                            pause ("iscp ovf in decode_raw_hits.for wtf?");
                         fprintf(stdout,"scp debug: %5i%5i%5.4X\n",iscp,iframe,scp_raw_data[iscp]);
                         iscp++;
                     }
@@ -12071,7 +12070,7 @@ extract_scope:
                     scp_silent		= false;
                     scp_playback	= true;
 
-                    TMB::scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+                    scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
 
 skip_scope:
                     //------------------------------------------------------------------------------
