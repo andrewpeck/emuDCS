@@ -19,8 +19,6 @@
 #include "emu/pc/service.h"
 #include "emu/pc/minIni.h"
 
-using namespace std; 
-
 //------------------------------------------------------------------------------
 // Check if Trigger Test Config file exists and create minIni class 
 //------------------------------------------------------------------------------
@@ -39,7 +37,7 @@ int flip_pid(int pid)
 //------------------------------------------------------------------------------
 //   Check data read vs data expected
 //------------------------------------------------------------------------------
-void ck(string msg_string, int data_read, int data_expect)
+void ck(std::string msg_string, int data_read, int data_expect)
 {    
     if (data_read != data_expect) {
         fprintf(stdout,  "ERRm: in %s: read=%8.8X expect=%8.8X\n",msg_string.c_str(),data_read,data_expect);
@@ -50,7 +48,7 @@ void ck(string msg_string, int data_read, int data_expect)
 //------------------------------------------------------------------------------
 //   Check data read vs data expected, with status return
 //------------------------------------------------------------------------------
-int cks(string msg_string, int data_read, int data_expect)
+int cks(std::string msg_string, int data_read, int data_expect)
 {
     int status;
 
@@ -65,7 +63,7 @@ int cks(string msg_string, int data_read, int data_expect)
 //------------------------------------------------------------------------------
 //   Check data read vs data expected, floating point version  with tolerance
 //------------------------------------------------------------------------------
-void tok(string msg_string, double fdata_read, double fdata_expect, double tolerance, int &status)
+void tok(std::string msg_string, double fdata_read, double fdata_expect, double tolerance, int &status)
 {
     double err;
     double errpct;
@@ -84,7 +82,7 @@ void tok(string msg_string, double fdata_read, double fdata_expect, double toler
 //------------------------------------------------------------------------------
 //   Inquire for integer from Config File
 //------------------------------------------------------------------------------
-int inquire(string test, string var, const int &minv, const int &maxv, const int &radix, int &now) {
+int inquire(std::string test, std::string var, const int &minv, const int &maxv, const int &radix, int &now) {
     int i; 
     i=ini.getl(test,var,-999); 
     if ( (i<minv) || (i>maxv) ) {
@@ -99,7 +97,7 @@ int inquire(string test, string var, const int &minv, const int &maxv, const int
 //------------------------------------------------------------------------------
 //   Inquire for two integers from Config File
 //------------------------------------------------------------------------------
-int inquir2(string test, string var1, string var2, const int &minv, const int &maxv, const int &radix, int &num, int &now)
+int inquir2(std::string test, std::string var1, std::string var2, const int &minv, const int &maxv, const int &radix, int &num, int &now)
 {
     int i; 
     int j; 
@@ -124,7 +122,7 @@ int inquir2(string test, string var1, string var2, const int &minv, const int &m
 //------------------------------------------------------------------------------
 //   Inquire for long integer from Config file
 //------------------------------------------------------------------------------
-int inquirl(string test, string var, const long int &minv, const long int &maxv, const int &radix, long int &now)
+int inquirl(std::string test, std::string var, const long int &minv, const long int &maxv, const int &radix, long int &now)
 {
     long int i; 
     i=ini.getl(test,var,-1); 
@@ -141,7 +139,7 @@ int inquirl(string test, string var, const long int &minv, const long int &maxv,
 //------------------------------------------------------------------------------
 //   Inquire for bool from Config file
 //------------------------------------------------------------------------------
-void inquirb(string test, string var, bool &now) {
+void inquirb(std::string test, std::string var, bool &now) {
     bool b; 
     b = ini.getbool(test,var,0); 
     now = b; 
@@ -150,8 +148,8 @@ void inquirb(string test, string var, bool &now) {
 //------------------------------------------------------------------------------
 //   Inquire for string from Config file
 //------------------------------------------------------------------------------
-void inquirs(string test, string var, string &now) {
-    string s; 
+void inquirs(std::string test, std::string var, std::string &now) {
+    std::string s; 
     s = ini.gets(test,var,0); 
     now = s; 
 }
@@ -308,7 +306,6 @@ void nextCRC22_D16(int din[16], int crc[22], int newcrc[22])
 
     return;
 }
-
 //------------------------------------------------------------------------------
 // The bitter end
 //------------------------------------------------------------------------------

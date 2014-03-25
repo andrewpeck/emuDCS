@@ -15,7 +15,6 @@
 #include <iostream>
 #include "emu/pc/pattern_unit.h"
 #include "emu/pc/trigger_test.h"
-using namespace std;
 
 //------------------------------------------------------------------------------
 void pattern_unit 

@@ -20,8 +20,6 @@
 
 //------------------------------------------------------------------------------
 
-using namespace std;
-
 //------------------------------------------------------------------------------
 // Entry miniscope16()
 //------------------------------------------------------------------------------
@@ -60,7 +58,7 @@ void miniscope16 (int ntbins, int miniscope_data[16]) {
         public:
             int		nbits;
             int		bit;
-            string	tag;
+            std::string	tag;
     };
     static label ch[NCHANNELS];
 
