@@ -36,7 +36,11 @@ Sources=\
 	EmuEndcap.cc \
         EmuLogger.cc \
         PROBLEM.cc \
-        DDU.cc
+        DDU.cc \
+		pattern_unit.cpp \
+		trigger_test.cpp \
+		service.cpp \
+		minIni.cpp
 
 IncludeDirs = 
 
