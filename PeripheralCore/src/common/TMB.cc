@@ -935,51 +935,7 @@ namespace emu {
             return;
         }
 
-        //------------------------------------------------------------------------------
-        // vme_write:   Wrapper around emuLIB native TMB write register. Handles type 
-        //              conversion of addresses and data. 
-        //              TMB.cc places hard limit on data word size: 
-        //                  (data_to_write < 0x10000)
-        //------------------------------------------------------------------------------
-        int TMB::vme_write(unsigned long &adr, unsigned short &wr_data) {
-            int reg; 
-            int value;
-
-            if ((reg < INT_MAX) && (reg > INT_MIN))
-                reg = static_cast<int>(adr);                    //typecast long adr to int
-            else {
-                std::cout << "Failed to cast adr to int. Address too long."; 
-                return EXIT_FAILURE; 
-            }
-
-            if ((wr_data < INT_MAX) && (wr_data > INT_MIN))
-                value = static_cast<int>(wr_data);              //typecast short wr_data to int
-            else {
-                std::cout << "Failed to cast wr_data to int. Data too long."; 
-                return EXIT_FAILURE; 
-            }
-
-            WriteRegister(reg, value);         //write to VME register using emuLib native 
-            return EXIT_SUCCESS;
-        }
-
-        //------------------------------------------------------------------------------
-        // vme_read:    Wrapper around emuLIB native TMB write register. Handles type 
-        //              conversion of addresses and data. 
-        //------------------------------------------------------------------------------
-        int TMB::vme_read(unsigned long &adr, unsigned short &rd_data) {
-            int reg;
-            if ((reg < INT_MAX) && (reg > INT_MIN))
-                reg = static_cast<int>(adr);                    //typecast long adr to int
-            else {
-                std::cout << "Failed to cast adr to int. Address too long."; 
-                return EXIT_FAILURE; 
-            }
-
-            rd_data = (unsigned short) TMB::ReadRegister(reg);  //read VME register using emuLib 
-            return EXIT_SUCCESS;
-        }
-        //
+        
         bool TMB::SelfTest() {
             //
             return 0;
@@ -4521,7 +4477,7 @@ END:
         int nalcts_inject=1;
         int triad_1st_tdbin[6]={0};
         int l1a_delay=119;  // hits 0th l1a window bx
-        int pat_ram[32][3][5]={0}; 
+        int pat_ram[32][3][5] = {{{ 0 }}}; 
 
         std::string marker="AOXOMOXOA";
         std::string sfmm_state[5]={ "Startup", "Resync ", "Stop   ", "WaitBXO", "Run    "};
@@ -6866,6 +6822,9 @@ END:
 
                                 key_inj = clct_key_inj_expect[0];
                                 clct0_is_on_me1a = (key_inj>=128);
+
+                                int	busy_min;
+                                int	busy_max;
 
                                 if (csc_type==0xA || csc_type==0xB)     // CSC Type A or B limit busy list to range 0-159
                                 {
@@ -12723,8 +12682,6 @@ exit:
                         //------------------------------------------------------------------------------
                         int	nspan;
                         int	pspan;
-                        int	busy_min;
-                        int	busy_max;
                         int	clct0_is_on_me1a;
                         int	hs_key_s2;
 
@@ -13193,6 +13150,24 @@ exit:
         // End pattern_unit
         //------------------------------------------------------------------------------------------
 
+        //------------------------------------------------------------------------------
+        // vme_write:  Writes wr_data to adr 
+        //------------------------------------------------------------------------------
+        int TMB::vme_write(unsigned long &adr, unsigned short &wr_data) {
+            int reg = static_cast<int>(adr);                    //typecast long adr to int
+            int value = static_cast<int>(wr_data);              //typecast short wr_data to int
+            WriteRegister(reg, value);                      //write to VME register using emuLib native 
+            return EXIT_SUCCESS;
+        }
+
+        //------------------------------------------------------------------------------
+        // vme_read: reads rd_data from adr
+        //------------------------------------------------------------------------------
+        int TMB::vme_read(unsigned long &adr, unsigned short &rd_data) {
+            int reg = static_cast<int>(adr);                    //typecast long adr to int
+            rd_data = (unsigned short) TMB::ReadRegister(reg);  //read VME register using emuLib 
+            return EXIT_SUCCESS;
+        }
 
         //------------------------------------------------------------------------------
         // End Trigger Tests 

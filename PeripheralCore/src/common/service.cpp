@@ -72,7 +72,7 @@ void tok(std::string msg_string, double fdata_read, double fdata_expect, double 
     errpct = err*100.;
 
     status=0;
-    if (abs(err)>tolerance) {
+    if (std::abs(err)>tolerance) {
         status=1;
         fprintf(stdout,  "\tERRm: in %s: read=%10.4g expect=%10.4g %10.2f\n",msg_string.c_str(),fdata_read,fdata_expect,errpct);
     }
