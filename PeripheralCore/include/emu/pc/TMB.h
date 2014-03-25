@@ -692,6 +692,7 @@ public:
   int  TriggerTestForceCLCTtriggerandReadout();
   void pause (std::string s);
   void stop (std::string s);
+  void lct_quality(int &ACC, int &A, int &C, int &A4, int &C4, int &P, int &CPAT, int &Q); 
   void decode_readout(int	vf_data[mxframe],int &dmb_wdcnt, bool &err_check);
   int vme_write(unsigned long &adr, unsigned short &wr_data);
   int vme_read(unsigned long &adr, unsigned short &rd_data);
