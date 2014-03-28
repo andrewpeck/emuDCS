@@ -19,11 +19,11 @@ Sources=\
         AppsVersion.cc \
         CalibDAQ.cc \
         ChamberUtilities.cc \
-		CrateUtilities.cc \
+	CrateUtilities.cc \
         XMLParser.cc \
         EmuPCrateConfigTStore.cc \
         EmuPeripheralCrateBase.cc \
-		EmuPeripheralCrateBroadcast.cc \
+	EmuPeripheralCrateBroadcast.cc \
         EmuPeripheralCrateConfig.cc \
         EmuPeripheralCrateConfig_VCC.cc \
         EmuPeripheralCrateConfig_CCBMPC.cc \
