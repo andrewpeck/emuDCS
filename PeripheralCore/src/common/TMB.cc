@@ -4660,7 +4660,8 @@ END:
         //  Inject ALCT
         //------------------------------------------------------------------------------
         void TMB::TriggerTestInjectALCT() {
-            ifunc = 1; 
+            ifunc = 1;              // turn on/off bang mode
+            nalcts_inject=1;        // number of ALCTs to Inject
             inquirb("Global", "rdscope", rdscope);
 
             // Turn off CCB backplane inputs, turn on L1A emulator
@@ -4734,6 +4735,65 @@ END:
             scp_playback   = false;
             if (rdscope)
                 scope160c(scp_ctrl_adr,scp_rdata_adr,scp_arm,scp_readout,scp_raw_decode,scp_silent,scp_playback,scp_raw_data);
+            
+            // Set ALCT first muon to inject:
+            if (nalcts_inject >= 1) 
+            {
+                inquire("InjectALCT", "alct0_vpf_inj",  minv= 0, maxv=  1,   radix=10, alct0_vpf_inj) ;     // Valid pattern flag
+                inquire("InjectALCT", "alct0_qual_inj", minv= 0, maxv=  3,   radix=10, alct0_qual_inj);     // Pattern Quality
+                inquire("InjectALCT", "alct0_amu_inj",  minv= 0, maxv=  1,   radix=10, alct0_amu_inj) ;     // Accelerator muon
+                inquire("InjectALCT", "alct0_key_inj",  minv= 0, maxv=  127, radix=10, alct0_key_inj) ;     // Wire group ID Number
+                inquire("InjectALCT", "alct0_bxn_inj",  minv= 0, maxv=  3,   radix=10, alct0_bxn_inj) ;     // Bunch crossing number
+            }
+            else {                                                                                          //  No 1st alct muon
+                alct0_vpf_inj   = 0;                                                                        //  Valid pattern flag
+                alct0_qual_inj  = 0;                                                                        //  Pattern quality
+                alct0_amu_inj   = 0;                                                                        //  Accelerator muon
+                alct0_key_inj   = 0;                                                                        //  Wire group ID number (just some offset wrt clct key for now)
+                alct0_bxn_inj   = 0;                                                                        //  Bunch crossing number
+            }
+
+            alct0_inj_wr    = (alct0_vpf_inj  <<  0);
+            alct0_inj_wr    = (alct0_qual_inj <<  1) | alct0_inj_wr;
+            alct0_inj_wr    = (alct0_amu_inj  <<  3) | alct0_inj_wr;
+            alct0_inj_wr    = (alct0_key_inj  <<  4) | alct0_inj_wr;
+            alct0_inj_wr    = (alct0_bxn_inj  << 11) | alct0_inj_wr;
+
+            wr_data = alct0_inj_wr;
+            adr     = alct0_inj_adr;
+            status  = vme_write(adr,wr_data);
+
+            (*MyOutput_) << "alct0_inj_wr=" << alct0_inj_wr << std::endl;
+
+            // Set ALCT second muon to inject:
+            if (nalcts_inject == 2) 
+            {
+                inquire("InjectALCT", "alct1_vpf_inj",  minv= 0, maxv=  1,   radix=10, alct1_vpf_inj) ;     // Valid pattern flag
+                inquire("InjectALCT", "alct1_qual_inj", minv= 0, maxv=  3,   radix=10, alct1_qual_inj);     // Pattern quality
+                inquire("InjectALCT", "alct1_amu_inj",  minv= 0, maxv=  1,   radix=10, alct1_amu_inj) ;     // Accelerator muon
+                inquire("InjectALCT", "alct1_key_inj",  minv= 0, maxv=  127, radix=10, alct1_key_inj) ;     // Wire group ID Number
+                inquire("InjectALCT", "alct1_bxn_inj",  minv= 0, maxv=  3,   radix=10, alct1_bxn_inj) ;     // Bunch crossing number
+            }
+            else 
+            {                                                                                               //  No 2nd alct muon
+                alct1_vpf_inj   = 0;                                                                        //  Valid pattern flag
+                alct1_qual_inj  = 0;                                                                        //  Pattern quality
+                alct1_amu_inj   = 0;                                                                        //  Accelerator muon
+                alct1_key_inj   = 0;                                                                        //  Wire group ID number
+                alct1_bxn_inj   = 0;                                                                        //  Bunch crossing number
+            }
+
+            alct1_inj_wr    = (alct1_vpf_inj  <<  0);
+            alct1_inj_wr    = (alct1_qual_inj <<  1) | alct1_inj_wr;
+            alct1_inj_wr    = (alct1_amu_inj  <<  3) | alct1_inj_wr;
+            alct1_inj_wr    = (alct1_key_inj  <<  4) | alct1_inj_wr;
+            alct1_inj_wr    = (alct1_bxn_inj  << 11) | alct1_inj_wr;
+
+            wr_data = alct1_inj_wr; 
+            adr     = alct1_inj_adr;
+            status  = vme_write(adr,wr_data);
+
+            (*MyOutput_) << "alct1_inj_wr=" << alct1_inj_wr << std::endl;
 
             // Clear previous inject
             adr     = alct_inj_adr;
@@ -8529,7 +8589,7 @@ END:
             //(*MyOutput_) << "\n";
 
             // Inquire
-            inquire("FireL1AEvent", "fifo_mode", 			minv=0, maxv=4,     radix=10, fifo_mode); 	  
+            inquire("FireL1AEvent", "fifo_mode", yy			minv=0, maxv=4,     radix=10, fifo_mode); 	  
             inquire("FireL1AEvent", "fifo_tbins", 			minv=0, maxv=10,    radix=10, fifo_tbins); 	  
             inquire("FireL1AEvent", "fifo_pretrig", 		minv=0, maxv=31,    radix=10, fifo_pretrig); 		
             inquire("FireL1AEvent", "l1a_lookback", 		minv=0, maxv=256,   radix=10, l1a_lookback); 		
