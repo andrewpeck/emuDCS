@@ -335,6 +335,7 @@ private:
   void FastConfigOne(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void ConfigureInit(int c, int ID=0);
   void ConfigOneCrate(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void ConfigDCFEBs(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void InitChamber(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   //
   // Calibration
@@ -420,6 +421,7 @@ private:
   void DCFEBProgramFpga(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void DCFEBProgramEprom(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void DCFEBProgramEpromAll(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void ODMBLoadFirmwarePoll(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
     
   //
   // TMB utils

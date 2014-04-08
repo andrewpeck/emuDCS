@@ -707,6 +707,73 @@ void EmuPeripheralCrateConfig::CFEBStatus(xgi::Input * in, xgi::Output * out )
   // section for DCFEB only
   if(ndcfebs>0)
   {
+     unsigned short dcfeb_par[7][6];
+     std::string color[7][6];
+     std::vector<std::string> parname;
+     parname.clear();
+     parname.push_back("comp mode");
+     parname.push_back("comp timing");
+     parname.push_back("comp clock phase");
+     parname.push_back("sample clock phase");
+     parname.push_back("pipeline depth");
+     parname.push_back("number of samples");
+
+     *out << cgicc::fieldset().set("style","font-size: 11pt; font-family: arial;");
+     *out << std::endl;
+     //
+     *out << cgicc::legend("DCFEB Virtex-6 Parameters").set("style","color:blue") << std::endl ;
+     *out << cgicc::table().set("border","1");
+     *out <<cgicc::td() << "Channel" << cgicc::td();
+     for(CFEBItr cfebItr = cfebs.begin(); cfebItr != cfebs.end(); ++cfebItr)
+     {
+       unsigned i = cfebItr - cfebs.begin();
+       char wrd[2];
+       *out << cgicc::td() << "CFEB " << (cfebItr - cfebs.begin() + 1) << cgicc::td();
+       thisDMB->write_cfeb_selector(cfebItr->SelectorBit());
+
+       thisDMB->autoload_select_readback_wrd(*cfebItr,2);
+       thisDMB->autoload_readback_wrd(*cfebItr,wrd);
+       dcfeb_par[i][0] = wrd[0] & 0x3;
+       dcfeb_par[i][1] = (wrd[0] & 0xc) >> 2;
+
+       thisDMB->autoload_select_readback_wrd(*cfebItr,10);
+       thisDMB->autoload_readback_wrd(*cfebItr,wrd);
+       dcfeb_par[i][2] = wrd[0];
+
+       thisDMB->autoload_select_readback_wrd(*cfebItr,11);
+       thisDMB->autoload_readback_wrd(*cfebItr,wrd);
+       dcfeb_par[i][3] = wrd[0];
+
+       thisDMB->autoload_select_readback_wrd(*cfebItr,6);
+       thisDMB->autoload_readback_wrd(*cfebItr,wrd);
+       dcfeb_par[i][4] = wrd[0];
+
+       thisDMB->autoload_select_readback_wrd(*cfebItr,8);
+       thisDMB->autoload_readback_wrd(*cfebItr,wrd);
+       dcfeb_par[i][5] = wrd[0];
+
+       color[i][0] = dcfeb_par[i][0] == thisDMB->GetCompModeCfeb(i) ? "green" : "red";
+       color[i][1] = dcfeb_par[i][1] == thisDMB->GetCompTimingCfeb(i) ? "green" : "red";
+       color[i][2] = dcfeb_par[i][2] == thisDMB->GetCompClockPhaseCfeb(i) ? "green" : "red";
+       color[i][3] = dcfeb_par[i][3] == thisDMB->GetADCSampleClockPhaseCfeb(i) ? "green" : "red";
+       color[i][4] = dcfeb_par[i][4] == cfebItr->GetPipelineDepth() ? "green" : "red";
+       color[i][5] = dcfeb_par[i][5] == thisDMB->GetNSamplesCfeb(i) ? "green" : "red";
+     }
+     *out << cgicc::tr() << cgicc::tr() << std::endl;
+     for (unsigned par=0; par<6; par++)
+     {
+       *out << cgicc::td() << parname[par] << cgicc::td();
+       for(CFEBItr cfebItr = cfebs.begin(); cfebItr != cfebs.end(); ++cfebItr)
+       {
+         unsigned i = cfebItr - cfebs.begin ();
+         *out << cgicc::td() << cgicc::span().set("style","color:"+color[i][par]);
+         *out << ((int) dcfeb_par[i][par]);
+         *out << cgicc::span() << cgicc::td();
+       }
+       *out << cgicc::tr() << cgicc::tr() << std::endl;
+     }
+     *out << cgicc::table() << cgicc::fieldset() << std::endl;
+     //
      double monitor_dcfebs[200];
      for(unsigned c=0; c<200; c++) monitor_dcfebs[c] = -1.0;
      std::vector<std::string> chname;
@@ -1781,6 +1848,15 @@ else if(D_hversion==2)
      *out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
      *out << FirmwareDir_+"odmb/me11_odmb.mcs";
      *out << cgicc::form() << std::endl ;
+     *out << cgicc::br();
+     //
+     std::string ODMBLoadFirmwarePoll = toolbox::toString("/%s/ODMBLoadFirmwarePoll",getApplicationDescriptor()->getURN().c_str());
+     *out << cgicc::form().set("method","GET").set("action",ODMBLoadFirmwarePoll) << std::endl ;
+     *out << cgicc::input().set("type","submit").set("value","ODMB Program EPROM by Polling BPI") << std::endl ;
+     sprintf(buf,"%d",dmb);
+     *out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
+     *out << FirmwareDir_+"odmb/me11_odmb.mcs";
+     *out << cgicc::form() << std::endl ;
      //
      *out << cgicc::br() <<cgicc::hr() << std::endl;
      *out << "Use this one ONLY if power-cycle failed to recover the FPGA:" << cgicc::br()<< std::endl;
@@ -1933,6 +2009,46 @@ void EmuPeripheralCrateConfig::DMBLoadFirmware(xgi::Input * in, xgi::Output * ou
      
        std::cout << getLocalDateTime() << " ODMB program EPROM finished." << std::endl;
 
+    }
+  }
+  //
+  this->DMBUtils(in,out);
+  //
+}
+//
+//
+void EmuPeripheralCrateConfig::ODMBLoadFirmwarePoll(xgi::Input * in, xgi::Output * out ) 
+  throw (xgi::exception::Exception) {
+  //
+  cgicc::Cgicc cgi(in);
+  //
+  cgicc::form_iterator name = cgi.getElement("dmb");
+  //
+  int dmb=0;
+  if(name != cgi.getElements().end()) {
+    dmb = cgi["dmb"]->getIntegerValue();
+    std::cout << "ODMBLoadFirmwarePoll:  DMB " << dmb << std::endl;
+    DMB_ = dmb;
+  }
+  //
+  DAQMB * thisDMB = dmbVector[dmb];
+  //
+  if (thisDMB) 
+  {
+   
+    int hversion=thisDMB->GetHardwareVersion();
+    if(hversion==2)
+    {
+       std::string mcsfile= FirmwareDir_+ "odmb/me11_odmb.mcs";
+                
+       std::cout << getLocalDateTime() << " ODMB program EPROM by Polling BPI status in slot " << thisDMB->slot() << std::endl;
+       std::cout << "Use mcs file: " << mcsfile << std::endl;
+
+       bool success=thisDMB->odmb_program_eprom_poll(mcsfile.c_str());
+       if(success)     
+          std::cout << getLocalDateTime() << " ODMB program EPROM finished successfully." << std::endl;
+       else
+           std::cout << getLocalDateTime() << " ODMB program EPROM failed." << std::endl;
     }
   }
   //
