@@ -2073,7 +2073,7 @@ display:
                         for (idigit=ndigits-1; idigit>=0; --idigit) {
                             (*MyOutput_) << "ch" << ich << "\t" << ch[ich].tag.c_str() << "\t";
                             for(i=0;i<NDSP;++i) 
-                                (*MyOutput_) << ((ihex[i] >> (4*idigit)) & 0xF);
+                                (*MyOutput_) << std::hex << ((ihex[i] >> (4*idigit)) & 0xF);
                             (*MyOutput_) << std::endl;
                         } // close for idigit
                     } // close if last_bit
@@ -5284,7 +5284,7 @@ END:
 
                 dmb_rdata = dmb_rdata_lsb | (dmb_rdata_msb << 16);
 
-                std::cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
+                std::cout << "\tAdr=" << iadr << " Data=" << std::hex << dmb_rdata << std::endl;
 
             }   // close iadr
 
@@ -5357,8 +5357,8 @@ END:
 
             if (ifunc>0)
             {
-                (*MyOutput_) << "\tALCT0=" << alct0_rd << std::endl;
-                (*MyOutput_) << "\tALCT1=" << alct1_rd << std::endl;
+                (*MyOutput_) << "\tALCT0=" << std::hex << alct0_rd << std::endl;
+                (*MyOutput_) << "\tALCT1=" << std::hex << alct1_rd << std::endl;
                 if (alct0_rd==alct0_prev) 
                     (*MyOutput_) << "\tALCT LCT0 unchanged\n";
                 if (alct1_rd==alct1_prev) 
@@ -5409,17 +5409,17 @@ END:
                 adr     = alctfifo2_adr;   // alct raw data lsbs
                 status  = vme_read(adr,rd_data);
                 alct_raw_data = rd_data;
-                (*MyOutput_) << "adr=4i alct raw lsbs=" << rd_data << std::endl;
+                (*MyOutput_) << "adr=4i alct raw lsbs=" << std::hex << rd_data << std::endl;
 
                 adr     = alct_fifo_adr;   // alct raw data msbs
                 status  = vme_read(adr,rd_data);
-                (*MyOutput_) << "adr=4i alct raw msbs=" << rd_data << std::endl;
+                (*MyOutput_) << "adr=4i alct raw msbs=" << std::hex << rd_data << std::endl;
                 rd_data = (rd_data>>13) & 0x0003;
                 alct_raw_data = alct_raw_data | (rd_data<<16);
 
                 if (i<mxframe) vf_data[i] = alct_raw_data;
                 if (i<=3 || i>=alct_raw_nwords-4)
-                    (*MyOutput_) << "\t" << i << " " << alct_raw_data << std::endl;
+                    (*MyOutput_) << "\t" << i << " " << std::hex << alct_raw_data << std::endl;
             }
 
             // calculate CRC for data stream
@@ -5443,7 +5443,7 @@ END:
             tmb_crc     = tmb_crc_lsb | (tmb_crc_msb<<11);  // full 22 bit crc
             crc_match   = crc==tmb_crc;
 
-            (*MyOutput_) <<  "calc_crc=" << crc << " alct_crc=" << tmb_crc << "match=" << logical(crc_match) << std::endl;
+            (*MyOutput_) <<  "calc_crc=" << std::hex << crc << " alct_crc=" << std::hex << tmb_crc << "match=" << logical(crc_match) << std::endl;
 
             if (!crc_match) pause("ALCT crc error, WTF!");
             return EXIT_FAILURE; 
@@ -5996,7 +5996,7 @@ END:
 
                     for (irpc=0; irpc<=1;   ++ irpc) {
                         for (ibxn=0; ibxn<=255; ++ ibxn) {
-                            std::cout << "rpc_inj_image writing " << ibxn << " " << irpc << " " << rpc_inj_image[ibxn][irpc] << std::endl;
+                            std::cout << "rpc_inj_image writing " << ibxn << " " << irpc << " " << std::hex << rpc_inj_image[ibxn][irpc] << std::endl;
                             adr     = rpc_inj_wdata_adr;       // pad data to write to ram
                             wr_data = rpc_inj_image[ibxn][irpc] & 0x0000FFFF;
                             status  = vme_write(adr,wr_data);
@@ -6048,10 +6048,10 @@ END:
                             wr_data = rpc_inj_wen | (rpc_inj_ren << 4) | (rpc_inj_rwadr << 8) | (rpc_tbins_test << 15);     // set ren=0
                             status  = vme_write(adr,wr_data);
 
-                            std::cout << "rpc_inj_data reading " << ibxn << " " << irpc << " " << rpc_inj_data << std::endl;
+                            std::cout << "rpc_inj_data reading " << ibxn << " " << irpc << " " << std::hex << rpc_inj_data << std::endl;
 
                             if (rpc_inj_data != rpc_inj_image[ibxn][irpc])
-                                (*MyOutput_) << "RPC injector RAM error at adr=" << rpc_inj_rwadr << " expect= " << rpc_inj_image[ibxn][irpc] << " read=" << rpc_inj_data << std::endl;
+                                (*MyOutput_) << "RPC injector RAM error at adr=" << rpc_inj_rwadr << " expect= " << std::hex << rpc_inj_image[ibxn][irpc] << " read=" << std::hex << rpc_inj_data << std::endl;
 
                         }   // close for ibxn
                     }   // close for irpc
@@ -6199,7 +6199,7 @@ END:
 
                             if (debug_) {
                                 std::cout << "dbg: clct_key_inject" << iclct << "=" << clct_key_inject[iclct] << std::endl;
-                                std::cout << "dbg: clct_pid_inject" << iclct << "=" << clct_pid_inject[iclct] << std::endl;
+                                std::cout << "dbg: clct_pid_inject" << iclct << "=" << std::hex << clct_pid_inject[iclct] << std::endl;
                             }
 
                             if (iclct==1 && loop_keys[1]) {
@@ -6251,7 +6251,7 @@ END:
                                 }   // close icell
                             }   // close layer
 
-                            (*MyOutput_) << "CLCT" << iclct << ": " << "Key=" << ikey << " " << "Pattern=" << ipid << " " << "primary hits=" << ihitp << " " << "expected hits=" << clct_hit_expect[iclct] << std::endl;
+                            (*MyOutput_) << "CLCT" << iclct << ": " << "Key=" << ikey << " " << "Pattern=" << std::hex << ipid << " " << "primary hits=" << ihitp << " " << "expected hits=" << clct_hit_expect[iclct] << std::endl;
 
                             if (ihitp!=6)
                                 pause("clct error in primary hit count, expected 6 hits.");
@@ -6320,7 +6320,7 @@ END:
                                 if  (feof(ram_file)) break;                             // Hit end of file
                                 fgets(line,81,ram_file);                                // Get a new line
                                 sscanf(line,     "%1i%3i |%8X|%8X|%8X|%8X|%8X|",            &layer,&itbin,&dscfeb[0],&dscfeb[1],&dscfeb[2],&dscfeb[3],&dscfeb[4]);
-                                (*MyOutput_) << &layer << &itbin << " |" << layer << "|" << itbin << "|" << dscfeb[0] << "|" << dscfeb[1] << "|" << dscfeb[2] << "|" << dscfeb[3] << "|" << dscfeb[4] << "|\n";
+                                (*MyOutput_) << &layer << &itbin << " |" << layer << "|" << itbin << "|" << HEX8(dscfeb[0]) << "|" << HEX8(dscfeb[1]) << "|" << HEX8(dscfeb[2]) << "|" << HEX8(dscfeb[3]) << "|" << HEX8(dscfeb[4]) << "|\n";
 
                                 if (layer<0 || layer>5       ) stop("layer out of range in clct injector image file");
                                 if (itbin<0 || itbin>=mxtbins) stop("itbin out of range in clct injector image file");
@@ -6354,7 +6354,7 @@ END:
                         // Display Triads
                         (*MyOutput_) << "\nbegin triad for key" << ikeylp; 
                         for(i=0;i<nclcts_inject;++i) 
-                            (*MyOutput_) << "  clct"<<i<<": key" << clct_key_expect[i] << " hit" <<clct_hit_expect[i] << " pid" << clct_pid_expect[i];
+                            (*MyOutput_) << "  clct"<<i<<": key" << clct_key_expect[i] << " hit" <<clct_hit_expect[i] << " pid" << std::hex << clct_pid_expect[i];
                         (*MyOutput_) << "\n";
 
                         for (layer=0; layer<=5; ++layer) {
@@ -6389,7 +6389,7 @@ END:
 
                                     pat_ram[itbin][iram][icfeblp]=wr_data;
                                     if (debug_)
-                                        std::cout << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << wr_data << std::endl;
+                                        std::cout << "pat_ram tbin=" << itbin << " ram=" << iram << " wr_data=" << std::hex << wr_data << std::endl;
                                 }
                             }
                         }
@@ -6458,8 +6458,8 @@ END:
                                             << " key" << ikey
                                             << " RAM" << iram
                                             << " Tbin" << itbin
-                                            << " wr=" << wr_data_mem
-                                            << " rd=" << rd_data_mem << std::endl;
+                                            << " wr=" << std::hex << wr_data_mem
+                                            << " rd=" << std::hex << rd_data_mem << std::endl;
 
                                         //printf("\tSkip, Continue <cr> ");
                                         //fgets(line, 80, stdin);
@@ -6498,7 +6498,7 @@ END:
                         adr     = alct0_inj_adr;
                         status  = vme_write(adr,wr_data);
 
-                        (*MyOutput_) << "alct0_inj_wr=" << alct0_inj_wr << std::endl;
+                        (*MyOutput_) << "alct0_inj_wr=" << std::hex << alct0_inj_wr << std::endl;
 
                         // Set ALCT second muon to inject:
                         if (nalcts_inject == 2) {
@@ -6526,7 +6526,7 @@ END:
                         adr     = alct1_inj_adr;
                         status  = vme_write(adr,wr_data);
 
-                        (*MyOutput_) << "alct1_inj_wr=" << alct1_inj_wr << std::endl;
+                        (*MyOutput_) << "alct1_inj_wr=" << std::hex << alct1_inj_wr << std::endl;
 
                         // Lower pattern threshold temporarily so edge key 1/2-strips will trigger, set it back later
                         if (loop_keys[0] && (ikey<=4 || ikey>=154))
@@ -6654,8 +6654,8 @@ END:
                         }
 
                         (*MyOutput_) << "\n";
-                        (*MyOutput_) << "CLCTemu hs_key_1st_emu=" << hs_key_1st_emu << " hs_pid_1st_emu=" << hs_pid_1st_emu << " hs_hit_1st_emu=" << hs_hit_1st_emu << std::endl;
-                        (*MyOutput_) << "CLCTemu hs_key_2nd_emu=" << hs_key_2nd_emu << " hs_pid_2nd_emu=" << hs_pid_2nd_emu << " hs_hit_2nd_emu=" << hs_hit_2nd_emu << std::endl;
+                        (*MyOutput_) << "CLCTemu hs_key_1st_emu=" << hs_key_1st_emu << " hs_pid_1st_emu=" << std::hex << hs_pid_1st_emu << " hs_hit_1st_emu=" << std::hex << hs_hit_1st_emu << std::endl;
+                        (*MyOutput_) << "CLCTemu hs_key_2nd_emu=" << hs_key_2nd_emu << " hs_pid_2nd_emu=" << std::hex << hs_pid_2nd_emu << " hs_hit_2nd_emu=" << std::hex << hs_hit_2nd_emu << std::endl;
                         (*MyOutput_) << "CLCTemu layer_trig_emu=" << layer_trig_emu << " nlayers_hit_emu=" << nlayers_hit_emu << std::endl;
                         (*MyOutput_) << "CLCTemu cfeb_active_emu[4:0]=";
                         for(i=4;i>=0;--i)
@@ -6708,15 +6708,15 @@ END:
                                 status = vme_read(adr,rd_data);
                                 clctc_vme = (rd_data >> 0) & 0x0007;
 
-                                (*MyOutput_) << "clct0_vme=" << clct0_vme << std::endl; 
-                                (*MyOutput_) << "clct1_vme=" << clct1_vme << std::endl; 
-                                (*MyOutput_) << "clctm_vme=" << rd_data << std::endl; 
+                                (*MyOutput_) << "clct0_vme=" << std::hex << clct0_vme << std::endl; 
+                                (*MyOutput_) << "clct1_vme=" << std::hex << clct1_vme << std::endl; 
+                                (*MyOutput_) << "clctm_vme=" << std::hex << rd_data << std::endl; 
 
                                 // CLCTvme: Get VME clct bxn stored at pretrigger
                                 adr    = bxn_clct_adr;
                                 status = vme_read(adr,rd_data);
                                 clct_bxn_expect = rd_data & 0x3;
-                                (*MyOutput_) << " CLCT pretrigger bxn=" << rd_data << " truncated=" << clct_bxn_expect << std::endl;
+                                (*MyOutput_) << " CLCT pretrigger bxn=" << std::hex << rd_data << " truncated=" << std::hex << clct_bxn_expect << std::endl;
 
                                 // CLCTvme: Get VME  number of layers hit
                                 adr    = layer_trg_mode_adr;
@@ -6811,8 +6811,8 @@ END:
 
                                 (*MyOutput_) << "clct_hit_inj_expect[0]=" << clct_hit_inj_expect[0] << std::endl;
                                 (*MyOutput_) << "clct_key_inj_expect[0]=" << clct_key_inj_expect[0] << std::endl;
-                                (*MyOutput_) << "clct_pid_inj_expect[0]=" << clct_pid_inj_expect[0] << std::endl;
-                                (*MyOutput_) << "clct_pat_inj_expect[0]=" << clct_pat_inj_expect[0] << std::endl;
+                                (*MyOutput_) << "clct_pid_inj_expect[0]=" << std::hex << clct_pid_inj_expect[0] << std::endl;
+                                (*MyOutput_) << "clct_pat_inj_expect[0]=" << std::hex << clct_pat_inj_expect[0] << std::endl;
 
                                 // CLCTinj: Create key 1/2-strip blanking region around clct0 from injector
                                 nspan = clct_sep;
@@ -6883,8 +6883,8 @@ END:
 
                                 (*MyOutput_) << "clct_hit_inj_expect[1]=" << clct_hit_inj_expect[1] << std::endl;
                                 (*MyOutput_) << "clct_key_inj_expect[1]=" << clct_key_inj_expect[1] << std::endl;
-                                (*MyOutput_) << "clct_pid_inj_expect[1]=" << clct_pid_inj_expect[1] << std::endl;
-                                (*MyOutput_) << "clct_pat_inj_expect[1]=" << clct_pat_inj_expect[1] << std::endl;
+                                (*MyOutput_) << "clct_pid_inj_expect[1]=" << std::hex << clct_pid_inj_expect[1] << std::endl;
+                                (*MyOutput_) << "clct_pat_inj_expect[1]=" << std::hex << clct_pat_inj_expect[1] << std::endl;
 
                                 // CLCTinj: Predict pre-trigger and post-drift behavior for injected CLCTs
                                 injector_clct0_over  = false;   // clct0 over thresholds
@@ -7164,8 +7164,8 @@ END:
                                 (*MyOutput_) << "TMBemu: tmb_clct_only_ro_ff  = " << logical(tmb_clct_only_ro_ff ) << std::endl;
                                 (*MyOutput_) << "TMBemu: tmb_alct_discard     = " << logical(tmb_alct_discard    ) << std::endl;
                                 (*MyOutput_) << "TMBemu: tmb_clct_discard     = " << logical(tmb_clct_discard    ) << std::endl;
-                                (*MyOutput_) << "TMBemu: tmb_alct0            = " << tmb_alct0 << std::endl;
-                                (*MyOutput_) << "TMBemu: tmb_alct1            = " << tmb_alct1 << std::endl;
+                                (*MyOutput_) << "TMBemu: tmb_alct0            = " << std::hex << tmb_alct0 << std::endl;
+                                (*MyOutput_) << "TMBemu: tmb_alct1            = " << std::hex << tmb_alct1 << std::endl;
 
                                 // TMBemu: Kill CLCTs from ME1A, TMB firmware handles this incorrectly as of 4/6/2010
                                 kill_me1a_clcts = (mpc_me1a_block==1 && csc_me1ab==1);
@@ -7271,18 +7271,18 @@ END:
                                 else                        {alct0_emu = alct0_real;  alct1_emu = alct1_real;} // alct0 and alct1 exist, so use them
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: clct0_emu            = " << clct0_emu << std::endl;
-                                (*MyOutput_) << "TMBemu: clct1_emu            = " << clct1_emu << std::endl;
-                                (*MyOutput_) << "TMBemu: alct0_emu            = " << alct0_emu << std::endl;
-                                (*MyOutput_) << "TMBemu: alct1_emu            = " << alct1_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_emu            = " << std::hex << clct0_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_emu            = " << std::hex << clct1_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: alct0_emu            = " << std::hex << alct0_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: alct1_emu            = " << std::hex << alct1_emu << std::endl;
 
                                 // TMBemu: LCT valid pattern flags
                                 lct0_vpf_emu    = alct0_vpf_emu || clct0_vpf_emu;   // First muon exists
                                 lct1_vpf_emu    = alct1_vpf_emu || clct1_vpf_emu;   // Second muon exists
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: lct0_vpf_emu         = " << lct0_vpf_emu << std::endl;
-                                (*MyOutput_) << "TMBemu: lct1_vpf_emu         = " << lct1_vpf_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: lct0_vpf_emu         = " << std::hex << lct0_vpf_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: lct1_vpf_emu         = " << std::hex << lct1_vpf_emu << std::endl;
 
                                 // TMBemu: Decompose ALCT muons
                                 alct0_valid_emu     = (alct0_emu >>  0) & 0x1;      // Valid pattern flag
@@ -7300,18 +7300,18 @@ END:
                                 alct_bx0_emu        = alct0_bxn_emu==0;
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: alct0_valid_emu      = " << alct0_valid_emu    << std::endl;
-                                (*MyOutput_) << "TMBemu: alct0_quality_emu    = " << alct0_quality_emu  << std::endl;
-                                (*MyOutput_) << "TMBemu: alct0_amu_emu        = " << alct0_amu_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: alct0_key_emu        = " << alct0_key_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: alct0_bxn_emu        = " << alct0_bxn_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: alct0_valid_emu      = " << std::hex << alct0_valid_emu    << std::endl;
+                                (*MyOutput_) << "TMBemu: alct0_quality_emu    = " << std::hex << alct0_quality_emu  << std::endl;
+                                (*MyOutput_) << "TMBemu: alct0_amu_emu        = " << std::hex << alct0_amu_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: alct0_key_emu        = " << std::hex << alct0_key_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: alct0_bxn_emu        = " << std::hex << alct0_bxn_emu      << std::endl;
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: alct1_valid_emu      = " << alct1_valid_emu    << std::endl;
-                                (*MyOutput_) << "TMBemu: alct1_quality_emu    = " << alct1_quality_emu  << std::endl;
-                                (*MyOutput_) << "TMBemu: alct1_amu_emu        = " << alct1_amu_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: alct1_key_emu        = " << alct1_key_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: alct1_bxn_emu        = " << alct1_bxn_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: alct_bx0_emu         = " << alct_bx0_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: alct1_valid_emu      = " << std::hex << alct1_valid_emu    << std::endl;
+                                (*MyOutput_) << "TMBemu: alct1_quality_emu    = " << std::hex << alct1_quality_emu  << std::endl;
+                                (*MyOutput_) << "TMBemu: alct1_amu_emu        = " << std::hex << alct1_amu_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: alct1_key_emu        = " << std::hex << alct1_key_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: alct1_bxn_emu        = " << std::hex << alct1_bxn_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: alct_bx0_emu         = " << std::hex << alct_bx0_emu       << std::endl;
 
                                 // TMBemu: Decompose CLCT muons
                                 clct0_valid_emu     = (clct0_emu >>  0) & 0x1;      // Valid pattern flag
@@ -7336,24 +7336,24 @@ END:
                                 clct_bx0_emu   = clct_bxn_emu==0;
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: clct0_valid_emu     = " << clct0_valid_emu     << std::endl;
-                                (*MyOutput_) << "TMBemu: clct0_hit_emu       = " << clct0_hit_emu       << std::endl;
-                                (*MyOutput_) << "TMBemu: clct0_pid_emu       = " << clct0_pid_emu       << std::endl;
-                                (*MyOutput_) << "TMBemu: clct0_key_emu       = " << clct0_key_emu       << std::endl;
-                                (*MyOutput_) << "TMBemu: clct0_cfeb_emu      = " << clct0_cfeb_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_valid_emu     = " << std::hex << clct0_valid_emu     << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_hit_emu       = " << std::hex << clct0_hit_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_pid_emu       = " << std::hex << clct0_pid_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_key_emu       = " << std::hex << clct0_key_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_cfeb_emu      = " << std::hex << clct0_cfeb_emu      << std::endl;
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: clct1_valid_emu     = " << clct1_valid_emu     << std::endl;
-                                (*MyOutput_) << "TMBemu: clct1_hit_emu       = " << clct1_hit_emu       << std::endl;
-                                (*MyOutput_) << "TMBemu: clct1_pid_emu       = " << clct1_pid_emu       << std::endl;
-                                (*MyOutput_) << "TMBemu: clct1_key_emu       = " << clct1_key_emu       << std::endl;
-                                (*MyOutput_) << "TMBemu: clct1_cfeb_emu      = " << clct1_cfeb_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_valid_emu     = " << std::hex << clct1_valid_emu     << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_hit_emu       = " << std::hex << clct1_hit_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_pid_emu       = " << std::hex << clct1_pid_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_key_emu       = " << std::hex << clct1_key_emu       << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_cfeb_emu      = " << std::hex << clct1_cfeb_emu      << std::endl;
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: clct0_bend_emu      = " << clct0_bend_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: clct1_bend_emu      = " << clct1_bend_emu      << std::endl;
-                                (*MyOutput_) << "TMBemu: clct_bxn_emu        = " << clct_bxn_emu        << std::endl;
-                                (*MyOutput_) << "TMBemu: clct_bx0_emu        = " << clct_bx0_emu        << std::endl;
-                                (*MyOutput_) << "TMBemu: csc_id_emu          = " << csc_id_emu          << std::endl;
-                                (*MyOutput_) << "TMBemu: clct_sync_err_emu   = " << clct_sync_err_emu   << std::endl;
+                                (*MyOutput_) << "TMBemu: clct0_bend_emu      = " << std::hex << clct0_bend_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: clct1_bend_emu      = " << std::hex << clct1_bend_emu      << std::endl;
+                                (*MyOutput_) << "TMBemu: clct_bxn_emu        = " << std::hex << clct_bxn_emu        << std::endl;
+                                (*MyOutput_) << "TMBemu: clct_bx0_emu        = " << std::hex << clct_bx0_emu        << std::endl;
+                                (*MyOutput_) << "TMBemu: csc_id_emu          = " << std::hex << csc_id_emu          << std::endl;
+                                (*MyOutput_) << "TMBemu: clct_sync_err_emu   = " << std::hex << clct_sync_err_emu   << std::endl;
                                 (*MyOutput_) << "\n";
 
                                 // LCT Quality
@@ -7391,7 +7391,7 @@ END:
                                 tmb_rank_err_emu = (lct0_quality_emu*lct0_vpf_emu) < (lct1_quality_emu * lct1_vpf_emu);
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: tmb_rank_err_emu  = " << tmb_rank_err_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: tmb_rank_err_emu  = " << std::hex << tmb_rank_err_emu << std::endl;
 
                                 // TMBemu: Format MPC output words
                                 mpc0_frame0_emu =
@@ -7433,15 +7433,15 @@ END:
                                 mpc1_frame1_pulse = (trig_mpc1_emu) ? mpc1_frame1_emu : 0;
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: trig_mpc_emu         = " << trig_mpc_emu  << std::endl;
-                                (*MyOutput_) << "TMBemu: trig_mpc0_emu        = " << trig_mpc0_emu << std::endl;
-                                (*MyOutput_) << "TMBemu: trig_mpc1_emu        = " << trig_mpc1_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: trig_mpc_emu         = " << std::hex << trig_mpc_emu  << std::endl;
+                                (*MyOutput_) << "TMBemu: trig_mpc0_emu        = " << std::hex << trig_mpc0_emu << std::endl;
+                                (*MyOutput_) << "TMBemu: trig_mpc1_emu        = " << std::hex << trig_mpc1_emu << std::endl;
 
                                 (*MyOutput_) << "\n";
-                                (*MyOutput_) << "TMBemu: mpc0_frame0_pulse    = " << mpc0_frame0_pulse << std::endl;
-                                (*MyOutput_) << "TMBemu: mpc0_frame1_pulse    = " << mpc0_frame1_pulse << std::endl;
-                                (*MyOutput_) << "TMBemu: mpc1_frame0_pulse    = " << mpc1_frame0_pulse << std::endl;
-                                (*MyOutput_) << "TMBemu: mpc1_frame1_pulse    = " << mpc1_frame1_pulse << std::endl;
+                                (*MyOutput_) << "TMBemu: mpc0_frame0_pulse    = " << std::hex << mpc0_frame0_pulse << std::endl;
+                                (*MyOutput_) << "TMBemu: mpc0_frame1_pulse    = " << std::hex << mpc0_frame1_pulse << std::endl;
+                                (*MyOutput_) << "TMBemu: mpc1_frame0_pulse    = " << std::hex << mpc1_frame0_pulse << std::endl;
+                                (*MyOutput_) << "TMBemu: mpc1_frame1_pulse    = " << std::hex << mpc1_frame1_pulse << std::endl;
                                 (*MyOutput_) << "\n";
 
                                 // Read latched MPC data
@@ -7461,10 +7461,10 @@ END:
                                 status = vme_read(adr,rd_data);
                                 mpc1_frame1_vme = rd_data;
 
-                                (*MyOutput_) << "VME:    mpc0_frame0_vme      = " << mpc0_frame0_vme << std::endl;
-                                (*MyOutput_) << "VME:    mpc0_frame1_vme      = " << mpc0_frame1_vme << std::endl;
-                                (*MyOutput_) << "VME:    mpc1_frame0_vme      = " << mpc1_frame0_vme << std::endl;
-                                (*MyOutput_) << "VME:    mpc1_frame1_vme      = " << mpc1_frame1_vme << std::endl;
+                                (*MyOutput_) << "VME:    mpc0_frame0_vme      = " << std::hex << mpc0_frame0_vme << std::endl;
+                                (*MyOutput_) << "VME:    mpc0_frame1_vme      = " << std::hex << mpc0_frame1_vme << std::endl;
+                                (*MyOutput_) << "VME:    mpc1_frame0_vme      = " << std::hex << mpc1_frame0_vme << std::endl;
+                                (*MyOutput_) << "VME:    mpc1_frame1_vme      = " << std::hex << mpc1_frame1_vme << std::endl;
 
                                 // TMBemu: Decompose expected MPC frames
                                 mpc_alct0_key_expect    =   (mpc0_frame0_pulse >>  0) & 0x007F;
@@ -7566,7 +7566,7 @@ END:
                                     << "clct0: " 
                                     << " vpf=" << clct0_vpf_tmb 
                                     << " nhit=" << clct0_hit_tmb 
-                                    << " pid=" << clct0_pid_tmb 
+                                    << " pid=" << std::hex << clct0_pid_tmb 
                                     << " key=" << clct0_key_tmb 
                                     << " cfeb=" << clct0_cfeb_tmb 
                                     << " bxn=" << clctc_bxn_tmb 
@@ -7577,7 +7577,7 @@ END:
                                     << "clct1: " 
                                     << " vpf=" << clct1_vpf_tmb 
                                     << " nhit=" << clct1_hit_tmb 
-                                    << " pid=" << clct1_pid_tmb 
+                                    << " pid=" << std::hex << clct1_pid_tmb 
                                     << " key=" << clct1_key_tmb 
                                     << " cfeb=" << clct1_cfeb_tmb 
                                     << " bxn=" << clctc_bxn_tmb
@@ -7586,7 +7586,7 @@ END:
                                 // Display ALCTs
                                 (*MyOutput_)
                                     << "alct0: vpf= "   << alct0_vpf_inj 
-                                    << " qual="         << alct0_qual_inj 
+                                    << " qual="         << std::hex << alct0_qual_inj 
                                     << " amu="          << alct0_amu_inj 
                                     << " key="          << alct0_key_inj 
                                     << " bxn="          << alct0_bxn_inj
@@ -7594,15 +7594,15 @@ END:
 
                                 (*MyOutput_)
                                     << "alct1: vpf= "   << alct1_vpf_inj 
-                                    << " qual="         << alct1_qual_inj 
+                                    << " qual="         << std::hex << alct1_qual_inj 
                                     << " amu="          << alct1_amu_inj 
                                     << " key="          << alct1_key_inj 
                                     << " bxn="          << alct1_bxn_inj
                                     << std::endl; 
 
                                 // Display LCTs
-                                (*MyOutput_) << "lct0=" << lct0_vme << " ";
-                                (*MyOutput_) << "lct1=" << lct1_vme << std::endl << std::endl;
+                                (*MyOutput_) << "lct0=" << std::hex << lct0_vme << " ";
+                                (*MyOutput_) << "lct1=" << std::hex << lct1_vme << std::endl << std::endl;
 
                                 // Display CLCT keys generated vs found
                                 if (first_scn) {    // Display column heading, show 1/2 strip numbers 0-159
@@ -7656,7 +7656,7 @@ END:
 
                                 symbol=' ';                                                         // display row heading
                                 if (ikey%32==0||ikey%32==31) symbol='-';
-                                (*MyOutput_) << symbol << symbol << ikey; 
+                                (*MyOutput_) << symbol << symbol << setw(3) << ikey; 
 
                                 for (i=0; i<=159; ++i) {
                                     symbol=' '; 
@@ -7727,7 +7727,7 @@ END:
 
                                         vf_data[i]=dmb_rdata;
                                         if (debug_)
-                                            std::cout << "Adr=" << i << " Data=" << dmb_rdata << std::endl;
+                                            std::cout << "Adr=" << i << " Data=" << std::hex << dmb_rdata << std::endl;
                                     } // close i
 
                                     // Clear RAM address for next event
@@ -7883,7 +7883,7 @@ END:
                 status  = vme_read(adr,rd_data);
 
                 if (rd_data!=0x0020) 
-                    (*MyOutput_) << "Trigger source error rd_data=" << rd_data << std::endl;
+                    (*MyOutput_) << "Trigger source error rd_data=" << std::hex << rd_data << std::endl;
 
                 // Read back embedded scope data
                 scp_arm        = false;
@@ -7967,7 +7967,7 @@ END:
                 status = vme_read(adr,rd_data);
 
                 if (rd_data!=0x0040) 
-                    (*MyOutput_) << "\tTrigger source error rd_data=" << rd_data << std::endl;
+                    (*MyOutput_) << "\tTrigger source error rd_data=" << std::hex << rd_data << std::endl;
 
                 // Read back embedded scope data
                 scp_arm        = false;
@@ -8050,7 +8050,7 @@ END:
                 status = vme_read(adr,rd_data);
 
                 if (rd_data!=0x0020) 
-                    (*MyOutput_) << "\tTrigger source error rd_data=" << rd_data << std::endl;
+                    (*MyOutput_) << "\tTrigger source error rd_data=" << std::hex << rd_data << std::endl;
 
                 // Read back embedded scope data
                 scp_arm        = false;
@@ -8304,7 +8304,7 @@ END:
 
                     vf_data[i]=dmb_rdata;
                     if (debug_)
-                        std::cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                        std::cout << "\tAdr=" << i << " Data=" << std::hex << dmb_rdata << std::endl;
                 }   // close for i
 
                 // Clear RAM address for next event
@@ -8834,7 +8834,7 @@ END:
 
                         vf_data[i]=dmb_rdata;
                         if (debug_)
-                            std::cout << "\tAdr=" << i << " Data=" << dmb_rdata << std::endl;
+                            std::cout << "\tAdr=" << i << " Data=" << std::hex << dmb_rdata << std::endl;
                     } // close i
 
                     // Clear RAM address for next event
@@ -8867,7 +8867,7 @@ END:
                         }}
                         deb_adr_diff = abs(long(deb_buf_push_adr-deb_wr_buf_adr));
 
-                        (*MyOutput_) << "push_adr-pretrig_adr=" << deb_adr_diff << std::endl;
+                        (*MyOutput_) << "push_adr-pretrig_adr=" << std::hex << deb_adr_diff << std::endl;
 
                         // Take snapshot of current counter state
                 } while(false); //close do{...} while(false) 
@@ -9116,7 +9116,7 @@ END:
                 vf_data[iadr]=dmb_rdata;
 
                 if (debug_)
-                    std::cout << "\tAdr=" << iadr << " Data=" << dmb_rdata << std::endl;
+                    std::cout << "\tAdr=" << iadr << " Data=" << std::hex << dmb_rdata << std::endl;
             }   // close iadr
 
             // Clear RAM address for next event
@@ -9161,7 +9161,7 @@ END:
                             if (hits1 != 0) nonzero_triads++;                       // Count nonzero triads
                             (*MyOutput_)
                                 << "iframe=" << iframe
-                                << " vf_data=" << vf_data[iframe]
+                                << " vf_data=" << std::hex << vf_data[iframe]
                                 << " hits8=" << hits8
                                 << " jcfeb=" << jcfeb
                                 << " itbin=" << itbin
@@ -9747,7 +9747,7 @@ END:
                 (*MyOutput_) << "ERRs: 0xDB0C first frame marker not found\n" << std::endl;
             }
             else
-                (*MyOutput_) << "First frame marker found at Adr=" << first_word << " Data= " << vf_data[first_word] << std::endl; 
+                (*MyOutput_) << "First frame marker found at Adr=" << first_word << " Data= " << std::hex << vf_data[first_word] << std::endl; 
 
             // Did not find DE0F/DEEF
             if(last_word ==-1) {
@@ -9756,7 +9756,7 @@ END:
                 (*MyOutput_) << "ERRs: 0xDE0C or 0xDEEF last frame marker not found\n" << std::endl;
             }
             else
-                (*MyOutput_) << "Last frame marker found at Adr=" << last_word << " Data= " << vf_data[first_word] << std::endl; 
+                (*MyOutput_) << "Last frame marker found at Adr=" << last_word << " Data= " << std::hex << vf_data[first_word] << std::endl; 
 
             // Compare word count to callers value [caller may not have supplied a word count]
             wdcnt=1+last_word-first_word;
@@ -9839,7 +9839,7 @@ END:
                 if(iframe==0) crc22a(din,crc,1);				// Reset crc
                 crc22a(din,crc,0);								// Calc  crc
                 if(iframe==dmb_wdcnt-1-4) crc_calc=crc;			// Latch result prior to de0f marker beco ddu fails to process de0f frame
-                (*MyOutput_) << "iframe=" << iframe << " din=" << din << "crc= " << crc << std::endl; 
+                (*MyOutput_) << "iframe=" << iframe << " din=" << std::hex << din << "crc= " << std::hex << crc << std::endl; 
             }
 
             // Compare our computed CRC to what TMB computed
@@ -9849,8 +9849,8 @@ END:
             tmb_crc=tmb_crc_lsb | (tmb_crc_msb << 11);		// Full 22 bit crc
             crc_match=crc_calc==tmb_crc;
 
-            (*MyOutput_) << "calc crc  =" << crc_calc << std::endl;
-            (*MyOutput_) << "tmb crc   =" << tmb_crc << std::endl;
+            (*MyOutput_) << "calc crc  =" << std::hex << crc_calc << std::endl;
+            (*MyOutput_) << "tmb crc   =" << std::hex << tmb_crc << std::endl;
             (*MyOutput_) << "crc_match =" << logical(crc_match) << std::endl;
 
             // CRC mismatch

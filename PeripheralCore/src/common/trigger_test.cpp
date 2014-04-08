@@ -9,6 +9,17 @@
 #define     logical(L)  ((L)?'T':'F')
 #define     yesno(L)    ((L)?'y':'n')
 
+//------------------------------------------------------------------------------
+// Preprocessor macros for writing fixed width Hex 
+// needed because cout sucks
+//------------------------------------------------------------------------------
+#define HEX2(x)
+   setw(2) << setfill('0') << std::hex << ( x )
+#define HEX4(x)
+   setw(4) << setfill('0') << std::hex << ( x )
+#define HEX8(x)
+   setw(8) << setfill('0') << std::hex << ( x )
+
 
 // Common/decode_readout_common/
 int             scp_tbins;
