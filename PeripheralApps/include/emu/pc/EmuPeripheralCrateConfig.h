@@ -451,11 +451,26 @@ private:
   void TMBPrintCounters(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void TMBResetCounters(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void TMBCounterForFixedTime(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  //
   void TriggerTestInjectALCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestInjectCLCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestInjectALCTCLCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestInjectALCTCLCT_Readout(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestFire_L1A_to_ALCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestFire_CLCT_ext_trig_with_ALCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestInject_walking_CLCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestExternalTriggerALCTCLCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestExternalTriggerALCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestExternalTriggerCLCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestExternalTriggerALCTCLCTwithGTLpulser(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestExternalALCTCLCTwithGTLpulserCheckCRC(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestTestBXNCounter(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestFireL1A(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  void TriggerTestForceCLCTtriggerandReadout(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
+  //
   void armScope(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void forceScope(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void readoutScope(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
-  void TriggerTestInjectCLCT(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void TMBReadFirmware(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void ALCTReadFirmware(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void LoadALCTSlowFirmware(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);

@@ -735,6 +735,10 @@ public:
        int &hs_pid_2nd,
        int &hs_hit_2nd
            );
+  void miniscope16 (int ntbins, int miniscope_data[16]);
+  void pattern_unit (
+          int ly0[], int ly1[], int ly2[], int ly3[], int ly4[], int ly5[], // Inputs
+          int &pat_nhits, int &pat_id); // Outputs
   
   //------------------------------------------------------------------------------
   

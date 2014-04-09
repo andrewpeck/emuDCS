@@ -7656,7 +7656,7 @@ END:
 
                                 symbol=' ';                                                         // display row heading
                                 if (ikey%32==0||ikey%32==31) symbol='-';
-                                (*MyOutput_) << symbol << symbol << setw(3) << ikey; 
+                                (*MyOutput_) << symbol << symbol << std::setw(3) << ikey; 
 
                                 for (i=0; i<=159; ++i) {
                                     symbol=' '; 

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <iomanip>
 #include "emu/pc/trigger_test.h"
 
 //------------------------------------------------------------------------------
@@ -13,12 +14,9 @@
 // Preprocessor macros for writing fixed width Hex 
 // needed because cout sucks
 //------------------------------------------------------------------------------
-#define HEX2(x)
-   setw(2) << setfill('0') << std::hex << ( x )
-#define HEX4(x)
-   setw(4) << setfill('0') << std::hex << ( x )
-#define HEX8(x)
-   setw(8) << setfill('0') << std::hex << ( x )
+#define HEX2(x) std::setw(2) << std::setfill('0') << std::hex << ( x )
+#define HEX4(x) std::setw(4) << std::setfill('0') << std::hex << ( x )
+#define HEX8(x) std::setw(8) << std::setfill('0') << std::hex << ( x )
 
 
 // Common/decode_readout_common/
