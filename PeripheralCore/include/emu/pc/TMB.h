@@ -458,6 +458,8 @@ public:
   //
   void DecodeCLCT();
   void PrintCLCT();
+  void DecodeMPCFrames();
+  void PrintMPCFrames();
   int  GetALCTWordCount();
   void DecodeALCT();
   void PrintALCT();
@@ -2274,6 +2276,11 @@ private:
   int CLCT0_data_;
   int CLCT1_data_;
   //
+  int mpc0_frame0_data_;
+  int mpc0_frame1_data_;
+  int mpc1_frame0_data_;
+  int mpc1_frame1_data_;
+  //
   int ALCT0_data_;
   int ALCT1_data_;
   //
@@ -2803,6 +2810,42 @@ private:
   int read_mpc_sel_ttc_bx0_;
   int read_mpc_idle_blank_;
   int read_mpc_output_enable_;
+  //
+  //------------------------------------------------------------------
+  //0X88 = ADR_MPC0_FRAME0:  MPC0 Frame0 Data Sent to MPC
+  //------------------------------------------------------------------
+  int read_mpc0_frame0_alct_first_key_;
+  int read_mpc0_frame0_clct_first_pat_;
+  int read_mpc0_frame0_lct_first_quality_;
+  int read_mpc0_frame0_first_vpf_;
+  //
+  //------------------------------------------------------------------
+  //0X8A = ADR_MPC0_FRAME1:  MPC0 Frame1 Data Sent to MPC
+  //------------------------------------------------------------------
+  int read_mpc0_frame1_clct_first_key_;
+  int read_mpc0_frame1_clct_first_bend_;
+  int read_mpc0_frame1_sync_err_;
+  int read_mpc0_frame1_alct_first_bxn_;
+  int read_mpc0_frame1_clct_first_bx0_local_;
+  int read_mpc0_frame1_csc_id_;
+  //
+  //------------------------------------------------------------------
+  //0X8C = ADR_MPC1_FRAME0:  MPC1 Frame0 Data Sent to MPC
+  //------------------------------------------------------------------
+  int read_mpc1_frame0_alct_second_key_;
+  int read_mpc1_frame0_clct_second_pat_;
+  int read_mpc1_frame0_lct_second_quality_;
+  int read_mpc1_frame0_second_vpf_;
+  //
+  //------------------------------------------------------------------
+  //0X8E = ADR_MPC1_FRAME1:  MPC1 Frame1 Data Sent to MPC
+  //------------------------------------------------------------------
+  int read_mpc1_frame1_clct_second_key_;
+  int read_mpc1_frame1_clct_second_bend_;
+  int read_mpc1_frame1_sync_err_;
+  int read_mpc1_frame1_alct_second_bxn_;
+  int read_mpc1_frame1_clct_second_bx0_local_;
+  int read_mpc1_frame1_csc_id_;
   //
   //------------------------------------------------------------------
   //0X98 = ADR_SCP_CTRL:  Scope control

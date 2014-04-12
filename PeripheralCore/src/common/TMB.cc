@@ -1398,6 +1398,63 @@ namespace emu {
             return;
         }
         //
+        void TMB::DecodeMPCFrames(){
+            //
+            int mpc0_frame0 = ReadRegister(mpc0_frame0_adr); // 0x88
+            int mpc0_frame1 = ReadRegister(mpc0_frame1_adr); // 0x8a
+            int mpc1_frame0 = ReadRegister(mpc1_frame0_adr); // 0x8c
+            int mpc1_frame1 = ReadRegister(mpc1_frame1_adr); // 0x8e
+            //
+            mpc0_frame0_data_ = (mpc0_frame0 & 0xffff);
+            mpc0_frame1_data_ = (mpc0_frame1 & 0xffff);
+            mpc1_frame0_data_ = (mpc1_frame0 & 0xffff);
+            mpc1_frame1_data_ = (mpc1_frame1 & 0xffff);
+            //
+            //   PrintCLCT();
+            //
+            return;
+        }
+        //
+        void TMB::PrintMPCFrames() {
+            //
+            std::cout << "MPC0 frame0 data = 0x" << std::hex << mpc0_frame0_data_ << std::endl;
+            std::cout << "MPC0 frame1 data = 0x" << std::hex << mpc0_frame1_data_ << std::endl;
+            std::cout << "MPC1 frame0 data = 0x" << std::hex << mpc1_frame0_data_ << std::endl;
+            std::cout << "MPC1 frame1 data = 0x" << std::hex << mpc1_frame1_data_ << std::endl;
+            //
+            (*MyOutput_) << "----------------------"                                 << std::endl;
+            (*MyOutput_) << "MPC0 frame0 data = 0x" << std::hex << mpc0_frame0_data_ << std::endl;
+            (*MyOutput_) << "     frame1 data = 0x" << std::hex << mpc0_frame1_data_ << std::endl;
+            (*MyOutput_) << "MPC1 frame0 data = 0x" << std::hex << mpc1_frame0_data_ << std::endl;
+            (*MyOutput_) << "     frame1 data = 0x" << std::hex << mpc1_frame1_data_ << std::endl;
+            (*MyOutput_) << "----------------------"                                 << std::endl;
+            (*MyOutput_) << "MPC0 frame0.alct_first_key    = 0x" << std::hex << read_mpc0_frame0_alct_first_key_    << std::endl;
+            (*MyOutput_) << "     frame0.clct_first_pat    = 0x" << std::hex << read_mpc0_frame0_clct_first_pat_    << std::endl;
+            (*MyOutput_) << "     frame0.lct_first_quality = 0x" << std::hex << read_mpc0_frame0_lct_first_quality_ << std::endl;
+            (*MyOutput_) << "     frame0.first_vpf         = 0x" << std::hex << read_mpc0_frame0_first_vpf_         << std::endl;
+            (*MyOutput_) << "----------------------"                                                                << std::endl;
+            (*MyOutput_) << "MPC0 frame1.clct_first_key       = 0x" << std::hex << read_mpc0_frame1_clct_first_key_       << std::endl;
+            (*MyOutput_) << "     frame1.clct_first_bend      = 0x" << std::hex << read_mpc0_frame1_clct_first_bend_      << std::endl;
+            (*MyOutput_) << "     frame1.sync_err             = 0x" << std::hex << read_mpc0_frame1_sync_err_             << std::endl;
+            (*MyOutput_) << "     frame1.alct_first_bxn       = 0x" << std::hex << read_mpc0_frame1_alct_first_bxn_       << std::endl;
+            (*MyOutput_) << "     frame1.clct_first_bx0_local = 0x" << std::hex << read_mpc0_frame1_clct_first_bx0_local_ << std::endl;
+            (*MyOutput_) << "     frame1.csc_id               = 0x" << std::hex << read_mpc0_frame1_csc_id_               << std::endl;
+            (*MyOutput_) << "----------------------"                                                                      << std::endl;
+            (*MyOutput_) << "MPC1 frame0.alct_second_key    = 0x" << std::hex << read_mpc1_frame0_alct_second_key_    << std::endl;
+            (*MyOutput_) << "     frame0.clct_second_pat    = 0x" << std::hex << read_mpc1_frame0_clct_second_pat_    << std::endl;
+            (*MyOutput_) << "     frame0.lct_second_quality = 0x" << std::hex << read_mpc1_frame0_lct_second_quality_ << std::endl;
+            (*MyOutput_) << "     frame0.second_vpf         = 0x" << std::hex << read_mpc1_frame0_second_vpf_         << std::endl;
+            (*MyOutput_) << "----------------------"                                                                  << std::endl;
+            (*MyOutput_) << "MPC1 frame1.clct_first_key        = 0x" << std::hex << read_mpc1_frame1_clct_second_key_       << std::endl;
+            (*MyOutput_) << "     frame1.clct_second_bend      = 0x" << std::hex << read_mpc1_frame1_clct_second_bend_      << std::endl;
+            (*MyOutput_) << "     frame1.sync_err              = 0x" << std::hex << read_mpc1_frame1_sync_err_              << std::endl;
+            (*MyOutput_) << "     frame1.alct_second_bxn       = 0x" << std::hex << read_mpc1_frame1_alct_second_bxn_       << std::endl;
+            (*MyOutput_) << "     frame1.clct_second_bx0_local = 0x" << std::hex << read_mpc1_frame1_clct_second_bx0_local_ << std::endl;
+            (*MyOutput_) << "     frame1.csc_id                = 0x" << std::hex << read_mpc1_frame1_csc_id_                << std::endl;
+            //
+            return;
+        }
+        //
         int TMB::FmState(){
             //
             tmb_vme(VME_READ,ccb_cmd_adr,sndbuf,rcvbuf,NOW);
@@ -15156,6 +15213,46 @@ exit:
                 read_mpc_sel_ttc_bx0_     = ExtractValueFromData(data,mpc_sel_ttc_bx0_bitlo    ,mpc_sel_ttc_bx0_bithi    );
                 read_mpc_idle_blank_      = ExtractValueFromData(data,mpc_idle_blank_bitlo     ,mpc_idle_blank_bithi     );
                 read_mpc_output_enable_   = ExtractValueFromData(data,mpc_output_enable_bitlo  ,mpc_output_enable_bithi  );
+                //
+            } else if ( address == mpc0_frame0_adr ) {
+                //------------------------------------------------------------------
+                //0X88 = ADR_MPC0_FRAME0:  MPC0 Frame0 Data Sent to MPC
+                //------------------------------------------------------------------
+                read_mpc0_frame0_alct_first_key_    = ExtractValueFromData(data,mpc0_frame0_alct_first_key_bitlo,    mpc0_frame0_alct_first_key_bithi);
+                read_mpc0_frame0_clct_first_pat_    = ExtractValueFromData(data,mpc0_frame0_clct_first_pat_bitlo,    mpc0_frame0_clct_first_pat_bithi);
+                read_mpc0_frame0_lct_first_quality_ = ExtractValueFromData(data,mpc0_frame0_lct_first_quality_bitlo, mpc0_frame0_lct_first_quality_bithi);
+                read_mpc0_frame0_first_vpf_         = ExtractValueFromData(data,mpc0_frame0_first_vpf_bitlo,         mpc0_frame0_first_vpf_bithi);
+                //
+            } else if ( address == mpc0_frame1_adr ) {
+                //------------------------------------------------------------------
+                //0X8A = ADR_MPC0_FRAME1:  MPC0 Frame1 Data Sent to MPC
+                //------------------------------------------------------------------
+                read_mpc0_frame1_clct_first_key_       = ExtractValueFromData(data,mpc0_frame1_clct_first_key_bitlo,       mpc0_frame1_clct_first_key_bithi);
+                read_mpc0_frame1_clct_first_bend_      = ExtractValueFromData(data,mpc0_frame1_clct_first_bend_bitlo,      mpc0_frame1_clct_first_bend_bithi);
+                read_mpc0_frame1_sync_err_             = ExtractValueFromData(data,mpc0_frame1_sync_err_bitlo,             mpc0_frame1_sync_err_bithi);
+                read_mpc0_frame1_alct_first_bxn_       = ExtractValueFromData(data,mpc0_frame1_alct_first_bxn_bitlo,       mpc0_frame1_alct_first_bxn_bithi);
+                read_mpc0_frame1_clct_first_bx0_local_ = ExtractValueFromData(data,mpc0_frame1_clct_first_bx0_local_bitlo, mpc0_frame1_clct_first_bx0_local_bithi);
+                read_mpc0_frame1_csc_id_               = ExtractValueFromData(data,mpc0_frame1_csc_id_bitlo,               mpc0_frame1_csc_id_bithi);
+                //
+            } else if ( address == mpc1_frame0_adr ) {
+                //------------------------------------------------------------------
+                //0X8C = ADR_MPC1_FRAME0:  MPC1 Frame0 Data Sent to MPC
+                //------------------------------------------------------------------
+                read_mpc1_frame0_alct_second_key_    = ExtractValueFromData(data,mpc1_frame0_alct_second_key_bitlo,    mpc1_frame0_alct_second_key_bithi);
+                read_mpc1_frame0_clct_second_pat_    = ExtractValueFromData(data,mpc1_frame0_clct_second_pat_bitlo,    mpc1_frame0_clct_second_pat_bithi);
+                read_mpc1_frame0_lct_second_quality_ = ExtractValueFromData(data,mpc1_frame0_lct_second_quality_bitlo, mpc1_frame0_lct_second_quality_bithi);
+                read_mpc1_frame0_second_vpf_         = ExtractValueFromData(data,mpc1_frame0_second_vpf_bitlo,         mpc1_frame0_second_vpf_bithi);
+                //
+            } else if ( address == mpc1_frame1_adr ) {
+                //------------------------------------------------------------------
+                //0X8E = ADR_MPC1_FRAME1:  MPC1 Frame1 Data Sent to MPC
+                //------------------------------------------------------------------
+                read_mpc1_frame1_clct_second_key_       = ExtractValueFromData(data,mpc1_frame1_clct_second_key_bitlo,       mpc1_frame1_clct_second_key_bithi);
+                read_mpc1_frame1_clct_second_bend_      = ExtractValueFromData(data,mpc1_frame1_clct_second_bend_bitlo,      mpc1_frame1_clct_second_bend_bithi);
+                read_mpc1_frame1_sync_err_             = ExtractValueFromData(data,mpc1_frame1_sync_err_bitlo,             mpc1_frame1_sync_err_bithi);
+                read_mpc1_frame1_alct_second_bxn_       = ExtractValueFromData(data,mpc1_frame1_alct_second_bxn_bitlo,       mpc1_frame1_alct_second_bxn_bithi);
+                read_mpc1_frame1_clct_second_bx0_local_ = ExtractValueFromData(data,mpc1_frame1_clct_second_bx0_local_bitlo, mpc1_frame1_clct_second_bx0_local_bithi);
+                read_mpc1_frame1_csc_id_               = ExtractValueFromData(data,mpc1_frame1_csc_id_bitlo,               mpc1_frame1_csc_id_bithi);
                 //
             } else if ( address == scp_ctrl_adr ) {
                 //------------------------------------------------------------------

@@ -8580,6 +8580,16 @@ namespace emu {
                     *out << cgicc::pre();
                     *out << cgicc::fieldset();
                     //
+                    *out << cgicc::fieldset();
+                    *out << cgicc::legend("MPC Frames Info").set("style","color:blue") << std::endl ;
+                    *out << cgicc::pre();
+                    thisTMB->RedirectOutput(out);
+                    thisTMB->DecodeMPCFrames();
+                    thisTMB->PrintMPCFrames();
+                    thisTMB->RedirectOutput(&std::cout);
+                    *out << cgicc::pre();
+                    *out << cgicc::fieldset();
+                    //
                     if (alct) {
                         *out << cgicc::fieldset();
                         *out << cgicc::legend("ALCT Info").set("style","color:blue") << std::endl ;

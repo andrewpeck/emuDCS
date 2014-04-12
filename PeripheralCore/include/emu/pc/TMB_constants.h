@@ -1395,6 +1395,138 @@ const int mpc_output_enable_default   =  1;
 //
 //
 //------------------------------------------------------------------
+//0X88 = ADR_MPC0_FRAME0:  MPC0 Frame0 Data Sent to MPC
+//------------------------------------------------------------------
+const int mpc0_frame0_alct_first_key_vmereg  = mpc0_frame0_adr;
+const int mpc0_frame0_alct_first_key_bitlo   = 0;
+const int mpc0_frame0_alct_first_key_bithi   = 6;
+const int mpc0_frame0_alct_first_key_default = 0;
+//
+//
+const int mpc0_frame0_clct_first_pat_vmereg  = mpc0_frame0_adr;
+const int mpc0_frame0_clct_first_pat_bitlo   =  7;
+const int mpc0_frame0_clct_first_pat_bithi   = 10;
+const int mpc0_frame0_clct_first_pat_default =  0;
+//
+//
+const int mpc0_frame0_lct_first_quality_vmereg  = mpc0_frame0_adr;
+const int mpc0_frame0_lct_first_quality_bitlo   = 11;
+const int mpc0_frame0_lct_first_quality_bithi   = 14;
+const int mpc0_frame0_lct_first_quality_default =  0;
+//
+//
+const int mpc0_frame0_first_vpf_vmereg  = mpc0_frame0_adr;
+const int mpc0_frame0_first_vpf_bitlo   = 15;
+const int mpc0_frame0_first_vpf_bithi   = 15;
+const int mpc0_frame0_first_vpf_default = 0;
+//
+//
+//------------------------------------------------------------------
+//0X8A = ADR_MPC0_FRAME1:  MPC0 Frame1 Data Sent to MPC
+//------------------------------------------------------------------
+const int mpc0_frame1_clct_first_key_vmereg  = mpc0_frame1_adr;
+const int mpc0_frame1_clct_first_key_bitlo   = 0;
+const int mpc0_frame1_clct_first_key_bithi   = 7;
+const int mpc0_frame1_clct_first_key_default = 0;
+//
+//
+const int mpc0_frame1_clct_first_bend_vmereg  = mpc0_frame1_adr;
+const int mpc0_frame1_clct_first_bend_bitlo   = 8;
+const int mpc0_frame1_clct_first_bend_bithi   = 8;
+const int mpc0_frame1_clct_first_bend_default = 0;
+//
+//
+const int mpc0_frame1_sync_err_vmereg  = mpc0_frame1_adr;
+const int mpc0_frame1_sync_err_bitlo   = 9;
+const int mpc0_frame1_sync_err_bithi   = 9;
+const int mpc0_frame1_sync_err_default = 0;
+//
+//
+const int mpc0_frame1_alct_first_bxn_vmereg  = mpc0_frame1_adr;
+const int mpc0_frame1_alct_first_bxn_bitlo   = 10;
+const int mpc0_frame1_alct_first_bxn_bithi   = 10;
+const int mpc0_frame1_alct_first_bxn_default = 0;
+//
+//
+const int mpc0_frame1_clct_first_bx0_local_vmereg  = mpc0_frame1_adr;
+const int mpc0_frame1_clct_first_bx0_local_bitlo   = 11;
+const int mpc0_frame1_clct_first_bx0_local_bithi   = 11;
+const int mpc0_frame1_clct_first_bx0_local_default = 0;
+//
+//
+const int mpc0_frame1_csc_id_vmereg  = mpc0_frame1_adr;
+const int mpc0_frame1_csc_id_bitlo   = 12;
+const int mpc0_frame1_csc_id_bithi   = 15;
+const int mpc0_frame1_csc_id_default = 0;
+//
+//
+//------------------------------------------------------------------
+//0X8C = ADR_MPC1_FRAME0:  MPC1 Frame0 Data Sent to MPC
+//------------------------------------------------------------------
+const int mpc1_frame0_alct_second_key_vmereg  = mpc1_frame0_adr;
+const int mpc1_frame0_alct_second_key_bitlo   = 0;
+const int mpc1_frame0_alct_second_key_bithi   = 6;
+const int mpc1_frame0_alct_second_key_default = 0;
+//
+//
+const int mpc1_frame0_clct_second_pat_vmereg  = mpc1_frame0_adr;
+const int mpc1_frame0_clct_second_pat_bitlo   =  7;
+const int mpc1_frame0_clct_second_pat_bithi   = 10;
+const int mpc1_frame0_clct_second_pat_default =  0;
+//
+//
+const int mpc1_frame0_lct_second_quality_vmereg  = mpc1_frame0_adr;
+const int mpc1_frame0_lct_second_quality_bitlo   = 11;
+const int mpc1_frame0_lct_second_quality_bithi   = 14;
+const int mpc1_frame0_lct_second_quality_default =  0;
+//
+//
+const int mpc1_frame0_second_vpf_vmereg  = mpc1_frame0_adr;
+const int mpc1_frame0_second_vpf_bitlo   = 15;
+const int mpc1_frame0_second_vpf_bithi   = 15;
+const int mpc1_frame0_second_vpf_default = 0;
+//
+//
+//------------------------------------------------------------------
+//0X8E = ADR_MPC1_FRAME1:  MPC1 Frame1 Data Sent to MPC
+//------------------------------------------------------------------
+const int mpc1_frame1_clct_second_key_vmereg  = mpc1_frame1_adr;
+const int mpc1_frame1_clct_second_key_bitlo   = 0;
+const int mpc1_frame1_clct_second_key_bithi   = 7;
+const int mpc1_frame1_clct_second_key_default = 0;
+//
+//
+const int mpc1_frame1_clct_second_bend_vmereg  = mpc1_frame1_adr;
+const int mpc1_frame1_clct_second_bend_bitlo   = 8;
+const int mpc1_frame1_clct_second_bend_bithi   = 8;
+const int mpc1_frame1_clct_second_bend_default = 0;
+//
+//
+const int mpc1_frame1_sync_err_vmereg  = mpc1_frame1_adr;
+const int mpc1_frame1_sync_err_bitlo   = 9;
+const int mpc1_frame1_sync_err_bithi   = 9;
+const int mpc1_frame1_sync_err_default = 0;
+//
+//
+const int mpc1_frame1_alct_second_bxn_vmereg  = mpc1_frame1_adr;
+const int mpc1_frame1_alct_second_bxn_bitlo   = 10;
+const int mpc1_frame1_alct_second_bxn_bithi   = 10;
+const int mpc1_frame1_alct_second_bxn_default = 0;
+//
+//
+const int mpc1_frame1_clct_second_bx0_local_vmereg  = mpc1_frame1_adr;
+const int mpc1_frame1_clct_second_bx0_local_bitlo   = 11;
+const int mpc1_frame1_clct_second_bx0_local_bithi   = 11;
+const int mpc1_frame1_clct_second_bx0_local_default = 0;
+//
+//
+const int mpc1_frame1_csc_id_vmereg  = mpc1_frame1_adr;
+const int mpc1_frame1_csc_id_bitlo   = 12;
+const int mpc1_frame1_csc_id_bithi   = 15;
+const int mpc1_frame1_csc_id_default = 0;
+//
+//
+//------------------------------------------------------------------
 //0X98 = ADR_SCP_CTRL:  Scope control
 //------------------------------------------------------------------
 const int scope_in_readout_vmereg    =  scp_ctrl_adr;
