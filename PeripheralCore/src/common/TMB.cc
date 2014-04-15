@@ -4671,9 +4671,9 @@ END:
         //  Inject ALCT
         //------------------------------------------------------------------------------
         void TMB::TriggerTestInjectALCT() {
-            ifunc = 1;              // turn on/off bang mode
-            nalcts_inject=1;        // number of ALCTs to Inject
-            inquirb("Global", "rdscope", rdscope);
+            ifunc = 1;              									// turn on/off bang mode
+            inquire("InjectALCT", "nalcts_inject",  minv= 0, maxv=  2,   radix=10, nalcts_inject) ;     //number of ALCTs to inject
+            inquirb("Global", "rdscope", rdscope);							//read scope? yes/no
 
             // Turn off CCB backplane inputs, turn on L1A emulator
             adr     = ccb_cfg_adr;
@@ -4774,7 +4774,7 @@ END:
             adr     = alct0_inj_adr;
             status  = vme_write(adr,wr_data);
 
-            (*MyOutput_) << "alct0_inj_wr=" << alct0_inj_wr << std::endl;
+            //(*MyOutput_) << "alct0_inj_wr=" << alct0_inj_wr << std::endl;
 
             // Set ALCT second muon to inject:
             if (nalcts_inject == 2) 
@@ -4804,7 +4804,7 @@ END:
             adr     = alct1_inj_adr;
             status  = vme_write(adr,wr_data);
 
-            (*MyOutput_) << "alct1_inj_wr=" << alct1_inj_wr << std::endl;
+            //(*MyOutput_) << "alct1_inj_wr=" << alct1_inj_wr << std::endl;
 
             // Clear previous inject
             adr     = alct_inj_adr;
@@ -4882,25 +4882,43 @@ END:
             alct1_key   = (alct1_inj_rd >> 4) & 0x007F; // Wire group ID number
             alct1_bxn   = (alct1_inj_rd >>11) & 0x0003; // Bunch crossing number
 
-            // Display ALCTs found
+            // Display ALCTs expected vs found
             if (ifunc>0) {
-                (*MyOutput_) << ("Expect:ALCT0:Key7 Q3 Bxn1 ALCT1:Key61 Q2 Bxn1\n");
+                if (nalcts_inject>=1) {
+                    (*MyOutput_) << "Expect ALCT0: ";
+                    (*MyOutput_) << " vpf=" <<  std::setw(2) << alct0_vpf_inj ;
+                    (*MyOutput_) << " qual=" << std::setw(2) << alct0_qual_inj;
+                    (*MyOutput_) << " amu=" <<  std::setw(2) << alct0_amu_inj ;
+                    (*MyOutput_) << " key=" <<  std::setw(3) << alct0_key_inj ;
+                    (*MyOutput_) << " bxn=" <<  std::setw(2) << alct0_bxn_inj ;
+                    (*MyOutput_) << "\n";
 
-                (*MyOutput_) << "ALCT0: ";
-                (*MyOutput_) << "vpf = " << alct0_vpf ;
-                (*MyOutput_) << "qual= " << alct0_qual;
-                (*MyOutput_) << "amu = " << alct0_amu ;
-                (*MyOutput_) << "key = " << alct0_key ;
-                (*MyOutput_) << "bxn = " << alct0_bxn ;
-                (*MyOutput_) << "\n";
+                    (*MyOutput_) << " Found ALCT0: ";
+                    (*MyOutput_) << " vpf=" <<  std::setw(2) << alct0_vpf ;
+                    (*MyOutput_) << " qual=" << std::setw(2) << alct0_qual;
+                    (*MyOutput_) << " amu=" <<  std::setw(2) << alct0_amu ;
+                    (*MyOutput_) << " key=" <<  std::setw(3) << alct0_key ;
+                    (*MyOutput_) << " bxn=" <<  std::setw(2) << alct0_bxn ;
+                    (*MyOutput_) << "\n";
+                }
 
-                (*MyOutput_) << "ALCT1: "; 
-                (*MyOutput_) << "vpf = " << alct1_vpf ;
-                (*MyOutput_) << "qual= " << alct1_qual;
-                (*MyOutput_) << "amu = " << alct1_amu ;
-                (*MyOutput_) << "key = " << alct1_key ;
-                (*MyOutput_) << "bxn = " << alct1_bxn ;
-                (*MyOutput_) << "\n";
+                if (nalcts_inject>=2) {
+                    (*MyOutput_) << "Expect ALCT1: "; 
+                    (*MyOutput_) << " vpf=" <<  std::setw(2) << alct1_vpf_inj ;
+                    (*MyOutput_) << " qual=" << std::setw(2) << alct1_qual_inj;
+                    (*MyOutput_) << " amu=" <<  std::setw(2) << alct1_amu_inj ;
+                    (*MyOutput_) << " key=" <<  std::setw(3) << alct1_key_inj ;
+                    (*MyOutput_) << " bxn=" <<  std::setw(2) << alct1_bxn_inj ;
+                    (*MyOutput_) << "\n";
+
+                    (*MyOutput_) << " Found ALCT1: "; 
+                    (*MyOutput_) << " vpf=" <<  std::setw(2) << alct1_vpf ;
+                    (*MyOutput_) << " qual=" << std::setw(2) << alct1_qual;
+                    (*MyOutput_) << " amu=" <<  std::setw(2) << alct1_amu ;
+                    (*MyOutput_) << " key=" <<  std::setw(3) << alct1_key ;
+                    (*MyOutput_) << " bxn=" <<  std::setw(2) << alct1_bxn ;
+                    (*MyOutput_) << "\n";
+                }
             }
 
             // Read back embedded scope data
@@ -12850,7 +12868,7 @@ exit:
         // Pause emulator cuz C sux
         //------------------------------------------------------------------------------
         void TMB::pause (std::string s) {
-            (*MyOutput_) << "\n PAUSE: " << s.c_str() << std::endl;
+            (*MyOutput_) << "\nPAUSE: " << s.c_str() << std::endl;
             return;
         }
         
