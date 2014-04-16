@@ -7834,6 +7834,7 @@ END:
                                     decode_readout(vf_data,dmb_wdcnt,err_check=true);
 
                                     (*MyOutput_) << "Non-zero triad bits=" << nonzero_triads << std::endl;
+                            break;
                                 } while (false); //close do loop
 
 
