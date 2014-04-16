@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <cmath>
+#include <wordexp.h>
 
 //------------------------------------------------------------------------------
 // Local Headers
@@ -20,11 +21,11 @@
 #include "emu/pc/minIni.h"
 
 //------------------------------------------------------------------------------
-// Check if Trigger Test Config file exists and create minIni class 
+// Create minIni object
 //------------------------------------------------------------------------------
 
-minIni ini("~/config.ini");
-
+//set config file location
+const char* config_file = "~/config.ini";
 
 //------------------------------------------------------------------------------
 //   Flip pattern ID numbers, because Im too lazy to flip the hs image
@@ -83,6 +84,13 @@ void tok(std::string msg_string, double fdata_read, double fdata_expect, double 
 //   Inquire for integer from Config File
 //------------------------------------------------------------------------------
 int inquire(std::string test, std::string var, const int &minv, const int &maxv, const int &radix, int &now) {
+
+    //bash-like expansion of config file name
+    wordexp_t p;
+    wordexp(config_file, &p, 0);
+    //create minIni config file object
+    minIni ini(p.we_wordv[0]);
+
     int i; 
     i=ini.getl(test,var,-999); 
     if ( (i<minv) || (i>maxv) ) {
@@ -97,8 +105,16 @@ int inquire(std::string test, std::string var, const int &minv, const int &maxv,
 //------------------------------------------------------------------------------
 //   Inquire for two integers from Config File
 //------------------------------------------------------------------------------
-int inquir2(std::string test, std::string var1, std::string var2, const int &minv, const int &maxv, const int &radix, int &num, int &now)
+int inquir2(std::string test, std::string var1, std::string var2, const int &minv, 
+        const int &maxv, const int &radix, int &num, int &now)
 {
+
+//bash-like expansion of config file name
+wordexp_t p;
+wordexp(config_file, &p, 0);
+//create minIni config file object
+minIni ini(p.we_wordv[0]);
+
     int i; 
     int j; 
 
@@ -124,6 +140,13 @@ int inquir2(std::string test, std::string var1, std::string var2, const int &min
 //------------------------------------------------------------------------------
 int inquirl(std::string test, std::string var, const long int &minv, const long int &maxv, const int &radix, long int &now)
 {
+
+//bash-like expansion of config file name
+wordexp_t p;
+wordexp(config_file, &p, 0);
+//create minIni config file object
+minIni ini(p.we_wordv[0]);
+
     long int i; 
     i=ini.getl(test,var,-1); 
     if ( (i<minv) || (i>maxv) ) {
@@ -140,6 +163,13 @@ int inquirl(std::string test, std::string var, const long int &minv, const long 
 //   Inquire for bool from Config file
 //------------------------------------------------------------------------------
 void inquirb(std::string test, std::string var, bool &now) {
+
+//bash-like expansion of config file name
+wordexp_t p;
+wordexp(config_file, &p, 0);
+//create minIni config file object
+minIni ini(p.we_wordv[0]);
+
     bool b; 
     b = ini.getbool(test,var,0); 
     now = b; 
@@ -149,6 +179,13 @@ void inquirb(std::string test, std::string var, bool &now) {
 //   Inquire for string from Config file
 //------------------------------------------------------------------------------
 void inquirs(std::string test, std::string var, std::string &now) {
+
+//bash-like expansion of config file name
+wordexp_t p;
+wordexp(config_file, &p, 0);
+//create minIni config file object
+minIni ini(p.we_wordv[0]);
+
     std::string s; 
     s = ini.gets(test,var,0); 
     now = s; 
