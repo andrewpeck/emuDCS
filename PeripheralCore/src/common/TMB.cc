@@ -6549,11 +6549,19 @@ END:
 
                         // Set ALCT first muon to inject:
                         if (nalcts_inject >= 1) {
-                            alct0_vpf_inj   = 1;            //  Valid pattern flag
-                            alct0_qual_inj  = 3;            //  Pattern quality
-                            alct0_amu_inj   = 0;            //  Accelerator muon
-                            alct0_key_inj   = (ikey+5)%128; //  Wire group ID number (just some offset wrt clct key for now)
-                            alct0_bxn_inj   = 1;            //  Bunch crossing number
+                            inquire("InjectALCT", "alct0_vpf_inj",  minv= 0, maxv=  1,   radix=10, alct0_vpf_inj) ;     // Valid pattern flag
+                            inquire("InjectALCT", "alct0_qual_inj", minv= 0, maxv=  3,   radix=10, alct0_qual_inj);     // Pattern Quality
+                            inquire("InjectALCT", "alct0_amu_inj",  minv= 0, maxv=  1,   radix=10, alct0_amu_inj) ;     // Accelerator muon
+                            inquire("InjectALCT", "alct0_key_inj",  minv= 0, maxv=  127, radix=10, alct0_key_inj) ;     // Wire group ID Number
+                            inquire("InjectALCT", "alct0_bxn_inj",  minv= 0, maxv=  3,   radix=10, alct0_bxn_inj) ;     // Bunch crossing number
+
+                            (*MyOutput_) << "Injecting ALCT0: ";
+                            (*MyOutput_) << " vpf=" <<  std::setw(2) << alct0_vpf_inj ;
+                            (*MyOutput_) << " qual=" << std::setw(2) << alct0_qual_inj;
+                            (*MyOutput_) << " amu=" <<  std::setw(2) << alct0_amu_inj ;
+                            (*MyOutput_) << " key=" <<  std::setw(3) << alct0_key_inj ;
+                            (*MyOutput_) << " bxn=" <<  std::setw(2) << alct0_bxn_inj ;
+                            (*MyOutput_) << "\n";
                         }
                         else {                          //  No 1st alct muon
                             alct0_vpf_inj   = 0;            //  Valid pattern flag
@@ -6561,6 +6569,7 @@ END:
                             alct0_amu_inj   = 0;            //  Accelerator muon
                             alct0_key_inj   = 0;            //  Wire group ID number (just some offset wrt clct key for now)
                             alct0_bxn_inj   = 0;            //  Bunch crossing number
+                            (*MyOutput_) << "No first ALCT injected.\n" ;
                         }
 
                         alct0_inj_wr    = (alct0_vpf_inj  <<  0);
@@ -6573,22 +6582,31 @@ END:
                         adr     = alct0_inj_adr;
                         status  = vme_write(adr,wr_data);
 
-                        (*MyOutput_) << "alct0_inj_wr=" << std::hex << alct0_inj_wr << std::endl;
+                        //(*MyOutput_) << "alct0_inj_wr=" << std::hex << alct0_inj_wr << std::endl;
 
                         // Set ALCT second muon to inject:
                         if (nalcts_inject == 2) {
-                            alct1_vpf_inj   = 1;            //  Valid pattern flag
-                            alct1_qual_inj  = 2;            //  Pattern quality
-                            alct1_amu_inj   = 0;            //  Accelerator muon
-                            alct1_key_inj   = (ikey+9)%128; //  Wire group ID number (just some offset wrt clct key for now)
-                            alct1_bxn_inj   = 3;            //  Bunch crossing number
+                            inquire("InjectALCT", "alct1_vpf_inj",  minv= 0, maxv=  1,   radix=10, alct1_vpf_inj) ;     // Valid pattern flag
+                            inquire("InjectALCT", "alct1_qual_inj", minv= 0, maxv=  3,   radix=10, alct1_qual_inj);     // Pattern quality
+                            inquire("InjectALCT", "alct1_amu_inj",  minv= 0, maxv=  1,   radix=10, alct1_amu_inj) ;     // Accelerator muon
+                            inquire("InjectALCT", "alct1_key_inj",  minv= 0, maxv=  127, radix=10, alct1_key_inj) ;     // Wire group ID Number
+                            inquire("InjectALCT", "alct1_bxn_inj",  minv= 0, maxv=  3,   radix=10, alct1_bxn_inj) ;     // Bunch crossing number
+
+                            (*MyOutput_) << "Injecting ALCT1: ";
+                            (*MyOutput_) << " vpf=" <<  std::setw(2) << alct1_vpf_inj ;
+                            (*MyOutput_) << " qual=" << std::setw(2) << alct1_qual_inj;
+                            (*MyOutput_) << " amu=" <<  std::setw(2) << alct1_amu_inj ;
+                            (*MyOutput_) << " key=" <<  std::setw(3) << alct1_key_inj ;
+                            (*MyOutput_) << " bxn=" <<  std::setw(2) << alct1_bxn_inj ;
+                            (*MyOutput_) << "\n";
                         }
-                        else {                      //  No 2nd alct muon
+                        else {                              //  No 2nd alct muon
                             alct1_vpf_inj   = 0;            //  Valid pattern flag
                             alct1_qual_inj  = 0;            //  Pattern quality
                             alct1_amu_inj   = 0;            //  Accelerator muon
                             alct1_key_inj   = 0;            //  Wire group ID number
                             alct1_bxn_inj   = 0;            //  Bunch crossing number
+                            (*MyOutput_) << "No second ALCT injected.\n" ;
                         }
 
                         alct1_inj_wr    = (alct1_vpf_inj  <<  0);
@@ -6601,7 +6619,7 @@ END:
                         adr     = alct1_inj_adr;
                         status  = vme_write(adr,wr_data);
 
-                        (*MyOutput_) << "alct1_inj_wr=" << std::hex << alct1_inj_wr << std::endl;
+                        //(*MyOutput_) << "alct1_inj_wr=" << std::hex << alct1_inj_wr << std::endl;
 
                         // Lower pattern threshold temporarily so edge key 1/2-strips will trigger, set it back later
                         if (loop_keys[0] && (ikey<=4 || ikey>=154))
@@ -7816,6 +7834,7 @@ END:
                                     decode_readout(vf_data,dmb_wdcnt,err_check=true);
 
                                     (*MyOutput_) << "Non-zero triad bits=" << nonzero_triads << std::endl;
+                            break;
                                 } while (false); //close do loop
 
 
