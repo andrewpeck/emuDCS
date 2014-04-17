@@ -460,6 +460,9 @@ public:
   void PrintCLCT();
   void DecodeMPCFrames();
   void PrintMPCFrames();
+	void DecodeMPCFramesFromFIFO();
+  void PrintMPCFramesFromFIFO();
+	void DecodeAndPrintMPCFrames( unsigned int );
   int  GetALCTWordCount();
   void DecodeALCT();
   void PrintALCT();
@@ -2280,6 +2283,13 @@ private:
   int mpc0_frame1_data_;
   int mpc1_frame0_data_;
   int mpc1_frame1_data_;
+	//
+  int mpc0_frame0_fifo_data_;
+  int mpc0_frame1_fifo_data_;
+  int mpc1_frame0_fifo_data_;
+  int mpc1_frame1_fifo_data_;
+	//
+	int mpc_frames_fifo_ctrl_data_;
   //
   int ALCT0_data_;
   int ALCT1_data_;
@@ -2846,6 +2856,42 @@ private:
   int read_mpc1_frame1_alct_second_bxn_;
   int read_mpc1_frame1_clct_second_bx0_local_;
   int read_mpc1_frame1_csc_id_;
+  //
+  //------------------------------------------------------------------
+  //0X17C = ADR_MPC0_FRAME0_FIFO:  MPC0 Frame0 Data Sent to MPC and Stored in FIFO
+  //------------------------------------------------------------------
+  int read_mpc0_frame0_fifo_alct_first_key_;
+  int read_mpc0_frame0_fifo_clct_first_pat_;
+  int read_mpc0_frame0_fifo_lct_first_quality_;
+  int read_mpc0_frame0_fifo_first_vpf_;
+  //
+  //------------------------------------------------------------------
+  //0X17E = ADR_MPC0_FRAME1_FIFO:  MPC0 Frame1 Data Sent to MPC and Stored in FIFO
+  //------------------------------------------------------------------
+  int read_mpc0_frame1_fifo_clct_first_key_;
+  int read_mpc0_frame1_fifo_clct_first_bend_;
+  int read_mpc0_frame1_fifo_sync_err_;
+  int read_mpc0_frame1_fifo_alct_first_bxn_;
+  int read_mpc0_frame1_fifo_clct_first_bx0_local_;
+  int read_mpc0_frame1_fifo_csc_id_;
+  //
+  //------------------------------------------------------------------
+  //0X180 = ADR_MPC1_FRAME0_FIFO:  MPC1 Frame0 Data Sent to MPC and Stored in FIFO
+  //------------------------------------------------------------------
+  int read_mpc1_frame0_fifo_alct_second_key_;
+  int read_mpc1_frame0_fifo_clct_second_pat_;
+  int read_mpc1_frame0_fifo_lct_second_quality_;
+  int read_mpc1_frame0_fifo_second_vpf_;
+  //
+  //------------------------------------------------------------------
+  //0X182 = ADR_MPC1_FRAME1_FIFO:  MPC1 Frame1 Data Sent to MPC and Stored in FIFO
+  //------------------------------------------------------------------
+  int read_mpc1_frame1_fifo_clct_second_key_;
+  int read_mpc1_frame1_fifo_clct_second_bend_;
+  int read_mpc1_frame1_fifo_sync_err_;
+  int read_mpc1_frame1_fifo_alct_second_bxn_;
+  int read_mpc1_frame1_fifo_clct_second_bx0_local_;
+  int read_mpc1_frame1_fifo_csc_id_;
   //
   //------------------------------------------------------------------
   //0X98 = ADR_SCP_CTRL:  Scope control
