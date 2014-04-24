@@ -2101,6 +2101,16 @@ public:
   //!layer=[0-5], distrip=[0-39] = 1 = "bad"
   inline int  GetComparatorBadBit(int layer,int distrip) { return read_badbits_[layer][distrip]; }
   //
+	//------------------------------------------------------------------
+	//0X184 = ADR_MPC_FRAMES_FIFO_CTRL:  Controls FIFO
+	//------------------------------------------------------------------
+	inline void SetMPCFramesFifoCtrlWrEn(int mpc_frames_fifo_ctrl_wr_en) { mpc_frames_fifo_ctrl_wr_en_ = mpc_frames_fifo_ctrl_wr_en; }
+	inline int  GetMPCFramesFifoCtrlWrEn() { return mpc_frames_fifo_ctrl_wr_en_; }
+	inline int  GetReadMPCFramesFifoCtrlWrEn() { return read_mpc_frames_fifo_ctrl_wr_en_; }
+	
+	inline void SetMPCFramesFifoCtrlRdEn(int mpc_frames_fifo_ctrl_rd_en) { mpc_frames_fifo_ctrl_rd_en_ = mpc_frames_fifo_ctrl_rd_en; }
+	inline int  GetMPCFramesFifoCtrlRdEn() { return mpc_frames_fifo_ctrl_rd_en_; }
+	inline int  GetReadMPCFramesFifoCtrlRdEn() { return read_mpc_frames_fifo_ctrl_rd_en_; }
   //
   // **********************************************************************************
   //
@@ -3446,6 +3456,23 @@ private:
   //0X13E,140,142 = ADR_BADBITS401,BADBITS423,BADBITS445 = CFEB4 BadBits Masks
   //------------------------------------------------------------------
   int read_badbits_[MAX_NUM_LAYERS][MAX_NUM_DISTRIPS_PER_LAYER];
+	//
+	//
+	//------------------------------------------------------------------
+	//0X184 = ADR_MPC_FRAMES_FIFO_CTRL:  Controls FIFO
+	//------------------------------------------------------------------
+	int mpc_frames_fifo_ctrl_wr_en_;
+	int mpc_frames_fifo_ctrl_rd_en_;
+	//
+	int read_mpc_frames_fifo_ctrl_wr_en_;
+	int read_mpc_frames_fifo_ctrl_rd_en_;
+	int read_mpc_frames_fifo_ctrl_full_;
+	int read_mpc_frames_fifo_ctrl_wr_ack_;
+	int read_mpc_frames_fifo_ctrl_overflow_;
+	int read_mpc_frames_fifo_ctrl_empty_;
+	int read_mpc_frames_fifo_ctrl_prog_full_;
+	int read_mpc_frames_fifo_ctrl_sbiterr_;
+	int read_mpc_frames_fifo_ctrl_sditter_;
   //
   //
   //*******************************************************************

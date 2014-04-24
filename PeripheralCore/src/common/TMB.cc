@@ -1457,6 +1457,10 @@ namespace emu {
 				//
         void TMB::DecodeMPCFramesFromFIFO(){
             //
+						SetMPCFramesFifoCtrlRdEn(1);
+            int data_to_write = FillTMBRegister(mpc_frames_fifo_ctrl_adr);
+            WriteRegister(mpc_frames_fifo_ctrl_adr, data_to_write);
+						//
             int mpc0_frame0_fifo = ReadRegister(mpc0_frame0_fifo_adr); // 0x17C
             int mpc0_frame1_fifo = ReadRegister(mpc0_frame1_fifo_adr); // 0x17E
             int mpc1_frame0_fifo = ReadRegister(mpc1_frame0_fifo_adr); // 0x180
@@ -1588,7 +1592,7 @@ namespace emu {
 					//
 					std::cout << "LCT Info: Frames Sent to MPC" << std::endl;
 					if ( event_n > 0 ) {
-					  std::cout << "                          \t| \tMPC frames FIFO:" << std::endl;
+					  std::cout << "                          \t| \tExtended MPC frames from FIFO:" << std::endl;
 					  std::cout << "                          \t| ";
 						for ( unsigned int i = 0; i < event_n; i++ ) std::cout << "\t" << std::dec << i+1;
 					  std::cout << std::endl;
@@ -1609,15 +1613,16 @@ namespace emu {
 					if ( event_n > 0 ) std::cout << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) std::cout << "\t0x" << std::hex << v_mpc1_frame1_fifo_data_[i];
 					std::cout << std::endl;
+					std::cout << "MPC frames FIFO control data = 0x" << std::hex << mpc_frames_fifo_ctrl_data_ << std::endl;
 					//
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					  if ( event_n > 0 ) {
-					  (*MyOutput_) << "                                          \t| \tMPC frames FIFO:" << std::endl;
+					  (*MyOutput_) << "                                          \t| \tExtended MPC frames from FIFO:" << std::endl;
 						(*MyOutput_) << "                                          \t| ";
 					  for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t" << std::dec << i+1;
 						(*MyOutput_) << std::endl;
 					}
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					(*MyOutput_) << "LCT0 MPC0 frame0 data                  = 0x" << std::hex << mpc0_frame0_data_;
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t0x" << std::hex << v_mpc0_frame0_fifo_data_[i];
@@ -1634,7 +1639,7 @@ namespace emu {
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t0x" << std::hex << v_mpc1_frame1_fifo_data_[i];
 					(*MyOutput_) << std::endl;
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					(*MyOutput_) << "LCT0 MPC0 frame0.alct_first_key        = " << std::dec << read_mpc0_frame0_alct_first_key_;
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t" << std::dec << v_read_mpc0_frame0_fifo_alct_first_key_[i];
@@ -1651,7 +1656,7 @@ namespace emu {
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t0x" << std::hex << v_read_mpc0_frame0_fifo_first_vpf_[i];
 					(*MyOutput_) << std::endl;
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					(*MyOutput_) << "LCT0 MPC0 frame1.clct_first_key        = " << std::dec << read_mpc0_frame1_clct_first_key_;
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t" << std::dec << v_read_mpc0_frame1_fifo_clct_first_key_[i];
@@ -1676,9 +1681,7 @@ namespace emu {
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t0x" << std::hex << v_read_mpc0_frame1_fifo_csc_id_[i];
 					(*MyOutput_) << std::endl;
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
-					
-					
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					(*MyOutput_) << "LCT1 MPC1 frame0.alct_second_key       = " << std::dec << read_mpc1_frame0_alct_second_key_;
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t" << std::dec << v_read_mpc1_frame0_fifo_alct_second_key_[i];
@@ -1695,7 +1698,7 @@ namespace emu {
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t0x" << std::hex << v_read_mpc1_frame0_fifo_second_vpf_[i];
 					(*MyOutput_) << std::endl;
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					(*MyOutput_) << "LCT1 MPC1 frame1.clct_second_key       = " << std::dec << read_mpc1_frame1_clct_second_key_;
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t" << std::dec << v_read_mpc1_frame1_fifo_clct_second_key_[i];
@@ -1720,10 +1723,24 @@ namespace emu {
 					if ( event_n > 0 ) (*MyOutput_) << "\t| ";
 					for ( unsigned int i = 0; i < event_n; i++ ) (*MyOutput_) << "\t0x" << std::hex << v_read_mpc1_frame1_fifo_csc_id_[i];
 					(*MyOutput_) << std::endl;
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					(*MyOutput_) << "-------------------------------------------------" << std::endl;
 					//
-					(*MyOutput_) << "MPC frames FIFO control data            = 0x" << std::hex << mpc_frames_fifo_ctrl_data_ << std::endl;
-					(*MyOutput_) << "-----------------------------------------" << std::endl;
+					// Print out FIFO status and control registers
+					if ( event_n > 0 ) {
+						(*MyOutput_) << "                                         \t| \tMPC frames FIFO control data = 0x"     << std::hex << mpc_frames_fifo_ctrl_data_ << std::endl;
+						(*MyOutput_) << "                                         \t| \t-------------------------------------" << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Write enable      = 0x" << std::hex << read_mpc_frames_fifo_ctrl_wr_en_     << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Read enable       = 0x" << std::hex << read_mpc_frames_fifo_ctrl_rd_en_     << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Full              = 0x" << std::hex << read_mpc_frames_fifo_ctrl_full_      << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Write acknowledge = 0x" << std::hex << read_mpc_frames_fifo_ctrl_wr_ack_    << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Overflow          = 0x" << std::hex << read_mpc_frames_fifo_ctrl_overflow_  << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Empty             = 0x" << std::hex << read_mpc_frames_fifo_ctrl_empty_     << std::endl;
+						(*MyOutput_) << "                                         \t| \t   Prog full         = 0x" << std::hex << read_mpc_frames_fifo_ctrl_prog_full_ << std::endl;
+						(*MyOutput_) << "                                         \t| \t   sbiterr           = 0x" << std::hex << read_mpc_frames_fifo_ctrl_sbiterr_   << std::endl;
+						(*MyOutput_) << "                                         \t| \t   sditter           = 0x" << std::hex << read_mpc_frames_fifo_ctrl_sditter_   << std::endl;
+						(*MyOutput_) << "                                         \t| \t-------------------------------------" << std::endl;
+					}
+					
 					//
 					return;
 				}
@@ -15136,6 +15153,12 @@ exit:
             // 0X124 = ADR_CFEB_BADBITS_TIMER:  CFEB badbits check interval
             //---------------------------------------------------------------------
             cfeb_badbits_nbx_ = cfeb_badbits_nbx_default;
+						//
+						//------------------------------------------------------------------
+						//0X184 = ADR_MPC_FRAMES_FIFO_CTRL:  Controls FIFO
+						//------------------------------------------------------------------
+						mpc_frames_fifo_ctrl_wr_en_ = mpc_frames_fifo_ctrl_wr_en_default;
+						mpc_frames_fifo_ctrl_rd_en_ = mpc_frames_fifo_ctrl_rd_en_default;
             //
             //
             return;
@@ -15575,7 +15598,7 @@ exit:
                 //
 						} else if ( address == mpc0_frame1_fifo_adr ) {
                 //------------------------------------------------------------------
-                //0X17E = ADR_MPC0_FRAME1:  MPC0 Frame1 Data Sent to MPC
+                //0X17E = ADR_MPC0_FRAME1_FIFO:  MPC0 Frame1 Data Sent to MPC and Stored in FIFO
                 //------------------------------------------------------------------
                 read_mpc0_frame1_fifo_clct_first_key_       = ExtractValueFromData(data,mpc0_frame1_fifo_clct_first_key_bitlo,       mpc0_frame1_fifo_clct_first_key_bithi);
                 read_mpc0_frame1_fifo_clct_first_bend_      = ExtractValueFromData(data,mpc0_frame1_fifo_clct_first_bend_bitlo,      mpc0_frame1_fifo_clct_first_bend_bithi);
@@ -15586,7 +15609,7 @@ exit:
                 //
             } else if ( address == mpc1_frame0_fifo_adr ) {
                 //------------------------------------------------------------------
-                //0X180 = ADR_MPC1_FRAME0:  MPC1 Frame0 Data Sent to MPC
+                //0X180 = ADR_MPC1_FRAME0_FIFO:  MPC1 Frame0 Data Sent to MPC and Stored in FIFO
                 //------------------------------------------------------------------
                 read_mpc1_frame0_fifo_alct_second_key_    = ExtractValueFromData(data,mpc1_frame0_fifo_alct_second_key_bitlo,    mpc1_frame0_fifo_alct_second_key_bithi);
                 read_mpc1_frame0_fifo_clct_second_pat_    = ExtractValueFromData(data,mpc1_frame0_fifo_clct_second_pat_bitlo,    mpc1_frame0_fifo_clct_second_pat_bithi);
@@ -15595,7 +15618,7 @@ exit:
                 //
             } else if ( address == mpc1_frame1_fifo_adr ) {
                 //------------------------------------------------------------------
-                //0X182 = ADR_MPC1_FRAME1:  MPC1 Frame1 Data Sent to MPC
+                //0X182 = ADR_MPC1_FRAME1_FIFO:  MPC1 Frame1 Data Sent to MPC and Stored in FIFO
                 //------------------------------------------------------------------
                 read_mpc1_frame1_fifo_clct_second_key_       = ExtractValueFromData(data,mpc1_frame1_fifo_clct_second_key_bitlo,       mpc1_frame1_fifo_clct_second_key_bithi);
                 read_mpc1_frame1_fifo_clct_second_bend_      = ExtractValueFromData(data,mpc1_frame1_fifo_clct_second_bend_bitlo,      mpc1_frame1_fifo_clct_second_bend_bithi);
@@ -15604,6 +15627,21 @@ exit:
                 read_mpc1_frame1_fifo_clct_second_bx0_local_ = ExtractValueFromData(data,mpc1_frame1_fifo_clct_second_bx0_local_bitlo, mpc1_frame1_fifo_clct_second_bx0_local_bithi);
                 read_mpc1_frame1_fifo_csc_id_                = ExtractValueFromData(data,mpc1_frame1_fifo_csc_id_bitlo,                mpc1_frame1_fifo_csc_id_bithi);
                 //
+						} else if ( address == mpc_frames_fifo_ctrl_adr ) {
+                //------------------------------------------------------------------
+                //0X184 = ADR_MPC_FRAMES_FIFO_CTRL:  Controls FIFO
+                //------------------------------------------------------------------
+                read_mpc_frames_fifo_ctrl_wr_en_     = ExtractValueFromData(data, mpc_frames_fifo_ctrl_wr_en_bitlo,     mpc_frames_fifo_ctrl_wr_en_bithi);
+								read_mpc_frames_fifo_ctrl_rd_en_     = ExtractValueFromData(data, mpc_frames_fifo_ctrl_rd_en_bitlo,     mpc_frames_fifo_ctrl_rd_en_bithi);
+								read_mpc_frames_fifo_ctrl_full_      = ExtractValueFromData(data, mpc_frames_fifo_ctrl_full_bitlo,      mpc_frames_fifo_ctrl_full_bithi);
+								read_mpc_frames_fifo_ctrl_wr_ack_    = ExtractValueFromData(data, mpc_frames_fifo_ctrl_wr_ack_bitlo,    mpc_frames_fifo_ctrl_wr_ack_bithi);
+								read_mpc_frames_fifo_ctrl_overflow_  = ExtractValueFromData(data, mpc_frames_fifo_ctrl_overflow_bitlo,  mpc_frames_fifo_ctrl_overflow_bithi);
+								read_mpc_frames_fifo_ctrl_empty_     = ExtractValueFromData(data, mpc_frames_fifo_ctrl_empty_bitlo,     mpc_frames_fifo_ctrl_empty_bithi);
+								read_mpc_frames_fifo_ctrl_prog_full_ = ExtractValueFromData(data, mpc_frames_fifo_ctrl_prog_full_bitlo, mpc_frames_fifo_ctrl_prog_full_bithi);
+								read_mpc_frames_fifo_ctrl_sbiterr_   = ExtractValueFromData(data, mpc_frames_fifo_ctrl_sbiterr_bitlo,   mpc_frames_fifo_ctrl_sbiterr_bithi);
+								read_mpc_frames_fifo_ctrl_sditter_   = ExtractValueFromData(data, mpc_frames_fifo_ctrl_sditter_bitlo,   mpc_frames_fifo_ctrl_sditter_bithi);
+                //
+						
 						} else if ( address == scp_ctrl_adr ) {
                 //------------------------------------------------------------------
                 //0X98 = ADR_SCP_CTRL:  Scope Control
@@ -17433,6 +17471,13 @@ exit:
                 //---------------------------------------------------------------------
                 InsertValueIntoDataWord(cfeb_badbits_nbx_,cfeb_badbits_nbx_bithi,cfeb_badbits_nbx_bitlo,&data_word);
                 //
+						} else if ( address == mpc_frames_fifo_ctrl_adr ) {
+                //------------------------------------------------------------------
+                //0X184 = ADR_MPC_FRAMES_FIFO_CTRL:  Controls FIFO
+                //------------------------------------------------------------------
+                InsertValueIntoDataWord(mpc_frames_fifo_ctrl_wr_en_, mpc_frames_fifo_ctrl_wr_en_bithi, mpc_frames_fifo_ctrl_wr_en_bitlo, &data_word);
+								InsertValueIntoDataWord(mpc_frames_fifo_ctrl_rd_en_, mpc_frames_fifo_ctrl_rd_en_bithi, mpc_frames_fifo_ctrl_rd_en_bitlo, &data_word);
+								//
             } else {
                 //
                 (*MyOutput_) << "TMB: ERROR in FillTMBRegister, VME address = " << address << " not supported to be filled" << std::endl;

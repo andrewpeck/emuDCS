@@ -1666,6 +1666,63 @@ const int mpc1_frame1_fifo_csc_id_default = 0;
 //
 //
 //------------------------------------------------------------------
+//0X184 = ADR_MPC_FRAMES_FIFO_CTRL:  Controls FIFO
+//------------------------------------------------------------------
+const int mpc_frames_fifo_ctrl_wr_en_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_wr_en_bitlo   = 0;
+const int mpc_frames_fifo_ctrl_wr_en_bithi   = 0;
+const int mpc_frames_fifo_ctrl_wr_en_default = 1;
+//
+//
+const int mpc_frames_fifo_ctrl_rd_en_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_rd_en_bitlo   = 1;
+const int mpc_frames_fifo_ctrl_rd_en_bithi   = 1;
+const int mpc_frames_fifo_ctrl_rd_en_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_full_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_full_bitlo   = 2;
+const int mpc_frames_fifo_ctrl_full_bithi   = 2;
+const int mpc_frames_fifo_ctrl_full_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_wr_ack_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_wr_ack_bitlo   = 3;
+const int mpc_frames_fifo_ctrl_wr_ack_bithi   = 3;
+const int mpc_frames_fifo_ctrl_wr_ack_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_overflow_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_overflow_bitlo   = 4;
+const int mpc_frames_fifo_ctrl_overflow_bithi   = 4;
+const int mpc_frames_fifo_ctrl_overflow_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_empty_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_empty_bitlo   = 5;
+const int mpc_frames_fifo_ctrl_empty_bithi   = 5;
+const int mpc_frames_fifo_ctrl_empty_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_prog_full_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_prog_full_bitlo   = 6;
+const int mpc_frames_fifo_ctrl_prog_full_bithi   = 6;
+const int mpc_frames_fifo_ctrl_prog_full_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_sbiterr_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_sbiterr_bitlo   = 7;
+const int mpc_frames_fifo_ctrl_sbiterr_bithi   = 7;
+const int mpc_frames_fifo_ctrl_sbiterr_default = 0;
+//
+//
+const int mpc_frames_fifo_ctrl_sditter_vmereg  = mpc_frames_fifo_ctrl_adr;
+const int mpc_frames_fifo_ctrl_sditter_bitlo   = 8;
+const int mpc_frames_fifo_ctrl_sditter_bithi   = 8;
+const int mpc_frames_fifo_ctrl_sditter_default = 0;
+//
+//
+//------------------------------------------------------------------
 //0X98 = ADR_SCP_CTRL:  Scope control
 //------------------------------------------------------------------
 const int scope_in_readout_vmereg    =  scp_ctrl_adr;
